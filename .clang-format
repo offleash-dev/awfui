@@ -1,0 +1,61 @@
+BasedOnStyle: LLVM
+
+IndentWidth: 6
+TabWidth: 6
+UseTab: Never
+
+ColumnLimit: 120
+
+# K&R braces
+BraceWrapping:
+  AfterClass: false
+  AfterControlStatement: false
+  AfterEnum: false
+  AfterFunction: false
+  AfterNamespace: false
+  AfterStruct: false
+  BeforeCatch: false
+  BeforeElse: false
+  IndentBraces: false
+
+# Readability spacing
+# clang‑format won’t insert semantic block breaks for you,
+# but it can help keep them tidy.  Use 3 blank lines to separate
+# big definitionss (e.g functions, classes, #include vs implementation sections, etc)
+MaxEmptyLinesToKeep: 3
+SeparateDefinitionBlocks: Always
+EmptyLineBeforeAccessModifier: Always
+
+# Spaces
+SpacesInParentheses: false
+SpaceBeforeParens: ControlStatements
+SpaceAfterCStyleCast: true
+
+# Indentation rules
+IndentCaseLabels: true
+IndentGotoLabels: false
+IndentPPDirectives: AfterHash
+
+# Pointer/reference alignment
+PointerAlignment: Left
+ReferenceAlignment: Left
+
+# Function formatting
+AllowShortFunctionsOnASingleLine: None
+AllowShortIfStatementsOnASingleLine: false
+AllowShortLoopsOnASingleLine: false
+
+# Namespace (you’re not using them, but keep clean)
+NamespaceIndentation: None
+
+# Aligning and wrapping
+AlignConsecutiveAssignments: true
+AlignConsecutiveDeclarations: true
+AlignTrailingComments: true
+
+# C++ specific
+Standard: c++20
+
+# Keep your AF-style prefixes clean
+SortIncludes: CaseSensitive
+IncludeBlocks: Preserve

@@ -1,0 +1,48 @@
+TEST
+dialog variants
+
+
+
+polish for AFButton:
+
+pressed state drawing
+
+optional border radius
+
+optional theme integration
+
+optional text centering
+
+
+polish for AFLabel
+optional theme integration
+
+optional text centering
+
+
+
+polish for AFScreen
+optional refinements you might want later:
+
+invalidate/dirty‑rect redraw
+
+partial redraw optimization
+
+scrollable containers
+
+focus model (for keyboard/rotary input)
+
+
+
+Theme integration
+Right now AFTheme exists, but widgets don’t use it yet.
+
+You can start threading it in:
+
+default colors
+
+default padding
+
+default border radius
+
+default font

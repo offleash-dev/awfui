@@ -1,0 +1,72 @@
+#pragma once
+
+// AFButton.h
+// Button widget for the AWFUI library
+
+#include "AFAdafruitCompat.h"
+#undef swap
+
+#include "AFTheme.h"
+#include "AFWidget.h"
+
+
+
+// Callback type for button clicks (no STL, just a function pointer)
+using AFButtonCallback = void (*)();
+
+
+
+class AFButton : public AFWidget {
+    public:
+      AFButton(int16_t x, int16_t y, int16_t w, int16_t h, const char* label = nullptr);
+
+      void setLabel(const char* text);
+
+      const char* getLabel() const {
+            return m_label;
+      }
+
+      void setColors(uint16_t bg, uint16_t fg, uint16_t border);
+      void setPressedColors(uint16_t bg, uint16_t fg, uint16_t border);
+
+      void setTextSize(uint8_t size) {
+            m_textSize = size;
+      }
+
+      uint8_t getTextSize() const {
+            return m_textSize;
+      }
+
+      bool isPressed() const {
+            return m_pressed;
+      }
+
+      // Drawing
+      void draw(Adafruit_GFX& gfx) override;
+
+      // Event handling
+      void onPress(const AFEvent& e) override;
+      void onRelease(const AFEvent& e) override;
+      void onClick(const AFEvent& e) override;
+
+      void setOnClickCallback(AFButtonCallback cb) {
+            m_onClickCallback = cb;
+      }
+
+      
+    private:
+      const char* m_label;
+
+      uint16_t m_bgColor;
+      uint16_t m_fgColor;
+      uint16_t m_borderColor;
+
+      uint16_t m_bgColorPressed;
+      uint16_t m_fgColorPressed;
+      uint16_t m_borderColorPressed;
+
+      uint8_t m_textSize = 1;
+      bool    m_pressed  = false;
+
+      AFButtonCallback m_onClickCallback = nullptr;
+};

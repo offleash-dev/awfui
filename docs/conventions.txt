@@ -1,0 +1,45 @@
+Clarity.  Not extra junk.  Think embedded.
+
+
+No STL (use etl)
+https://www.etlcpp.com/
+
+
+No exceptions.  
+Should return something checkable if an error is possible 
+    bool success is fine
+    null is fine
+    an enum defined in AFResult.h is fine
+    asserts are for programmer errors
+
+
+no namespaces.   use AF* prefix
+
+
+m_* for member variables
+s_* for static variables (we don't have any yet)
+
+k* for contants (not all caps)
+
+
+virtual methods should use override
+
+
+factories when appropriate (e.g. screen factory in AFWorld)
+
+
+K&R brackets
+
+
+includes should be order C, then etl and/or platform (libraries), then AF
+
+
+Spaced for readability
+3 lines between big definition chunks (e.g functions, classes, #include vs implementation sections)
+
+
+Use clang-format and .clang-format settings to format the files with these conventions where possible.  
+Also, to get the 3 blanks lines between functions which isn't supported by clang-format, 
+run the bonus script
+    clang-format -i ...
+    format_spacing.sh   # or .ps1
