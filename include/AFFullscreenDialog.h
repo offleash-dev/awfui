@@ -10,7 +10,7 @@
 
 class AFFullscreenDialog : public AFModalDialog {
     public:
-      AFFullscreenDialog(int16_t screenW, int16_t screenH);
+      AFFullscreenDialog(int16_t screenW, int16_t screenH, uint32_t id = 0);
 
       // No border/chrome by default
       virtual void draw(Adafruit_GFX& gfx) override;

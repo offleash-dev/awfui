@@ -5,7 +5,7 @@
 
 // Constructor
 //
-AFModalDialog::AFModalDialog(int16_t x, int16_t y, int16_t w, int16_t h) : AFDialog(x, y, w, h) {
+AFModalDialog::AFModalDialog(int16_t x, int16_t y, int16_t w, int16_t h, uint32_t id) : AFDialog(x, y, w, h, id) {
       // Modal dialogs are visible by default
       m_visible = true;
 }
@@ -17,6 +17,8 @@ void AFModalDialog::show(AFScreen& screen) {
             return; // already visible
 
       m_owner = &screen;
+      setVisible(true);
+      markDirty();
       onShow();
       screen.showModal(this);
 }
@@ -26,7 +28,9 @@ void AFModalDialog::show(AFScreen& screen) {
 void AFModalDialog::dismiss() {
       if (m_owner) {
             onHide();
+            setVisible(false);
             m_owner->dismissModal(this);
+
             m_owner = nullptr;
       }
 }

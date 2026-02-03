@@ -55,6 +55,25 @@ bool AFScreenList::setActive(AFScreen* screen) {
       return found;
 }
 
+
+// Set active screen by id
+//
+bool AFScreenList::setActive(uint32_t screenId) {
+      bool found = false;
+
+      // Only allow active screens that are in the list
+      for (auto* s : m_screens) {
+            if (s->getId() == screenId) {
+                  m_active = s;
+                  found    = true;
+                  break;
+            }
+      }
+
+      return found;
+}
+
+
 // Set active screen by index
 //
 bool AFScreenList::setActive(int16_t screenIndex) {

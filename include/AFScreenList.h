@@ -24,6 +24,7 @@ class AFScreenList {
 
       bool      setActive(int16_t screenIndex);
       bool      setActive(AFScreen* screen);
+      bool      setActive(uint32_t screenId);
       AFScreen* getActive() const;
 
     private:

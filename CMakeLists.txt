@@ -16,6 +16,7 @@ set(CMAKE_CXX_EXTENSIONS OFF)
 # Options
 # -----------------------------------------------------------------------------
 option(AFUI_BUILD_EXAMPLES "Build the AFUI example applications" OFF)
+option(AFUI_USE_SDL "Build with SDL backend for desktop simulation" OFF)
 
 # -----------------------------------------------------------------------------
 # Compiler settings (GCC-friendly, cross-platform)
@@ -29,7 +30,7 @@ if(CMAKE_CXX_COMPILER_ID STREQUAL "GNU" OR CMAKE_CXX_COMPILER_ID STREQUAL "Clang
     )
 endif()
 
-if(CMAKE_CXX_COMPILER_ID STREQUAL "MSVC")
+if(MSVC)
     add_compile_options(/W4)
 endif()
 
@@ -68,6 +69,24 @@ set(AFUI_HEADERS
 )
 
 # -----------------------------------------------------------------------------
+# SDL backend sources (optional)
+# -----------------------------------------------------------------------------
+if(AFUI_USE_SDL)
+    set(AFUI_SDL_SOURCES
+        src/gfx_sdl.cpp
+        src/AFTouchSDL.cpp
+        # Adafruit_GFX source - needed for SDL builds (embedded builds link the full library)
+        ${CMAKE_CURRENT_SOURCE_DIR}/../Drivers/Adafruit/Adafruit-GFX/Adafruit_GFX.cpp
+    )
+    set(AFUI_SDL_HEADERS
+        include/gfx_sdl.hpp
+        include/AFTouchSDL.h
+    )
+    list(APPEND AFUI_SOURCES ${AFUI_SDL_SOURCES})
+    list(APPEND AFUI_HEADERS ${AFUI_SDL_HEADERS})
+endif()
+
+# -----------------------------------------------------------------------------
 # AFUI library target
 # -----------------------------------------------------------------------------
 add_library(afui STATIC ${AFUI_SOURCES} ${AFUI_HEADERS})
@@ -95,6 +114,11 @@ if(TARGET adafruit_gfx)
 elseif(DEFINED ADAFRUIT_GFX_INCLUDE_DIR)
     target_include_directories(afui
         PUBLIC $<BUILD_INTERFACE:${ADAFRUIT_GFX_INCLUDE_DIR}>
+    )
+elseif(EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/../Drivers/Adafruit/Adafruit-GFX)
+    # Default: assume Adafruit_GFX is in Drivers/Adafruit/Adafruit-GFX
+    target_include_directories(afui
+        PUBLIC $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/../Drivers/Adafruit/Adafruit-GFX>
     )
 endif()
 
@@ -124,10 +148,38 @@ endif()
 # Define ARDUINO version so Adafruit headers take the right code paths
 target_compile_definitions(afui PUBLIC ARDUINO=150)
 
+# -----------------------------------------------------------------------------
+# SDL dependency (when building with SDL backend)
+# -----------------------------------------------------------------------------
+if(AFUI_USE_SDL)
+    # Check for SDL2 source as sibling directory
+    if(EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/../SDL2/CMakeLists.txt)
+        message(STATUS "Adding SDL2 from ${CMAKE_CURRENT_SOURCE_DIR}/../SDL2")
+        # Build SDL2 as static library for cross-platform simplicity
+        set(SDL_SHARED OFF CACHE BOOL "Build SDL2 shared library" FORCE)
+        set(SDL_STATIC ON CACHE BOOL "Build SDL2 static library" FORCE)
+        add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/../SDL2 ${CMAKE_BINARY_DIR}/SDL2)
+        # Link static SDL2 - we use SDL_MAIN_HANDLED so no SDL2main needed
+        target_link_libraries(afui PUBLIC SDL2::SDL2-static)
+    else()
+        # Fall back to system-installed SDL2
+        find_package(SDL2 REQUIRED)
+        target_link_libraries(afui PUBLIC SDL2::SDL2)
+    endif()
+    target_compile_definitions(afui PUBLIC AFUI_USE_SDL=1)
+endif()
+
 # Suppress MSVC secure CRT warnings (strcpy, sprintf, etc.)
 # These functions are standard C and fine for embedded targets
 if(MSVC OR (CMAKE_CXX_COMPILER_ID STREQUAL "Clang" AND WIN32))
     target_compile_definitions(afui PRIVATE _CRT_SECURE_NO_WARNINGS)
+endif()
+
+# MSVC doesn't have GCC's __builtin_bswap* - force-include compatibility header
+if(MSVC)
+    target_compile_options(afui PRIVATE 
+        /FI"${CMAKE_CURRENT_SOURCE_DIR}/include/AFCompilerCompat.h"
+    )
 endif()
 
 # Embedded build settings
@@ -136,31 +188,47 @@ if(CMAKE_SYSTEM_NAME STREQUAL "Generic")
         -mcpu=cortex-m4 -mthumb -mfloat-abi=hard -mfpu=fpv4-sp-d16
         -fno-exceptions -fno-rtti
     )
-else()
-    # Desktop builds also disable exceptions/RTTI for consistency
+elseif(MSVC)
+    # MSVC desktop builds - disable exceptions/RTTI for consistency with embedded
+    target_compile_options(afui PRIVATE /EHs-c- /GR-)
+elseif(CMAKE_CXX_COMPILER_ID STREQUAL "GNU" OR CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
+    # GCC/Clang desktop builds
     target_compile_options(afui PRIVATE -fno-exceptions -fno-rtti)
 endif()
 
 # -----------------------------------------------------------------------------
-# Example application (optional)
+# Example applications (optional)
 # -----------------------------------------------------------------------------
 if(AFUI_BUILD_EXAMPLES)
-    # Include STM32 platform configuration
-    include(cmake/stm32_platform.cmake)
-    
+    # Main demo
     add_executable(afui_demo examples/demo/main.cpp)
-    target_link_libraries(afui_demo PRIVATE afui adafruit_ili9341 adafruit_gfx stm32_platform)
     
-    # Suppress MSVC secure CRT warnings for demo
+    # Coordinate/rotation test demo
+    add_executable(afui_test examples/test/main.cpp)
+    
+    if(AFUI_USE_SDL)
+        # SDL desktop build - only needs afui (which brings in SDL)
+        target_link_libraries(afui_demo PRIVATE afui)
+        target_link_libraries(afui_test PRIVATE afui)
+    else()
+        # Embedded build - needs STM32 platform and ILI9341 driver
+        include(cmake/stm32_platform.cmake)
+        target_link_libraries(afui_demo PRIVATE afui adafruit_ili9341 adafruit_gfx stm32_platform)
+        target_link_libraries(afui_test PRIVATE afui adafruit_ili9341 adafruit_gfx stm32_platform)
+    endif()
+    
+    # Suppress MSVC secure CRT warnings for demos
     if(MSVC OR (CMAKE_CXX_COMPILER_ID STREQUAL "Clang" AND WIN32))
         target_compile_definitions(afui_demo PRIVATE _CRT_SECURE_NO_WARNINGS)
+        target_compile_definitions(afui_test PRIVATE _CRT_SECURE_NO_WARNINGS)
     endif()
 endif()
 
 # -----------------------------------------------------------------------------
-# Installation (only when building standalone, not as subdirectory)
+# Installation (only when building standalone, not as subdirectory, and not SDL)
 # -----------------------------------------------------------------------------
-if(CMAKE_SOURCE_DIR STREQUAL CMAKE_CURRENT_SOURCE_DIR)
+# Skip install rules when using SDL subdirectory - the SDL targets aren't exportable
+if(CMAKE_SOURCE_DIR STREQUAL CMAKE_CURRENT_SOURCE_DIR AND NOT AFUI_USE_SDL)
     include(GNUInstallDirs)
 
     install(TARGETS afui

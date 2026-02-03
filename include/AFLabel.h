@@ -12,7 +12,7 @@
 
 class AFLabel : public AFWidget {
     public:
-      AFLabel(int16_t x, int16_t y, const char* text);
+      AFLabel(int16_t x, int16_t y, const char* text, uint32_t id = 0);
 
       void setText(const char* t) {
             m_text = t;

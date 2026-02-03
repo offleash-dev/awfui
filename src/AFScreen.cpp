@@ -8,7 +8,7 @@
 
 // Constructor
 //
-AFScreen::AFScreen(Adafruit_GFX& displayRef, bool useCanvas) : m_display(displayRef) {
+AFScreen::AFScreen(Adafruit_GFX& displayRef, uint32_t id, bool useCanvas) : m_display(displayRef), m_id(id) {
       if (useCanvas) {
             // Create an off-screen buffer matching the display size
             m_canvas = new GFXcanvas16(m_display.width(), m_display.height());
@@ -53,6 +53,15 @@ void AFScreen::showModal(AFModalDialog* d) {
 void AFScreen::dismissModal(AFModalDialog* d) {
       if (m_activeModal == d) {
             m_activeModal = nullptr;
+            // Mark all widgets dirty so they redraw and cover the dismissed modal
+            for (auto* w : m_widgets) {
+                  w->markDirty();
+            }
+            for (auto* dlg : m_dialogs) {
+                  dlg->markDirty();
+            }
+
+            m_needsScreenRedraw = true;
       }
 }
 
@@ -74,7 +83,7 @@ void AFScreen::handleEvent(const AFEvent& e) {
             }
       }
 
-      // Then route to root-level widgets
+      // Then route to root-level widgets 
       for (int i = m_widgets.size() - 1; i >= 0; --i) {
             AFWidget* w = m_widgets[i];
             if (w->isVisible() && w->hitTest(e.x, e.y)) {
@@ -97,6 +106,20 @@ void AFScreen::handleEvent(const AFEvent& e) {
       }
 }
 
+// Mark all widgets dirty to force a full redraw
+//
+void AFScreen::setNeedsFullRedraw() {
+      for (auto* w : m_widgets) {
+            w->markDirty();
+      }
+      for (auto* d : m_dialogs) {
+            d->markDirty();
+      }
+      if (m_activeModal) {
+            m_activeModal->markDirty();
+      }
+}
+
 // Clear the screen
 //
 void AFScreen::clear(uint16_t color) {
@@ -112,6 +135,9 @@ void AFScreen::clear(uint16_t color) {
 // Check if any widget needs redraw
 //
 bool AFScreen::needsRedraw() const {
+    if (m_needsScreenRedraw)
+        return true;
+      ;
     for (auto* w : m_widgets) {
         if (w->isVisible() && w->isDirty()) {
             return true;
@@ -134,6 +160,11 @@ void AFScreen::draw() {
     // Skip if nothing needs redraw
     if (!needsRedraw()) {
         return;
+    }
+
+    if (m_needsScreenRedraw) {
+        clear();
+        m_needsScreenRedraw = false;
     }
 
     Adafruit_GFX* gfx = m_canvas ? (Adafruit_GFX*) m_canvas : &m_display;

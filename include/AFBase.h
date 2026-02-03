@@ -31,3 +31,17 @@ struct AFSize {
       int16_t w;
       int16_t h;
 };
+
+
+
+// Helpers to create 4-character IDs used for widgets, screens, dialogs, etc.
+#define MAKE_ID(a,b,c,d) \ ((uint32_t)(a)<<24 | (uint32_t)(b)<<16 | (uint32_t)(c)<<8 | (uint32_t)(d))
+// Example: constexpr uint32_t myID = MAKE_ID('T','E','S','T');
+
+constexpr uint32_t makeID(const char (&s)[5]) {
+    return (uint32_t(s[0]) << 24) |
+           (uint32_t(s[1]) << 16) |
+           (uint32_t(s[2]) << 8)  |
+           (uint32_t(s[3]));
+}
+// Example: constexpr uint32_t myID = makeID("TEST");

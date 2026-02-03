@@ -7,7 +7,7 @@
 
 // Constructor: full‑screen modal dialog
 //
-AFFullscreenDialog::AFFullscreenDialog(int16_t screenW, int16_t screenH) : AFModalDialog(0, 0, screenW, screenH) {
+AFFullscreenDialog::AFFullscreenDialog(int16_t screenW, int16_t screenH, uint32_t id) : AFModalDialog(0, 0, screenW, screenH, id) {
       // Fullscreen dialogs are visible by default
       m_visible = true;
 }

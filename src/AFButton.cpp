@@ -6,8 +6,9 @@
 
 // Constructor
 //
-AFButton::AFButton(int16_t x, int16_t y, int16_t w, int16_t h, const char* labelText)
-    : AFWidget(x, y, w, h), m_label(labelText), m_bgColor(0xFFFF), // white
+AFButton::AFButton(int16_t x, int16_t y, int16_t w, int16_t h, uint32_t id, const char* labelText)
+    : AFWidget(x, y, w, h, id), m_label(labelText), 
+      m_bgColor(0xFFFF),                                           // white
       m_fgColor(0x0000),                                           // black
       m_borderColor(0x0000),                                       // black
       m_bgColorPressed(0xC618),                                    // light gray

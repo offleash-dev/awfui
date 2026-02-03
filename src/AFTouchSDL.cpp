@@ -1,0 +1,45 @@
+// AFTouchSDL.cpp
+
+#include "AFTouchSDL.h"
+
+
+
+AFTouchSDL::AFTouchSDL(int displayScale)
+    : scale(displayScale), isDown(false), lastX(0), lastY(0)
+{}
+
+
+
+bool AFTouchSDL::begin() {
+    // Nothing to initialize for SDL touch
+    return true;
+}
+
+
+
+void AFTouchSDL::handleEvent(const SDL_Event& e) {
+    switch (e.type) {
+        case SDL_MOUSEBUTTONDOWN:
+            isDown = true;
+            lastX = e.button.x / scale;
+            lastY = e.button.y / scale;
+            break;
+
+        case SDL_MOUSEBUTTONUP:
+            isDown = false;
+            break;
+
+        case SDL_MOUSEMOTION:
+            if (isDown) {
+                lastX = e.motion.x / scale;
+                lastY = e.motion.y / scale;
+            }
+            break;
+    }
+}
+
+
+
+AFTouchPoint AFTouchSDL::getPoint() {
+    return AFTouchPoint{ lastX, lastY, isDown };
+}

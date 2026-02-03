@@ -74,4 +74,7 @@ private:
     AFScreenList m_screenList;
 
     void pollHardware(AFEvent& outEvent);
+    
+    // Transform touch coordinates from physical screen space to rotated display space
+    void transformTouchCoordinates(int16_t& x, int16_t& y);
 };

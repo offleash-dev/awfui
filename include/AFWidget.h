@@ -13,7 +13,7 @@
 
 class AFWidget {
 public:
-    AFWidget(int16_t x, int16_t y, int16_t w, int16_t h);
+    AFWidget(int16_t x, int16_t y, int16_t w, int16_t h, uint32_t id = 0);
     virtual ~AFWidget() = default;
 
     virtual void draw(Adafruit_GFX& gfx) = 0;
@@ -89,11 +89,17 @@ public:
     }
 
 
+    uint32_t getId() const {
+        return m_id;
+    }
+
+
 protected:
     int16_t   m_x, m_y;
     int16_t   m_width, m_height;
     bool      m_visible = true;
     bool      m_dirty   = true;  // Start dirty so initial draw happens
+    uint32_t   m_id;
     AFWidget* m_parent  = nullptr;
 
     friend class AFDialog;
