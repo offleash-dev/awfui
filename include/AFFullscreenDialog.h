@@ -10,7 +10,11 @@
 
 class AFFullscreenDialog : public AFModalDialog {
     public:
-      AFFullscreenDialog(int16_t screenW, int16_t screenH, uint32_t id = 0);
+      // No dimensions needed - automatically fills the screen when shown
+      AFFullscreenDialog(uint32_t id = 0);
+
+      // Override show to resize to screen dimensions
+      void show(AFScreen& screen) override;
 
       // No border/chrome by default
       virtual void draw(Adafruit_GFX& gfx) override;

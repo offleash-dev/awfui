@@ -49,8 +49,9 @@ public:
     // returns nullptr if allocation fails or max screens reached
     AFScreen* createScreen(bool useCanvas = false);
 
-    // Convenience wrapper around screenList
+    // Accessors for screenList
     void setActiveScreen(AFScreen* screen);
+    AFScreen* getActiveScreen();
 
     // Main UI loop
     void loop();

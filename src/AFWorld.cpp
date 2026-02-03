@@ -72,6 +72,47 @@ void AFWorld::setActiveScreen(AFScreen* screen) {
       }
 }
 
+// Get active screen
+//
+AFScreen* AFWorld::getActiveScreen() {
+      return m_screenList.getActive();
+}
+
+// Transform touch coordinates from physical screen space to rotated display space
+// This is the inverse of Adafruit_GFX's rotation transform
+//
+void AFWorld::transformTouchCoordinates(int16_t& x, int16_t& y) {
+    uint8_t rotation = m_display.getRotation();
+    int16_t w = m_display.width();   // rotated width
+    int16_t h = m_display.height();  // rotated height
+    int16_t tx, ty;
+    
+    switch (rotation) {
+        case 0:
+            // No transformation needed
+            break;
+        case 1:
+            // Physical to rotated: x' = y, y' = width - 1 - x
+            tx = y;
+            ty = w - 1 - x;
+            x = tx;
+            y = ty;
+            break;
+        case 2:
+            // Physical to rotated: x' = width - 1 - x, y' = height - 1 - y
+            x = w - 1 - x;
+            y = h - 1 - y;
+            break;
+        case 3:
+            // Physical to rotated: x' = height - 1 - y, y' = x
+            tx = h - 1 - y;
+            ty = x;
+            x = tx;
+            y = ty;
+            break;
+    }
+}
+
 // Poll hardware and fill AFEvent
 //
 void AFWorld::pollHardware(AFEvent& outEvent) {
@@ -86,6 +127,9 @@ void AFWorld::pollHardware(AFEvent& outEvent) {
     // Poll touch if available
     if (m_touch) {
         AFTouchPoint pt = m_touch->getPoint();
+        
+        // Transform touch coordinates to match display rotation
+        transformTouchCoordinates(pt.x, pt.y);
         
         if (pt.touched && !m_wasTouched) {
             // Touch just started

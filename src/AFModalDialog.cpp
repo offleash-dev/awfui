@@ -2,6 +2,7 @@
 
 #include "AFModalDialog.h"
 #include "AFScreen.h"
+#include "AFWorld.h"
 
 // Constructor
 //
@@ -21,6 +22,18 @@ void AFModalDialog::show(AFScreen& screen) {
       markDirty();
       onShow();
       screen.showModal(this);
+}
+
+// Convenience: show on the active screen
+//
+void AFModalDialog::show() {
+      AFWorld* world = AFWorld::instance();
+      if (!world) return;
+      
+      AFScreen* active = world->getActiveScreen();
+      if (active) {
+            show(*active);  // calls virtual show(AFScreen&)
+      }
 }
 
 // Dismiss the modal dialog

@@ -6,10 +6,27 @@
 #include "AFScreen.h"
 
 // Constructor: full‑screen modal dialog
+// Dimensions are set when show() is called
 //
-AFFullscreenDialog::AFFullscreenDialog(int16_t screenW, int16_t screenH, uint32_t id) : AFModalDialog(0, 0, screenW, screenH, id) {
+AFFullscreenDialog::AFFullscreenDialog(uint32_t id) 
+    : AFModalDialog(0, 0, 0, 0, id) 
+{
       // Fullscreen dialogs are visible by default
       m_visible = true;
+}
+
+// Override show to resize to screen dimensions
+//
+void AFFullscreenDialog::show(AFScreen& screen) {
+      // Get screen dimensions and resize to fill
+      Adafruit_GFX& display = screen.getDisplay();
+      m_x = 0;
+      m_y = 0;
+      m_width = display.width();
+      m_height = display.height();
+      
+      // Call parent show
+      AFModalDialog::show(screen);
 }
 
 // Draw: fullscreen, no border, simple background
