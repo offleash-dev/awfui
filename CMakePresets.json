@@ -1,0 +1,69 @@
+{
+    "version": 3,
+    "configurePresets": [
+        {
+            "name": "default",
+            "hidden": true,
+            "binaryDir": "${sourceDir}/build/${presetName}",
+            "cacheVariables": {
+                "CMAKE_EXPORT_COMPILE_COMMANDS": "ON"
+            }
+        },
+        {
+            "name": "sdl-vs",
+            "displayName": "SDL Desktop (Visual Studio)",
+            "description": "Build with SDL backend for desktop debugging using Visual Studio",
+            "inherits": "default",
+            "generator": "Visual Studio 17 2022",
+            "architecture": {
+                "value": "x64",
+                "strategy": "set"
+            },
+            "toolset": {
+                "value": "host=x64",
+                "strategy": "set"
+            },
+            "cacheVariables": {
+                "AFUI_USE_SDL": "ON",
+                "AFUI_BUILD_EXAMPLES": "ON"
+            }
+        },
+        {
+            "name": "sdl-ninja",
+            "displayName": "SDL Desktop (Ninja/GCC)",
+            "description": "Build with SDL backend for desktop using Ninja and GCC",
+            "inherits": "default",
+            "generator": "Ninja",
+            "cacheVariables": {
+                "AFUI_USE_SDL": "ON",
+                "AFUI_BUILD_EXAMPLES": "ON"
+            }
+        },
+        {
+            "name": "embedded",
+            "displayName": "Embedded (STM32)",
+            "description": "Build for embedded STM32 target",
+            "inherits": "default",
+            "cacheVariables": {
+                "AFUI_USE_SDL": "OFF",
+                "AFUI_BUILD_EXAMPLES": "OFF"
+            }
+        }
+    ],
+    "buildPresets": [
+        {
+            "name": "sdl-vs-debug",
+            "configurePreset": "sdl-vs",
+            "configuration": "Debug"
+        },
+        {
+            "name": "sdl-vs-release",
+            "configurePreset": "sdl-vs",
+            "configuration": "Release"
+        },
+        {
+            "name": "sdl-ninja",
+            "configurePreset": "sdl-ninja"
+        }
+    ]
+}

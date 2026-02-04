@@ -1,8 +1,13 @@
 #pragma once
 
-// AFWorld.h
-// Singleton representing the entire UI world, managing screens, themes, and events.
-// Initialize once with init(), then access via instance().
+//// AFWorld.h
+//// Part of the AWFUI library
+////
+//// Singleton representing the entire UI world, managing screens, themes, and events.
+//// Initialize once with init(), then access via instance().
+////
+//// Copyright (c) 2026 Matt Foster
+//// Licensed under the MIT License. See LICENSE file for details.
 
 #include <etl/vector.h>
 

@@ -1,4 +1,9 @@
-// AFWidget.cpp
+//// AFWidget.cpp
+//// Implementation of the AWFUI base widget class.
+////
+//// Copyright (c) 2026 Matt Foster
+//// Licensed under the MIT License. See LICENSE file for details.
+
 
 #include "AFWidget.h"
 

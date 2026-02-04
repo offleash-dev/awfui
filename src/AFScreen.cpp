@@ -1,4 +1,9 @@
-// AFScreen.cpp
+//// AFScreen.cpp
+//// Implementation of the AWFUI screen management.
+////
+//// Copyright (c) 2026 Matt Foster
+//// Licensed under the MIT License. See LICENSE file for details.
+
 
 #include "AFAdafruitCompat.h"
 
@@ -7,6 +12,7 @@
 #include "AFDialog.h"
 #include "AFModalDialog.h"
 #include "AFScreen.h"
+#include "AFWorld.h"
 
 
 
@@ -140,7 +146,7 @@ void AFScreen::setNeedsFullRedraw() {
 
 
 
-// Clear the screen
+// Clear the screen to the specified color (default from theme)
 //
 void AFScreen::clear(uint16_t color) {
       Adafruit_GFX* gfx = m_canvas ? (Adafruit_GFX*) m_canvas : &m_display;
@@ -187,7 +193,7 @@ void AFScreen::draw() {
     }
 
     if (m_needsScreenRedraw) {
-        clear();
+        clear(AFWorld::instance()->getTheme().screenBgColor);
         m_needsScreenRedraw = false;
     }
 

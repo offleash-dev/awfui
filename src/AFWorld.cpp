@@ -1,4 +1,9 @@
-// AFWorld.cpp
+//// AFWorld.cpp
+//// Implementation of the AWFUI world singleton.
+////
+//// Copyright (c) 2026 Matt Foster
+//// Licensed under the MIT License. See LICENSE file for details.
+
 
 #include "AFAdafruitCompat.h"
 
@@ -43,12 +48,14 @@ AFWorld::AFWorld(Adafruit_GFX& displayRef, AFTouchInterface* touch)
     , m_touch(touch)
 {
     // Default theme initialization
-    m_theme.bgColor      = 0x0000; // black
-    m_theme.fgColor      = 0xFFFF; // white
-    m_theme.accentColor  = 0xF800; // red
-    m_theme.borderColor  = 0xFFFF; // white
-    m_theme.padding      = 4;
-    m_theme.cornerRadius = 4;
+    m_theme.screenBgColor = 0x0000; // black
+    m_theme.textColor     = 0xFFFF; // white
+    m_theme.bgColor       = 0x0000; // black
+    m_theme.fgColor       = 0xFFFF; // white
+    m_theme.accentColor   = 0xF800; // red
+    m_theme.borderColor   = 0xFFFF; // white
+    m_theme.padding       = 4;
+    m_theme.cornerRadius  = 4;
 }
 
 

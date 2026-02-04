@@ -1,5 +1,12 @@
 #pragma once
-// GFX_SDL.hpp
+
+//// gfx_sdl.hpp
+//// Part of the AWFUI library
+////
+//// SDL-based Adafruit GFX implementation for desktop simulation.
+////
+//// Copyright (c) 2026 Matt Foster
+//// Licensed under the MIT License. See LICENSE file for details.
 
 #include <SDL.h>
 

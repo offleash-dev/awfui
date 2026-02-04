@@ -1,48 +1,20 @@
 TEST
 dialog variants
 
-
-
-polish for AFButton:
-
-pressed state drawing
-
-optional border radius
-
-optional theme integration
-
-optional text centering
-
-
-polish for AFLabel
-optional theme integration
-
-optional text centering
-
-
-
 polish for AFScreen
 optional refinements you might want later:
+    invalidate/dirty‑rect redraw
+    partial redraw optimization
+    scrollable containers
+    focus model (for keyboard/rotary input)
 
-invalidate/dirty‑rect redraw
+Add setFont() and support for AFTheme
 
-partial redraw optimization
+layout support  
 
-scrollable containers
-
-focus model (for keyboard/rotary input)
-
-
-
-Theme integration
-Right now AFTheme exists, but widgets don’t use it yet.
-
-You can start threading it in:
-
-default colors
-
-default padding
-
-default border radius
-
-default font
+image support (AFImage, AFImageButton)
+AFImage
+AFImageButton includes AFImage
+AFCheckbox derives from AFImageButton
+AFRadioButton derives from AFCheckbox
+AFRadioGroup is grouping and control mechanism for AFRadioButtons

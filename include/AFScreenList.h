@@ -1,7 +1,12 @@
 #pragma once
 
-// AFScreenList.h
-// Manages a list of AFScreen objects for the AFWorld of the AWFUI library
+//// AFScreenList.h
+//// Part of the AWFUI library
+////
+//// Manages a list of AFScreen objects for the AFWorld.
+////
+//// Copyright (c) 2026 Matt Foster
+//// Licensed under the MIT License. See LICENSE file for details.
 
 #include <etl/vector.h>
 

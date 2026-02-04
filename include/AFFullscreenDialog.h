@@ -1,8 +1,13 @@
 #pragma once
 
-// AFFullscreenDialog.h
-// Fullscreen Dialog widget for the AWFUI library
-// Inherits from AFModalDialog and is sized to the screen with no border/chrome by default
+//// AFFullscreenDialog.h
+//// Part of the AWFUI library
+////
+//// Fullscreen dialog widget for embedded UIs.
+//// Inherits from AFModalDialog and is sized to the screen with no border/chrome by default.
+////
+//// Copyright (c) 2026 Matt Foster
+//// Licensed under the MIT License. See LICENSE file for details.
 
 #include "AFModalDialog.h"
 

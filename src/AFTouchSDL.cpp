@@ -1,4 +1,9 @@
-// AFTouchSDL.cpp
+//// AFTouchSDL.cpp
+//// Implementation of the AWFUI SDL touch interface.
+////
+//// Copyright (c) 2026 Matt Foster
+//// Licensed under the MIT License. See LICENSE file for details.
+
 
 #include "AFTouchSDL.h"
 

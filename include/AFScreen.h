@@ -1,7 +1,12 @@
 #pragma once
 
-// AFScreen.h
-// Screen management for the AWFUI library
+//// AFScreen.h
+//// Part of the AWFUI library
+////
+//// Screen management for embedded UIs.
+////
+//// Copyright (c) 2026 Matt Foster
+//// Licensed under the MIT License. See LICENSE file for details.
 
 #include <etl/vector.h>
 
@@ -32,8 +37,8 @@ public:
       // Check if any widget needs redraw
       bool needsRedraw() const;
 
-      // Clear the screen to the specified color (default black)
-      void clear(uint16_t color = 0x0000);
+      // Clear the screen to the specified color (default from theme)
+      void clear(uint16_t color = 0xFFFF);
 
       // Mark all widgets dirty to force a full redraw
       void setNeedsFullRedraw();

@@ -1,4 +1,9 @@
-// AFScreenList.cpp
+//// AFScreenList.cpp
+//// Implementation of the AWFUI screen list management.
+////
+//// Copyright (c) 2026 Matt Foster
+//// Licensed under the MIT License. See LICENSE file for details.
+
 
 #include "AFScreenList.h"
 #include "AFScreen.h"

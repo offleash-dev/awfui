@@ -1,23 +1,30 @@
-// AFButton.cpp
+//// AFButton.cpp
+//// Implementation of the AWFUI button widget.
+////
+//// Copyright (c) 2026 Matt Foster
+//// Licensed under the MIT License. See LICENSE file for details.
+
 
 #include <string.h>
 
 
 
 #include "AFButton.h"
+#include "AFWorld.h"
 
 
 
 // Constructor
 //
 AFButton::AFButton(int16_t x, int16_t y, int16_t w, int16_t h, uint32_t id, const char* labelText)
-    : AFWidget(x, y, w, h, id), m_label(labelText), 
-      m_bgColor(0xFFFF),                                           // white
-      m_fgColor(0x0000),                                           // black
-      m_borderColor(0x0000),                                       // black
-      m_bgColorPressed(0xC618),                                    // light gray
-      m_fgColorPressed(0x0000),                                    // black
-      m_borderColorPressed(0x0000) {
+    : AFWidget(x, y, w, h, id), m_label(labelText) {
+      const AFTheme& theme = AFWorld::instance()->getTheme();
+      m_bgColor            = theme.bgColor;
+      m_fgColor            = theme.fgColor;
+      m_borderColor        = theme.borderColor;
+      m_bgColorPressed     = theme.accentColor;
+      m_fgColorPressed     = theme.fgColor;
+      m_borderColorPressed = theme.borderColor;
 }
 
 
@@ -64,13 +71,15 @@ void AFButton::draw(Adafruit_GFX& gfx) {
       uint16_t fg     = m_pressed ? m_fgColorPressed : m_fgColor;
       uint16_t border = m_pressed ? m_borderColorPressed : m_borderColor;
 
+      uint8_t radius = AFWorld::instance()->getTheme().cornerRadius;
+
       // Draw background
-      gfx.fillRect(m_x, m_y, m_width, m_height, bg);
+      gfx.fillRoundRect(m_x, m_y, m_width, m_height, radius, bg);
 
       // Draw border
-      gfx.drawRect(m_x, m_y, m_width, m_height, border);
+      gfx.drawRoundRect(m_x, m_y, m_width, m_height, radius, border);
 
-      // Draw label centered
+      // Draw label with justification
       if (m_label && strlen(m_label) > 0) {
             gfx.setTextSize(m_textSize);
             gfx.setTextColor(fg);
@@ -79,8 +88,23 @@ void AFButton::draw(Adafruit_GFX& gfx) {
             uint16_t w, h;
             gfx.getTextBounds(m_label, 0, 0, &x1, &y1, &w, &h);
 
-            int16_t tx = m_x + (m_width - w) / 2;
-            int16_t ty = m_y + (m_height - h) / 2;
+            int16_t tx, ty;
+
+            // Horizontal justification
+            switch (m_justification) {
+                  case AFJustificationLeft:
+                        tx = m_x;
+                        break;
+                  case AFJustificationCenter:
+                        tx = m_x + (m_width - w) / 2;
+                        break;
+                  case AFJustificationRight:
+                        tx = m_x + m_width - w;
+                        break;
+            }
+
+            // Vertical centering
+            ty = m_y + (m_height - h) / 2;
 
             gfx.setCursor(tx, ty);
             gfx.print(m_label);

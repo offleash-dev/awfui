@@ -1,14 +1,19 @@
 #pragma once
 
-// AFBase.h
-// The root header for AFUI — the place where you put:
-//      Configuration constants for the AWFUI library
-//      core typedefs
-//      forward declarations
-//      global constants
-//      small enums that are used everywhere
-//      basic macros (assert, min/max, compile‑time helpers)
-//      fundamental types like AFPoint, AFSize, etc.
+//// AFBase.h
+//// Part of the AWFUI library
+////
+//// The root header for AWFUI — the place where you put:
+////      Configuration constants for the AWFUI library
+////      core typedefs
+////      forward declarations
+////      global constants
+////      small enums that are used everywhere
+////      basic macros (assert, min/max, compile‑time helpers)
+////      fundamental types like AFPoint, AFSize, etc.
+////
+//// Copyright (c) 2026 Matt Foster
+//// Licensed under the MIT License. See LICENSE file for details.
 
 
 #include "AFResult.h"
@@ -30,6 +35,14 @@ struct AFPoint {
 struct AFSize {
       int16_t w;
       int16_t h;
+};
+
+
+
+enum AFJustification {
+      AFJustificationCenter,
+      AFJustificationLeft,
+      AFJustificationRight
 };
 
 

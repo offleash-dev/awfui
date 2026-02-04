@@ -1,7 +1,12 @@
 #pragma once
 
-// AFTouchInterface.h
-// Abstract interface for touch input devices
+//// AFTouchInterface.h
+//// Part of the AWFUI library
+////
+//// Abstract interface for touch input devices.
+////
+//// Copyright (c) 2026 Matt Foster
+//// Licensed under the MIT License. See LICENSE file for details.
 
 #include <stdint.h>
 

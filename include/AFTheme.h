@@ -1,13 +1,20 @@
 #pragma once
 
-// AFTheme.h
-// Theme structure/options for the AWFUI library
+//// AFTheme.h
+//// Part of the AWFUI library
+////
+//// Theme structure and options for embedded UIs.
+////
+//// Copyright (c) 2026 Matt Foster
+//// Licensed under the MIT License. See LICENSE file for details.
 
 #include <stdint.h>
 
 
 
 struct AFTheme {
+      uint16_t screenBgColor;
+      uint16_t textColor;
       uint16_t bgColor;
       uint16_t fgColor;
       uint16_t accentColor;

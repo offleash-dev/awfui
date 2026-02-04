@@ -1,7 +1,12 @@
 #pragma once
 
-// AFFt6206Touch.h
-// Touch interface implementation for Adafruit FT6206 capacitive touch controller
+//// AFFt6206Touch.h
+//// Part of the AWFUI library
+////
+//// Touch interface implementation for Adafruit FT6206 capacitive touch controller.
+////
+//// Copyright (c) 2026 Matt Foster
+//// Licensed under the MIT License. See LICENSE file for details.
 
 #include "AFTouchInterface.h"
 #include "Adafruit_FT6206.h"

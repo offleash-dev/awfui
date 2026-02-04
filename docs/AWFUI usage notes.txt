@@ -1,0 +1,31 @@
+Strings in AWFUI 
+String lifetime management is the application's responsibility.
+
+AFButton, AFLabel, and similar widgets store const char* pointers. This means:
+    The widget doesn't own the string
+    The string must outlive the widget
+    The caller is responsible for keeping the string valid
+
+This Works Fine For:
+    String literals: new AFButton(10, 10, 100, 50, 1, "OK") - the "OK" is in read-only memory
+    Static/global constants:
+        const char* kOkText = "OK";
+        const char* kCancelText = "Cancel";
+    It would work for stack variables (if widget lifetime is shorter), but this is safe only if the label doesn't outlive this scope
+
+This Breaks For:
+    Temporary strings:
+        button.setLabel(String("OK").c_str()); // DANGER: dangling pointer
+    Dynamic allocation without tracking:
+        char* temp = new char[10];
+        strcpy(temp, "OK");
+        button.setLabel(temp);
+        delete[] temp; // Now button has dangling pointer
+
+So, best practices are:
+    Use string literals where possible
+    Define constants at file/class scope: static const char* kButtonLabels[] = {"OK", "Cancel", "Apply"};
+    For dynamic text (like sensor readings), maintain a buffer that outlives the widget
+    Never pass temporary string objects
+
+Again, string lifetime management is the application's responsibility.

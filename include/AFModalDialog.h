@@ -1,7 +1,12 @@
 #pragma once
 
-// AFModalDialog.h
-// Modal dialog widget for the AWFUI library
+//// AFModalDialog.h
+//// Part of the AWFUI library
+////
+//// Modal dialog widget for embedded UIs.
+////
+//// Copyright (c) 2026 Matt Foster
+//// Licensed under the MIT License. See LICENSE file for details.
 
 #include "AFDialog.h"
 

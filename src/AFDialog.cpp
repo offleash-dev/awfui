@@ -1,8 +1,13 @@
-// AFDialog.cpp
+//// AFDialog.cpp
+//// Implementation of the AWFUI dialog widget.
+////
+//// Copyright (c) 2026 Matt Foster
+//// Licensed under the MIT License. See LICENSE file for details.
+
+
 
 #include "AFAdafruitCompat.h"
-
-
+#include "AFWorld.h"
 
 #include "AFDialog.h"
 #include "AFWidget.h"
@@ -69,11 +74,9 @@ void AFDialog::draw(Adafruit_GFX& gfx) {
             return;
 
       if (m_opaque) {
-            // Draw background (default: light gray)
-            gfx.fillRect(m_x, m_y, m_width, m_height, 0xC618);
-
-            // Draw border (default: black)
-            gfx.drawRect(m_x, m_y, m_width, m_height, 0x0000);
+            const AFTheme& theme = AFWorld::instance()->getTheme();
+            gfx.fillRect(m_x, m_y, m_width, m_height, theme.bgColor);
+            gfx.drawRect(m_x, m_y, m_width, m_height, theme.borderColor);
       }
 
       // Draw children

@@ -1,7 +1,12 @@
 #pragma once
 
-// AFWidget.h
-// Base widget class for the AWFUI library
+//// AFWidget.h
+//// Part of the AWFUI library
+////
+//// Base widget class for embedded UIs.
+////
+//// Copyright (c) 2026 Matt Foster
+//// Licensed under the MIT License. See LICENSE file for details.
 
 #include <stdint.h>
 
@@ -93,6 +98,17 @@ public:
     }
 
 
+    void setJustification(AFJustification j) {
+            m_justification = j;
+            markDirty();
+    }
+
+
+    AFJustification getJustification() const {
+            return m_justification;
+    }
+
+    
 protected:
     int16_t   m_x, m_y;
     int16_t   m_width, m_height;
@@ -100,6 +116,7 @@ protected:
     bool      m_dirty   = true;  // Start dirty so initial draw happens
     uint32_t   m_id;
     AFWidget* m_parent  = nullptr;
+    AFJustification m_justification = AFJustificationCenter;
 
     friend class AFDialog;
     friend class AFScreen;
