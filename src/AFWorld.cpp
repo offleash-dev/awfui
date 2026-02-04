@@ -6,8 +6,10 @@
 #include "AFWorld.h"
 
 
+
 // Singleton instance
 AFWorld* AFWorld::s_instance = nullptr;
+
 
 
 // Initialize the singleton
@@ -22,12 +24,14 @@ bool AFWorld::init(Adafruit_GFX& display, AFTouchInterface* touch) {
 }
 
 
+
 // Get singleton instance
 // Returns nullptr if not initialized
 //
 AFWorld* AFWorld::instance() {
     return s_instance;
 }
+
 
 
 // Private constructor
@@ -44,6 +48,8 @@ AFWorld::AFWorld(Adafruit_GFX& displayRef, AFTouchInterface* touch)
     m_theme.padding      = 4;
     m_theme.cornerRadius = 4;
 }
+
+
 
 // Create a new screen and register it with the screen list
 // return nullptr if allocation fails or max screens reached
@@ -64,6 +70,8 @@ AFScreen* AFWorld::createScreen(bool useCanvas) {
       return screen;
 }
 
+
+
 // Set active screen
 //
 void AFWorld::setActiveScreen(AFScreen* screen) {
@@ -72,11 +80,15 @@ void AFWorld::setActiveScreen(AFScreen* screen) {
       }
 }
 
+
+
 // Get active screen
 //
 AFScreen* AFWorld::getActiveScreen() {
       return m_screenList.getActive();
 }
+
+
 
 // Transform touch coordinates from physical screen space to rotated display space
 // This is the inverse of Adafruit_GFX's rotation transform
@@ -112,6 +124,8 @@ void AFWorld::transformTouchCoordinates(int16_t& x, int16_t& y) {
             break;
     }
 }
+
+
 
 // Poll hardware and fill AFEvent
 //
@@ -158,6 +172,8 @@ void AFWorld::pollHardware(AFEvent& outEvent) {
     // TODO: integrate hardware buttons
     // TODO: integrate timers
 }
+
+
 
 // Main UI loop
 //

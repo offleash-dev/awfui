@@ -6,6 +6,8 @@
 #include "AFModalDialog.h"
 #include "AFScreen.h"
 
+
+
 // Constructor
 //
 AFScreen::AFScreen(Adafruit_GFX& displayRef, uint32_t id, bool useCanvas) : m_display(displayRef), m_id(id) {
@@ -14,6 +16,8 @@ AFScreen::AFScreen(Adafruit_GFX& displayRef, uint32_t id, bool useCanvas) : m_di
             m_canvas = new GFXcanvas16(m_display.width(), m_display.height());
       }
 }
+
+
 
 // Destructor
 //
@@ -24,6 +28,8 @@ AFScreen::~AFScreen() {
       }
 }
 
+
+
 // Add a normal widget (not a dialog)
 //
 void AFScreen::addWidget(AFWidget* w) {
@@ -32,6 +38,8 @@ void AFScreen::addWidget(AFWidget* w) {
             w->m_parent = nullptr; // root-level widget
       }
 }
+
+
 
 // Add a non-modal dialog
 //
@@ -42,11 +50,15 @@ void AFScreen::addDialog(AFDialog* d) {
       }
 }
 
+
+
 // Show a modal dialog
 //
 void AFScreen::showModal(AFModalDialog* d) {
       m_activeModal = d;
 }
+
+
 
 // Dismiss a modal dialog
 //
@@ -64,6 +76,8 @@ void AFScreen::dismissModal(AFModalDialog* d) {
             m_needsScreenRedraw = true;
       }
 }
+
+
 
 // Event routing
 //
@@ -106,6 +120,8 @@ void AFScreen::handleEvent(const AFEvent& e) {
       }
 }
 
+
+
 // Mark all widgets dirty to force a full redraw
 //
 void AFScreen::setNeedsFullRedraw() {
@@ -120,6 +136,8 @@ void AFScreen::setNeedsFullRedraw() {
       }
 }
 
+
+
 // Clear the screen
 //
 void AFScreen::clear(uint16_t color) {
@@ -131,6 +149,8 @@ void AFScreen::clear(uint16_t color) {
             m_display.drawRGBBitmap(0, 0, m_canvas->getBuffer(), m_display.width(), m_display.height());
       }
 }
+
+
 
 // Check if any widget needs redraw
 //
@@ -153,6 +173,8 @@ bool AFScreen::needsRedraw() const {
     }
     return false;
 }
+
+
 
 // Draw everything
 //

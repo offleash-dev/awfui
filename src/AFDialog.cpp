@@ -5,6 +5,8 @@
 #include "AFDialog.h"
 #include "AFWidget.h"
 
+
+
 // Constructor
 //
 AFDialog::AFDialog(int16_t x, int16_t y, int16_t w, int16_t h, uint32_t id) : AFWidget(x, y, w, h, id) {
@@ -12,7 +14,9 @@ AFDialog::AFDialog(int16_t x, int16_t y, int16_t w, int16_t h, uint32_t id) : AF
       m_visible = true;
 }
 
-// Add a child widget
+
+
+// Add a child widget to the dialog
 //
 bool AFDialog::addChild(AFWidget* w) {
       bool success = false;
@@ -26,7 +30,9 @@ bool AFDialog::addChild(AFWidget* w) {
       return success;
 }
 
-// Remove a child widget
+
+
+// Remove a child widget from the dialog 
 //
 void AFDialog::removeChild(AFWidget* w) {
       for (size_t i = 0; i < m_children.size(); ++i) {
@@ -37,6 +43,8 @@ void AFDialog::removeChild(AFWidget* w) {
             }
       }
 }
+
+
 
 // Find child at a screen point
 //
@@ -49,6 +57,8 @@ AFWidget* AFDialog::childAt(int16_t px, int16_t py) {
       }
       return nullptr;
 }
+
+
 
 // Draw dialog and children
 //
@@ -71,6 +81,8 @@ void AFDialog::draw(Adafruit_GFX& gfx) {
             }
       }
 }
+
+
 
 // Event routing
 //

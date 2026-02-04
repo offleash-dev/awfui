@@ -18,7 +18,6 @@ class AFScreenList {
       }
 
 
-
       void add(AFScreen* screen);
       void remove(AFScreen* screen);
 

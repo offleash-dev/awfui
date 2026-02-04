@@ -4,6 +4,8 @@
 
 
 
+// Convert RGB565 to ARGB8888
+// with full alpha
 static uint32_t rgb565_to_argb8888(uint16_t c) {
     uint8_t r = ((c >> 11) & 0x1F) << 3;
     uint8_t g = ((c >> 5)  & 0x3F) << 2;
@@ -13,6 +15,8 @@ static uint32_t rgb565_to_argb8888(uint16_t c) {
 
 
 
+// Constructor
+//
 GFX_SDL::GFX_SDL(int16_t w, int16_t h)
     : Adafruit_GFX(w, h), m_physWidth(w), m_physHeight(h)
 {
@@ -33,6 +37,8 @@ GFX_SDL::GFX_SDL(int16_t w, int16_t h)
 
 
 
+// Destructor
+//
 GFX_SDL::~GFX_SDL() {
     delete[] framebuffer;
     SDL_DestroyTexture(texture);
@@ -43,6 +49,8 @@ GFX_SDL::~GFX_SDL() {
 
 
 
+// Draw a pixel to the framebuffer
+//
 void GFX_SDL::drawPixel(int16_t x, int16_t y, uint16_t color) {
     // Adafruit_GFX base class handles rotation - we just draw to the physical framebuffer
     if (x < 0 || y < 0 || x >= m_physWidth || y >= m_physHeight) return;
@@ -51,12 +59,16 @@ void GFX_SDL::drawPixel(int16_t x, int16_t y, uint16_t color) {
 
 
 
+// Initialize / clear framebuffer
+//
 void GFX_SDL::begin() {
     memset(framebuffer, 0, m_physWidth * m_physHeight * sizeof(uint32_t));
 }
 
 
 
+// Present the framebuffer to the window
+//
 void GFX_SDL::present() {
     SDL_UpdateTexture(texture, nullptr, framebuffer, m_physWidth * sizeof(uint32_t));
     SDL_RenderClear(renderer);
@@ -66,6 +78,8 @@ void GFX_SDL::present() {
 
 
 
+// Process SDL events
+//  
 bool GFX_SDL::processEvents(bool& quit) {
     SDL_Event e;
     while (SDL_PollEvent(&e)) {

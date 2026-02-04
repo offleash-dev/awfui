@@ -23,8 +23,8 @@ BraceWrapping:
 # but it can help keep them tidy.  Use 3 blank lines to separate
 # big definitionss (e.g functions, classes, #include vs implementation sections, etc)
 MaxEmptyLinesToKeep: 3
-SeparateDefinitionBlocks: Always
-EmptyLineBeforeAccessModifier: Always
+#SeparateDefinitionBlocks: Leave
+EmptyLineBeforeAccessModifier: Never
 
 # Spaces
 SpacesInParentheses: false
@@ -57,5 +57,9 @@ AlignTrailingComments: true
 Standard: c++20
 
 # Keep your AF-style prefixes clean
-SortIncludes: CaseSensitive
+SortIncludes: false
 IncludeBlocks: Preserve
+
+IncludeCategories:
+  - Regex: '.*'
+    Priority: 1

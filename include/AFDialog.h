@@ -24,19 +24,24 @@ class AFDialog : public AFWidget {
       virtual void draw(Adafruit_GFX& gfx) override;
       virtual void handleEvent(const AFEvent& e);
 
+      
       int16_t toScreenX(int16_t localX) const {
             return m_x + localX;
       }
+
 
       int16_t toScreenY(int16_t localY) const {
             return m_y + localY;
       }
 
+
       virtual void onShow() {
       }
 
+
       virtual void onHide() {
       }
+
 
     protected:
       etl::vector<AFWidget*, MAX_WIDGETS_PER_DIALOG> m_children;

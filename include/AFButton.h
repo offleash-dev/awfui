@@ -49,6 +49,22 @@ class AFButton : public AFWidget {
       void onRelease(const AFEvent& e) override;
       void onClick(const AFEvent& e) override;
 
+      // Set callback function for press event 
+      //
+      void setOnPressCallback(AFButtonCallback cb) {
+            m_onPressCallback = cb;
+      }
+      
+      
+      // Set callback function for release event 
+      //
+      void setOnReleaseCallback(AFButtonCallback cb) {
+            m_onReleaseCallback = cb;
+      }
+
+
+      // Set callback function for combined event 
+      //
       void setOnClickCallback(AFButtonCallback cb) {
             m_onClickCallback = cb;
       }
@@ -69,4 +85,6 @@ class AFButton : public AFWidget {
       bool    m_pressed  = false;
 
       AFButtonCallback m_onClickCallback = nullptr;
+      AFButtonCallback m_onPressCallback = nullptr;
+      AFButtonCallback m_onReleaseCallback = nullptr;
 };

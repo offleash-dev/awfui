@@ -17,6 +17,7 @@ public:
     // Called by your SDL event loop
     void handleEvent(const SDL_Event& e);
 
+    
 private:
     int scale;
     bool isDown;

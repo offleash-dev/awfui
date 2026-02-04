@@ -3,6 +3,8 @@
 #include "AFScreenList.h"
 #include "AFScreen.h"
 
+
+
 // Add a screen to the list
 //
 void AFScreenList::add(AFScreen* screen) {
@@ -16,6 +18,8 @@ void AFScreenList::add(AFScreen* screen) {
       }
       // If full, silently ignore or assert depending on your style
 }
+
+
 
 // Remove a screen from the list
 //
@@ -38,6 +42,8 @@ void AFScreenList::remove(AFScreen* screen) {
       }
 }
 
+
+
 // Set active screen by pointer
 //
 bool AFScreenList::setActive(AFScreen* screen) {
@@ -56,6 +62,7 @@ bool AFScreenList::setActive(AFScreen* screen) {
 }
 
 
+
 // Set active screen by id
 //
 bool AFScreenList::setActive(uint32_t screenId) {
@@ -72,6 +79,7 @@ bool AFScreenList::setActive(uint32_t screenId) {
 
       return found;
 }
+
 
 
 // Set active screen by index
@@ -96,6 +104,8 @@ bool AFScreenList::setActive(int16_t screenIndex) {
 
       return found;
 }
+
+
 
 // Get active screen
 //

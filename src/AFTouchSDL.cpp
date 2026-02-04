@@ -4,12 +4,16 @@
 
 
 
+// Constructor
+//
 AFTouchSDL::AFTouchSDL(int displayScale)
     : scale(displayScale), isDown(false), lastX(0), lastY(0)
 {}
 
 
 
+// Initialize touch interface
+//
 bool AFTouchSDL::begin() {
     // Nothing to initialize for SDL touch
     return true;
@@ -17,6 +21,8 @@ bool AFTouchSDL::begin() {
 
 
 
+// Convert an SDL event to AF touch point
+//
 void AFTouchSDL::handleEvent(const SDL_Event& e) {
     switch (e.type) {
         case SDL_MOUSEBUTTONDOWN:
@@ -40,6 +46,8 @@ void AFTouchSDL::handleEvent(const SDL_Event& e) {
 
 
 
+// Get the current touch point
+//
 AFTouchPoint AFTouchSDL::getPoint() {
     return AFTouchPoint{ lastX, lastY, isDown };
 }

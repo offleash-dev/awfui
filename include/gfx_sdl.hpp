@@ -10,7 +10,6 @@
 
 
 class GFX_SDL : public Adafruit_GFX {
-
 public:
     GFX_SDL(int16_t w, int16_t h);
     ~GFX_SDL();

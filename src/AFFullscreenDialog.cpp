@@ -5,6 +5,8 @@
 #include "AFFullscreenDialog.h"
 #include "AFScreen.h"
 
+
+
 // Constructor: full‑screen modal dialog
 // Dimensions are set when show() is called
 //
@@ -14,6 +16,8 @@ AFFullscreenDialog::AFFullscreenDialog(uint32_t id)
       // Fullscreen dialogs are visible by default
       m_visible = true;
 }
+
+
 
 // Override show to resize to screen dimensions
 //
@@ -28,6 +32,8 @@ void AFFullscreenDialog::show(AFScreen& screen) {
       // Call parent show
       AFModalDialog::show(screen);
 }
+
+
 
 // Draw: fullscreen, no border, simple background
 //
