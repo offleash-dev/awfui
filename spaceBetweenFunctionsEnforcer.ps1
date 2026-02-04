@@ -1,61 +1,247 @@
 param(
-    [string]$Path = ".",
-    [int]$BlankLines = 3
+    [string]$Path = "."
 )
 
-# Build the blank-line block for .cpp files
-$blankCpp = "`n" * $BlankLines
+function Is-IgnoredPath {
+    param([string]$Path)
+    $parts = $Path -split '[\\/]'
+    foreach ($p in $parts) {
+        if ($p -eq 'build') { return $true }
+        if ($p.StartsWith('.')) { return $true }
+    }
+    return $false
+}
 
-# Build the blank-line block for .h files (always 2)
-$blankH = "`n" * 2
+function Is-FunctionSignature {
+    param([string]$line)
+    return $line -match '^\s*(?:[\w:<>~*&]+\s+)+\w+\s*\('
+}
 
-# -----------------------------
-# PASS 1: .cpp files
-# -----------------------------
-Get-ChildItem -Path $Path -Recurse -Include *.cpp | ForEach-Object {
-    $file = $_.FullName
+function Replace-BlankRange {
+    param(
+        [string[]]$lines,
+        [int]$startIndex,
+        [int]$existingCount,
+        [int]$desiredCount
+    )
 
-    clang-format -i $file
+    $before = if ($startIndex -gt 0) { $lines[0..($startIndex-1)] } else { @() }
 
-    $content = Get-Content $file -Raw
+    $afterIndex = $startIndex + $existingCount
+    $after = if ($afterIndex -lt $lines.Count) { $lines[$afterIndex..($lines.Count-1)] } else { @() }
 
-	# Ensure exactly 3 blank lines after the last include
-	$patternIncludes = "(?ms)(#include[^\n]*\n)(?!\n{3})"
-	$content = [regex]::Replace($content, $patternIncludes, "`$1`n`n`n")
+    $blanks = @()
+    for ($i = 0; $i -lt $desiredCount; $i++) { $blanks += '' }
 
-    # Insert N blank lines after function definitions
-    $patternCpp = "(?m)\}\s*\n(?=\s*[A-Za-z_][A-Za-z0-9_:<>~\*\&\s]+\()"
+    return @($before + $blanks + $after)
+}
 
-    $newContent = [regex]::Replace($content, $patternCpp, "}`n$blankCpp")
+# ---------------------------------------------------------
+#   DETECT TRUE HEADER COMMENT BLOCKS (//// only)
+# ---------------------------------------------------------
+function Get-MergedCommentBlock {
+    param([string[]]$lines, [int]$start)
 
-    if ($newContent -ne $content) {
-        Set-Content -Path $file -Value $newContent -NoNewline
-        Write-Host "Updated spacing in $file (cpp)"
+    $i = $start
+    $count = $lines.Count
+
+    # Must start with a comment
+    if (-not ($lines[$i].Trim().StartsWith('//'))) {
+        return @{ isHeader = $false; end = $start }
+    }
+
+    # First pass: merge comment + blank + comment
+    $blockLines = @()
+    while ($i -lt $count) {
+        $t = $lines[$i].Trim()
+
+        if ($t -eq '') {
+            $blockLines += $t
+            $i++
+            continue
+        }
+
+        if ($t.StartsWith('//')) {
+            $blockLines += $t
+            $i++
+            continue
+        }
+
+        break
+    }
+
+    # Now determine if EVERY non-blank line starts with ////
+    $nonBlank = $blockLines | Where-Object { $_ -ne '' }
+    $allAreHeader = $true
+    foreach ($l in $nonBlank) {
+        if (-not $l.StartsWith('////')) {
+            $allAreHeader = $false
+            break
+        }
+    }
+
+    return @{
+        isHeader = $allAreHeader
+        end      = $i
     }
 }
 
-# -----------------------------
-# PASS 2: .h files
-# -----------------------------
-Get-ChildItem -Path $Path -Recurse -Include *.h | ForEach-Object {
+# ---------------------------------------------------------
+#   CPP SPACING
+# ---------------------------------------------------------
+function Fix-CppSpacing {
+    param([string[]]$lines)
+
+    $i = 0
+    while ($i -lt $lines.Count) {
+        $trim = $lines[$i].Trim()
+
+        # --- 3 blank lines after last include block ---
+        if ($trim -match '^#\s*include\b') {
+            $lastInclude = $i
+            $j = $i + 1
+            while ($j -lt $lines.Count -and $lines[$j].Trim() -match '^#\s*include\b') {
+                $lastInclude = $j
+                $j++
+            }
+
+            $after = $lastInclude + 1
+            $blankCount = 0
+            while ($after + $blankCount -lt $lines.Count -and $lines[$after + $blankCount].Trim() -eq '') {
+                $blankCount++
+            }
+
+            if ($blankCount -ne 3) {
+                $lines = Replace-BlankRange $lines $after $blankCount 3
+            }
+
+            $i = $after + 3
+            continue
+        }
+
+        # --- Header comment block (//// only) ---
+        if ($trim.StartsWith('//')) {
+            $block = Get-MergedCommentBlock $lines $i
+
+            if ($block.isHeader) {
+                $end = $block.end
+
+                # Next non-blank line must be a function signature
+                $j = $end
+                while ($j -lt $lines.Count -and $lines[$j].Trim() -eq '') { $j++ }
+                if ($j -lt $lines.Count -and (Is-FunctionSignature $lines[$j])) {
+
+                    # Enforce 3 blank lines before header block
+                    $prev = $i - 1
+                    while ($prev -ge 0 -and $lines[$prev].Trim() -eq '') { $prev-- }
+
+                    $firstBlank = $prev + 1
+                    $blankCount = $i - $firstBlank
+
+                    if ($blankCount -ne 3) {
+                        $lines = Replace-BlankRange $lines $firstBlank $blankCount 3
+                        $i = $firstBlank + 3
+                        continue
+                    }
+                }
+            }
+
+            $i++
+            continue
+        }
+
+        $i++
+    }
+
+    return $lines
+}
+
+# ---------------------------------------------------------
+#   HEADER (.h) SPACING
+# ---------------------------------------------------------
+function Fix-HeaderSpacing {
+    param([string[]]$lines)
+
+    $i = 0
+    while ($i -lt $lines.Count) {
+        $line = $lines[$i]
+        $trim = $line.Trim()
+
+        # --- public/protected/private: no indent + spacing ---
+        $m = [regex]::Match($line, '^\s*(public|protected|private)\s*:')
+        if ($m.Success) {
+            $kind = $m.Groups[1].Value
+
+            $lines[$i] = ($lines[$i] -replace '^\s*', '')
+
+            $prev = $i - 1
+            while ($prev -ge 0 -and $lines[$prev].Trim() -eq '') { $prev-- }
+
+            $firstBlank = $prev + 1
+            $blankCount = $i - $firstBlank
+
+            if ($kind -eq 'public') {
+                if ($blankCount -gt 0) {
+                    $lines = Replace-BlankRange $lines $firstBlank $blankCount 0
+                    $i = $firstBlank
+                    continue
+                }
+            } else {
+                if ($blankCount -ne 2) {
+                    $lines = Replace-BlankRange $lines $firstBlank $blankCount 2
+                    $i = $firstBlank + 2
+                    continue
+                }
+            }
+        }
+
+        # --- Inline method spacing (no header comment logic here) ---
+        if ($trim -eq '}') {
+            $j = $i + 1
+
+            while ($j -lt $lines.Count) {
+                $t = $lines[$j].Trim()
+                if ($t -eq '' -or $t.StartsWith('//') -or $t.StartsWith('/*')) {
+                    $j++
+                    continue
+                }
+                break
+            }
+
+            if ($j -lt $lines.Count -and (Is-FunctionSignature $lines[$j])) {
+                $firstBlank = $i + 1
+                $blankCount = $j - $firstBlank
+
+                if ($blankCount -ne 2) {
+                    $lines = Replace-BlankRange $lines $firstBlank $blankCount 2
+                    $i = $firstBlank + 2
+                    continue
+                }
+            }
+        }
+
+        $i++
+    }
+
+    return $lines
+}
+
+# ---------------------------------------------------------
+#   MAIN DRIVER
+# ---------------------------------------------------------
+Get-ChildItem -Path $Path -Recurse -Include *.cpp, *.h | Where-Object {
+    -not (Is-IgnoredPath $_.FullName)
+} | ForEach-Object {
     $file = $_.FullName
+    Write-Host "Post-format spacing $file"
 
-    clang-format -i $file
+    $lines = Get-Content -LiteralPath $file
 
-    $content = Get-Content $file -Raw
+    if ($file.ToLower().EndsWith(".cpp")) {
+        $lines = Fix-CppSpacing $lines
+    } elseif ($file.ToLower().EndsWith(".h")) {
+        $lines = Fix-HeaderSpacing $lines
+    }
 
-	# Ensure exactly 3 blank lines after the last include
-	$patternIncludes = "(?ms)(#include[^\n]*\n)(?!\n{3})"
-	$content = [regex]::Replace($content, $patternIncludes, "`$1`n`n`n")
-
-    # 1. Two blank lines after inline method definitions
-    $patternMethod = "(?m)\}\s*\n(?=\s*[A-Za-z_][A-Za-z0-9_:<>~\*\&\s]+\()"
-    $content = [regex]::Replace($content, $patternMethod, "}`n$blankH")
-
-    # 2. Two blank lines before access specifiers
-    $patternAccess = "(?m)(?<!\n\n)(?=\s*(private|protected|public)\s*:)"
-    $content = [regex]::Replace($content, $patternAccess, "`n`n")
-
-    Set-Content -Path $file -Value $content -NoNewline
-    Write-Host "Updated spacing in $file (header)"
+    Set-Content -LiteralPath $file -Value $lines
 }

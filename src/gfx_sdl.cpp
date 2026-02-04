@@ -4,8 +4,8 @@
 
 
 
-// Convert RGB565 to ARGB8888
-// with full alpha
+// Convert RGB565 to ARGB8888 with full alpha
+// 
 static uint32_t rgb565_to_argb8888(uint16_t c) {
     uint8_t r = ((c >> 11) & 0x1F) << 3;
     uint8_t g = ((c >> 5)  & 0x3F) << 2;

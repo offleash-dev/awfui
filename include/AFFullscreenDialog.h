@@ -9,7 +9,7 @@
 
 
 class AFFullscreenDialog : public AFModalDialog {
-    public:
+public:
       // No dimensions needed - automatically fills the screen when shown
       AFFullscreenDialog(uint32_t id = 0);
 

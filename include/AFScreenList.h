@@ -12,7 +12,7 @@
 class AFScreen;
 
 class AFScreenList {
-    public:
+public:
       bool canAdd() const {
             return !m_screens.full();
       }
@@ -26,7 +26,8 @@ class AFScreenList {
       bool      setActive(uint32_t screenId);
       AFScreen* getActive() const;
 
-    private:
+
+private:
       etl::vector<AFScreen*, MAX_SCREENS_PER_WORLD> m_screens;
       AFScreen*                                     m_active = nullptr;
 };

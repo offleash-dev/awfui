@@ -16,7 +16,7 @@
 
 
 class AFScreen {
-    public:
+public:
       AFScreen(Adafruit_GFX& display, uint32_t id = 0, bool useCanvas = false);
       virtual ~AFScreen();
 
@@ -42,12 +42,13 @@ class AFScreen {
             return m_display;
       }
 
+
       uint32_t getId() const {
             return m_id;
       }
 
       
-    private:
+private:
       Adafruit_GFX& m_display;
       GFXcanvas16*  m_canvas = nullptr;
       bool          m_needsScreenRedraw = false;

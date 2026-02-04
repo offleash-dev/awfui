@@ -53,7 +53,6 @@ public:
     }
 
 
-    // Dirty flag for redraw optimization
     void markDirty() {
         m_dirty = true;
     }

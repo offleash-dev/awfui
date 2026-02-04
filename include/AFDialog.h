@@ -12,7 +12,7 @@
 
 
 class AFDialog : public AFWidget {
-    public:
+public:
       AFDialog(int16_t x, int16_t y, int16_t w, int16_t h, uint32_t id = 0);
       virtual ~AFDialog() = default;
 
@@ -43,7 +43,7 @@ class AFDialog : public AFWidget {
       }
 
 
-    protected:
+protected:
       etl::vector<AFWidget*, MAX_WIDGETS_PER_DIALOG> m_children;
 
       bool m_opaque = true;

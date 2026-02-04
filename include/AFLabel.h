@@ -11,7 +11,7 @@
 
 
 class AFLabel : public AFWidget {
-    public:
+public:
       AFLabel(int16_t x, int16_t y, const char* text, uint32_t id = 0);
 
       void setText(const char* t) {
@@ -39,7 +39,7 @@ class AFLabel : public AFWidget {
       virtual void draw(Adafruit_GFX& gfx) override;
 
       
-    private:
+private:
       const char* m_text;
       uint16_t    m_color = 0xFFFF; // default white
 };
