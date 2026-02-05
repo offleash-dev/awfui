@@ -12,6 +12,7 @@
 
 #include "AFAdafruitCompat.h"
 
+#include "AFBase.h"
 #include "AFEvent.h"
 
 
