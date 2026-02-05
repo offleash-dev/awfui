@@ -1,3 +1,18 @@
+Project Structure
+AWFUI live in a /modules directory.  Modules is assumed to be a sibling over the project that
+includes AWFUI.  There are application projects in /awfui/examples, but other than these demonstration
+projects, the examples directory is not where you app (the including project) should exist.
+
+AWFUI expects other library like projects to be siblings within the /modules directory.  So,
+/modules
+	/awfui
+	/etl
+	/sdl  (for the desktop simulator, not for an embedded project)
+	/drivers (for your embedded support files such as the adafruit and HAL files)
+
+
+
+
 Strings in AWFUI 
 String lifetime management is the application's responsibility.
 
