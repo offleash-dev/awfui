@@ -29,3 +29,36 @@ So, best practices are:
     Never pass temporary string objects
 
 Again, string lifetime management is the application's responsibility.
+
+
+
+
+
+
+Formatting Conventions
+There is no big style guide.  The code is a template for the style.  Try to follow it for consistency.  Thanks.
+
+Other than that, here are a few conventions...
+
+Brackets:
+K&R bracket style is used.
+
+#includes are not a random jumble (but then they aren't alphabetized either!)
+#include order is C, then etl and/or platform (libraries), then AF
+
+Spacing:
+Spaced for readability
+3 lines between big definition chunks in cpp (e.g functions, classes, #include vs implementation sections)
+For headers, its 2 lines.
+
+Style automation:
+The other options are just clang-format as configured.
+Use clang-format and .clang-format settings to format the files with these conventions where possible.  
+Alas, clang-format is not perfect.  It doesn't handle spacing between functions very well,
+so there is a bonus script to do that.  It calls clang-format for you so it's simple.
+    formatProjectFiles.sh   # or .ps1
+
+What's with all the spacing?
+I once worked adjacent to the Photoshop team.  Their code was massively spaced for readability.  
+It might have been overkill, but it was easy to read.  I've tone it down, but functions are still easy to read.
+The goal is to have object methods that are atomicly readable, I guess.
