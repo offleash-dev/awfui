@@ -12,20 +12,18 @@ set(CMAKE_CXX_EXTENSIONS OFF)
 
 
 
-# ----------------------------------------------------------------------------- 
+# -----------------------------------------------------------------------------
 # Options
 # -----------------------------------------------------------------------------
-option(AFUI_BUILD_EXAMPLES "Build the AFUI example applications" ON)
-option(AFUI_BUILD_EXAMPLES_DEMO "Build the AFUI example demo application" OFF)
-option(AFUI_BUILD_EXAMPLES_TEST "Build the AFUI example test application" ON)
-option(AFUI_USE_SDL "Build with SDL backend for desktop simulation" ON)
-
+option(AFUI_BUILD_EXAMPLES "Build the AFUI example applications" OFF)
+option(AFUI_USE_SDL "Build with SDL backend for desktop simulation" OFF)
+ 
 # -----------------------------------------------------------------------------
 # Compiler settings (GCC-friendly, cross-platform)
 # -----------------------------------------------------------------------------
 if(CMAKE_CXX_COMPILER_ID STREQUAL "GNU" OR CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
     add_compile_options(
-        -Wall
+        -Wall 
         -Wextra
         -Wpedantic
         -Wno-unused-parameter
@@ -202,39 +200,27 @@ endif()
 # Example applications (optional)
 # -----------------------------------------------------------------------------
 if(AFUI_BUILD_EXAMPLES)
-    if(AFUI_BUILD_EXAMPLES_DEMO)
-        add_executable(afui_demo examples/demo/main.cpp)
-    endif()
-
-    if(AFUI_BUILD_EXAMPLES_TEST)
-        add_executable(afui_test examples/test/main.cpp)
-    endif()
-
+    # Main demo
+    add_executable(afui_demo examples/demo/main.cpp)
+    
+    # Coordinate/rotation test demo
+    add_executable(afui_test examples/test/main.cpp)
+    
     if(AFUI_USE_SDL)
-        if(AFUI_BUILD_EXAMPLES_DEMO)
-            target_link_libraries(afui_demo PRIVATE afui)
-        endif()
-        if(AFUI_BUILD_EXAMPLES_TEST)
-            target_link_libraries(afui_test PRIVATE afui)
-        endif()
+        # SDL desktop build - only needs afui (which brings in SDL)
+        target_link_libraries(afui_demo PRIVATE afui)
+        target_link_libraries(afui_test PRIVATE afui)
     else()
+        # Embedded build - needs STM32 platform and ILI9341 driver
         include(cmake/stm32_platform.cmake)
-        if(AFUI_BUILD_EXAMPLES_DEMO)
-            target_link_libraries(afui_demo PRIVATE afui adafruit_ili9341 adafruit_gfx stm32_platform)
-        endif()
-        if(AFUI_BUILD_EXAMPLES_TEST)
-            target_link_libraries(afui_test PRIVATE afui adafruit_ili9341 adafruit_gfx stm32_platform)
-        endif()
+        target_link_libraries(afui_demo PRIVATE afui adafruit_ili9341 adafruit_gfx stm32_platform)
+        target_link_libraries(afui_test PRIVATE afui adafruit_ili9341 adafruit_gfx stm32_platform)
     endif()
-
+    
     # Suppress MSVC secure CRT warnings for demos
     if(MSVC OR (CMAKE_CXX_COMPILER_ID STREQUAL "Clang" AND WIN32))
-        if(AFUI_BUILD_EXAMPLES_DEMO)
-            target_compile_definitions(afui_demo PRIVATE _CRT_SECURE_NO_WARNINGS)
-        endif()
-        if(AFUI_BUILD_EXAMPLES_TEST)
-            target_compile_definitions(afui_test PRIVATE _CRT_SECURE_NO_WARNINGS)
-        endif()
+        target_compile_definitions(afui_demo PRIVATE _CRT_SECURE_NO_WARNINGS)
+        target_compile_definitions(afui_test PRIVATE _CRT_SECURE_NO_WARNINGS)
     endif()
 endif()
 
