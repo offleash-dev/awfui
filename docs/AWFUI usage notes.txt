@@ -12,7 +12,6 @@ AWFUI expects other library like projects to be siblings within the /modules dir
 
 
 
-
 Strings in AWFUI 
 String lifetime management is the application's responsibility.
 
@@ -47,33 +46,63 @@ Again, string lifetime management is the application's responsibility.
 
 
 
+Project Conventions
+When creating AWFUI, the goal/mantra was: Clarity.  No extra junk.  Think embedded.
+
+This is a C++ framework, but it is using the language in a minimal way because it is
+intended to be use for embedded work.  As such, things like RTTI that might add bloat
+are disabled.
+
+WRT containers, STL is not used.  Instead, the embedded focused ETL is used.
+https://www.etlcpp.com/
+
+For error handling, C++ exceptions should never be used.  They are one of those bloating
+technologies.  Code should return something checkable if an error is possible 
+    A bool for success is fine
+    null is fine
+    an enum defined in AFResult.h is fine
+    asserts are for programmer errors ONLY
 
 
 
-Formatting Conventions
-There is no big style guide.  The code is a template for the style.  Try to follow it for consistency.  Thanks.
+Language and Formatting Conventions
+There is no big F-35 style guide.  The code is a template for the style.  Try to follow it for consistency. Use the formatting script on occasion. Thanks.
 
-Other than that, here are a few conventions...
+Other than that, here are a few conventions that are worth pointing out.
 
-Brackets:
+AWFUI doesn't use namespaces.  It small enough that they probably aren't needed.
+All objects use the the AF* prefix.
+
+Constants don't use all caps.  Instead k* (e.g. kCenterJustification) is used.
+
+Classes use the following patterns:
+	m_* for member variables
+	s_* for static variables (we don't have any yet)
+	virtual methods should use override
+
+Patterns like sentinels and factories are great when appropriate (e.g. screen factory in AFWorld)
+
 K&R bracket style is used.
 
 #includes are not a random jumble (but then they aren't alphabetized either!)
-#include order is C, then etl and/or platform (libraries), then AF
+#include order is C, then ETL and/or platform (libraries), then AF
 
-Spacing:
-Spaced for readability
+AWFUI is spaced for readability
 3 lines between big definition chunks in cpp (e.g functions, classes, #include vs implementation sections)
 For headers, its 2 lines.
 
-Style automation:
-The other options are just clang-format as configured.
-Use clang-format and .clang-format settings to format the files with these conventions where possible.  
+
+
+Style Automation
+To help maintain the code, clang-format is used.  Basically it's the defaults and the .clang-format is
+at the project root.  Run clang-format and .clang-format settings to format the files on occasion.  
+
 Alas, clang-format is not perfect.  It doesn't handle spacing between functions very well,
 so there is a bonus script to do that.  It calls clang-format for you so it's simple.
     formatProjectFiles.sh   # or .ps1
+It's actually pretty easy.
 
 What's with all the spacing?
 I once worked adjacent to the Photoshop team.  Their code was massively spaced for readability.  
 It might have been overkill, but it was easy to read.  I've tone it down, but functions are still easy to read.
-The goal is to have object methods that are atomicly readable, I guess.
+The goal is to have object methods that are atomically readable, I guess.
