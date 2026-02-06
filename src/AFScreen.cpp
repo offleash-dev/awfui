@@ -97,7 +97,7 @@ void AFScreen::handleEvent(const AFEvent& e) {
       }
 
       // First route to dialogs (topmost last)
-      for (int i = m_dialogs.size() - 1; i >= 0; --i) {
+      for (int i = static_cast<int>(m_dialogs.size()) - 1; i >= 0; --i) {
             AFDialog* d = m_dialogs[i];
             if (d->isVisible() && d->hitTest(e.x, e.y)) {
                   d->handleEvent(e);
@@ -106,7 +106,7 @@ void AFScreen::handleEvent(const AFEvent& e) {
       }
 
       // Then route to root-level widgets 
-      for (int i = m_widgets.size() - 1; i >= 0; --i) {
+      for (int i = static_cast<int>(m_widgets.size()) - 1; i >= 0; --i) {
             AFWidget* w = m_widgets[i];
             if (w->isVisible() && w->hitTest(e.x, e.y)) {
                   switch (e.type) {

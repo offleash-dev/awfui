@@ -22,6 +22,7 @@ public:
     ~GFX_SDL();
 
     void drawPixel(int16_t x, int16_t y, uint16_t color) override;
+    void setRotation(uint8_t r) override;
 
     void begin();
     void present();

@@ -40,7 +40,7 @@ public:
       }
 
 
-      uint16_t getColor() const {
+      int32_t getColor() const {
             return m_color;
       }
       
@@ -50,5 +50,5 @@ public:
       
 private:
       const char*          m_text;
-      uint16_t             m_color         = 0x0000; // default black
+      int32_t              m_color         = -1;    // -1 = use theme textColor
 };

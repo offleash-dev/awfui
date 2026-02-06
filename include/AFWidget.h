@@ -27,22 +27,27 @@ public:
 
 
     virtual void onPress(const AFEvent& e) {
+          unused(e);
     }
 
 
     virtual void onRelease(const AFEvent& e) {
+          unused(e);
     }
 
 
     virtual void onClick(const AFEvent& e) {
+          unused(e);
     }
 
 
     virtual void onKey(const AFEvent& e) {
+          unused(e);
     }
 
 
     virtual void onButton(const AFEvent& e) {
+          unused(e);
     }
 
 

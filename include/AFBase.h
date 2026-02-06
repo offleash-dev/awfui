@@ -58,3 +58,8 @@ constexpr uint32_t makeID(const char (&s)[5]) {
            (uint32_t(s[3]));
 }
 // Example: constexpr uint32_t myID = makeID("TEST");
+
+
+
+// Macro to mark unused parameters and avoid compiler warnings
+#define unused(x) (void) (x)

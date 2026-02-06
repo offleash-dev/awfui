@@ -12,7 +12,7 @@
 // Constructor
 //
 AFTouchSDL::AFTouchSDL(int displayScale)
-    : scale(displayScale), isDown(false), lastX(0), lastY(0)
+    : scale(displayScale), isDown(false), lastX(-1), lastY(-1)
 {}
 
 

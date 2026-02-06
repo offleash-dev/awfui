@@ -92,14 +92,15 @@ void AFButton::draw(Adafruit_GFX& gfx) {
 
             // Horizontal justification
             switch (m_justification) {
-                  case AFJustificationLeft:
-                        tx = m_x;
-                        break;
                   case AFJustificationCenter:
                         tx = m_x + (m_width - w) / 2;
                         break;
                   case AFJustificationRight:
                         tx = m_x + m_width - w;
+                        break;
+                  case AFJustificationLeft:
+                  default:
+                        tx = m_x;
                         break;
             }
 
@@ -117,6 +118,7 @@ void AFButton::draw(Adafruit_GFX& gfx) {
 // Handle press event
 //
 void AFButton::onPress(const AFEvent& e) {
+    unused(e);
     m_pressed = true;
     markDirty();
 }
@@ -126,6 +128,7 @@ void AFButton::onPress(const AFEvent& e) {
 // Handle release event
 //
 void AFButton::onRelease(const AFEvent& e) {
+    unused(e);
     m_pressed = false;
     markDirty();
 }
@@ -135,6 +138,7 @@ void AFButton::onRelease(const AFEvent& e) {
 // Handle click event
 //
 void AFButton::onClick(const AFEvent& e) {
+      unused(e);
       if (m_onClickCallback) {
             m_onClickCallback();
       }

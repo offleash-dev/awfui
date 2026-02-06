@@ -56,7 +56,7 @@ void AFDialog::removeChild(AFWidget* w) {
 // Find child at a screen point
 //
 AFWidget* AFDialog::childAt(int16_t px, int16_t py) {
-      for (int i = m_children.size() - 1; i >= 0; --i) {
+      for (int i = static_cast<int>(m_children.size()) - 1; i >= 0; --i) {
             AFWidget* w = m_children[i];
             if (w->isVisible() && w->hitTest(px, py)) {
                   return w;
@@ -103,7 +103,7 @@ void AFDialog::handleEvent(const AFEvent& e) {
       }
 
       // Hit-test children in reverse order (topmost first)
-      for (int i = m_children.size() - 1; i >= 0; --i) {
+      for (int i = static_cast<int>(m_children.size()) - 1; i >= 0; --i) {
             AFWidget* w = m_children[i];
 
             if (w->isVisible() && w->hitTest(e.x, e.y)) {

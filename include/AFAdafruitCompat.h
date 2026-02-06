@@ -36,8 +36,26 @@
 #include <type_traits>
 #include <utility>
 
+// Suppress warnings from third-party Adafruit/Arduino headers
+#if defined(_MSC_VER)
+#define AF_THIRD_PARTY_WARNINGS_PUSH  __pragma(warning(push, 0))
+#define AF_THIRD_PARTY_WARNINGS_POP   __pragma(warning(pop))
+#elif defined(__GNUC__) || defined(__clang__)
+#define AF_THIRD_PARTY_WARNINGS_PUSH \
+    _Pragma("GCC diagnostic push") \
+    _Pragma("GCC diagnostic ignored \"-Wall\"") \
+    _Pragma("GCC diagnostic ignored \"-Wextra\"")
+#define AF_THIRD_PARTY_WARNINGS_POP \
+    _Pragma("GCC diagnostic pop")
+#else
+#define AF_THIRD_PARTY_WARNINGS_PUSH
+#define AF_THIRD_PARTY_WARNINGS_POP
+#endif
+
 // Now include Adafruit GFX (which pulls in Arduino.h)
+AF_THIRD_PARTY_WARNINGS_PUSH
 #include <Adafruit_GFX.h>
+AF_THIRD_PARTY_WARNINGS_POP
 
 // Undefine problematic macros that conflict with standard library
 #undef abs

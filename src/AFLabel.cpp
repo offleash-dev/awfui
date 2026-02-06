@@ -16,6 +16,7 @@ AFLabel::AFLabel(int16_t x_, int16_t y_, const char* text_, uint32_t id) : AFWid
       // width/height are not usable for hit-testing
       m_width  = 0;
       m_height = 0;
+      m_justification = AFJustificationLeft;
 }
 
 
@@ -24,6 +25,7 @@ AFLabel::AFLabel(int16_t x, int16_t y, int16_t w, int16_t h, const char* text, u
       // width/height are usable for hit-testing
       m_width  = w;
       m_height = h;
+      m_justification = AFJustificationLeft;
 }
 
 
@@ -35,7 +37,7 @@ void AFLabel::draw(Adafruit_GFX& gfx) {
             return;
       }
 
-      uint16_t color = (m_color == 0xFFFF) ? AFWorld::instance()->getTheme().textColor : m_color;
+      uint16_t color = (m_color < 0) ? AFWorld::instance()->getTheme().textColor : static_cast<uint16_t>(m_color);
       gfx.setTextColor(color);
 
       if (m_width == 0 && m_height == 0) {
@@ -52,14 +54,15 @@ void AFLabel::draw(Adafruit_GFX& gfx) {
 
             // Horizontal justification
             switch (m_justification) {
-                  case AFJustificationLeft:
-                        tx = m_x;
-                        break;
                   case AFJustificationCenter:
                         tx = m_x + (m_width - w) / 2;
                         break;
                   case AFJustificationRight:
                         tx = m_x + m_width - w;
+                        break;
+                  case AFJustificationLeft:
+                  default:
+                        tx = m_x;
                         break;
             }
 

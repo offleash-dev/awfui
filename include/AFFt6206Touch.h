@@ -34,7 +34,7 @@ public:
   
 
     AFTouchPoint getPoint() override {
-        AFTouchPoint pt = {0, 0, false};
+        AFTouchPoint pt = {-1, -1, false};
         if (m_touch.touched()) {
             TS_Point p = m_touch.getPoint();
             

@@ -150,29 +150,31 @@ void AFWorld::pollHardware(AFEvent& outEvent) {
     // Poll touch if available
     if (m_touch) {
         AFTouchPoint pt = m_touch->getPoint();
-        
-        // Transform touch coordinates to match display rotation
-        transformTouchCoordinates(pt.x, pt.y);
-        
-        if (pt.touched && !m_wasTouched) {
-            // Touch just started
-            outEvent.type = AFEventType::kTouchDown;
-            outEvent.x = pt.x;
-            outEvent.y = pt.y;
-            m_lastTouchX = pt.x;
-            m_lastTouchY = pt.y;
-        } else if (!pt.touched && m_wasTouched) {
-            // Touch just ended - use last known position
-            outEvent.type = AFEventType::kTouchUp;
-            outEvent.x = m_lastTouchX;
-            outEvent.y = m_lastTouchY;
-        } else if (pt.touched) {
-            // Ongoing touch - move/drag
-            outEvent.type = AFEventType::kTouchMove;
-            outEvent.x = pt.x;
-            outEvent.y = pt.y;
-            m_lastTouchX = pt.x;
-            m_lastTouchY = pt.y;
+
+        if (pt.touched || m_wasTouched) {
+              // Touch libraries report raw physical panel coordinates
+              // Widgets appear to be in physical space too (screen button works without transform)
+              
+              if (pt.touched && !m_wasTouched) {
+                    // Touch just started
+                    outEvent.type = AFEventType::kTouchDown;
+                    outEvent.x    = pt.x;
+                    outEvent.y    = pt.y;
+                    m_lastTouchX  = pt.x;
+                    m_lastTouchY  = pt.y;
+              } else if (!pt.touched && m_wasTouched) {
+                    // Touch just ended - use last known position
+                    outEvent.type = AFEventType::kTouchUp;
+                    outEvent.x    = m_lastTouchX;
+                    outEvent.y    = m_lastTouchY;
+              } else if (pt.touched) {
+                    // Ongoing touch - move/drag
+                    outEvent.type = AFEventType::kTouchMove;
+                    outEvent.x    = pt.x;
+                    outEvent.y    = pt.y;
+                    m_lastTouchX  = pt.x;
+                    m_lastTouchY  = pt.y;
+              }
         }
         
         m_wasTouched = pt.touched;

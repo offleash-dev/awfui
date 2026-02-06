@@ -26,7 +26,7 @@
 
 #ifdef AFUI_USE_SDL
 // SDL desktop simulation - 320x240 display at 2x scale
-GFX_SDL      tft(320, 240);
+GFX_SDL      tft(240, 320);
 AFTouchSDL   touch(2);
 #else
 // Example display - STM32L475 IoT01 board uses no-arg constructor
