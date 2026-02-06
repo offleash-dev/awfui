@@ -58,7 +58,7 @@ void setup() {
       // ------------------------------------------------------------
       // Main screen button
       // ------------------------------------------------------------
-      AFButton* openBtn = new AFButton(40, 40, 160, 50, makeID("Open"), "Open Dialog");
+      AFButton* openBtn = new AFButton(120, 40, 160, 50, makeID("Open"), "Open Dialog");
       openBtn->setOnClickCallback([]() { dialog->show(*mainScreen); });
       mainScreen->addWidget(openBtn);
 
