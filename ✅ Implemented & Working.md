@@ -17,29 +17,31 @@ Comparison of Spec vs Implementation:
 | AFFt6206Touch     | FT6206 implementation with rotation            | ✅ Done                                  |
 | Dirty flag redraw | Spec says "future"                             | ✅ Done early!                           |
 | No STL/exceptions | ETL only, no exceptions                        | ✅ Done                                  |
+| AFModalDialog     | Blocks input, explicit dismiss                 | ✅ Done                                  |
+| AFTheme           | Colors/fonts inherited by widgets              | ✅ Done                                  |
+
+
 
 ------
 
 ## ⚠️ Implemented but Untested/Incomplete
 
-| Component          | Spec                                        | Status                       |
-| :----------------- | :------------------------------------------ | :--------------------------- |
-| AFDialog           | Container widget, routes events to children | ⚠️ Code exists, untested      |
-| AFModalDialog      | Blocks input, explicit dismiss              | ⚠️ Code exists, untested      |
-| AFFullscreenDialog | Full-screen modal                           | ⚠️ Code exists, untested      |
-| Canvas mode        | Off-screen buffer for smooth rendering      | ⚠️ Structure exists, untested |
+| Component          | Spec                                        | Status                  |
+| :----------------- | :------------------------------------------ | :---------------------- |
+| AFDialog           | Container widget, routes events to children | ⚠️ Code exists, untested |
+| AFFullscreenDialog | Full-screen modal                           | ⚠️ Code exists, untested |
 
 ------
 
 ## ❌ Not Yet Implemented
 
-| Component          | Spec                              | Status                               |
-| :----------------- | :-------------------------------- | :----------------------------------- |
-| AFTheme usage      | Colors/fonts inherited by widgets | ❌ Defined but not wired into drawing |
-| Hardware buttons   | onButton() event type             | ❌ Event type exists, no polling      |
-| Keyboard/keys      | onKey() event type                | ❌ Event type exists, no polling      |
-| Timer events       | kTimer event type                 | ❌ Not implemented                    |
-| Screen transitions | Fade, slide (spec says "planned") | ❌ Future                             |
+| Component          | Spec                                   | Status                          |
+| :----------------- | :------------------------------------- | :------------------------------ |
+| Canvas mode        | Off-screen buffer for smooth rendering | ⚠️ Structure exists, untested    |
+| Hardware buttons   | onButton() event type                  | ❌ Event type exists, no polling |
+| Keyboard/keys      | onKey() event type                     | ❌ Event type exists, no polling |
+| Timer events       | kTimer event type                      | ❌ Not implemented               |
+| Screen transitions | Fade, slide (spec says "planned")      | ❌ Future                        |
 
 ------
 
@@ -49,12 +51,7 @@ Core framework: ~85% complete
 
 The main gaps are:
 
-1. Touch coordinate accuracy - needs verification
-
-1. AFTheme - needs to be wired into widget drawing
-
 1. Dialog testing - code exists but unused
-
 1. Hardware buttons/timers - event types ready, polling not implemented
 
 The dirty-flag optimization you asked for is actually ahead of the spec (listed as "future").
