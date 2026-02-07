@@ -46,6 +46,18 @@ public:
         m_gfx.drawRoundRect(x, y, w, h, radius, color);
     }
 
+    void drawLine(int16_t x0, int16_t y0, int16_t x1, int16_t y1, uint16_t color) override {
+        m_gfx.drawLine(x0, y0, x1, y1, color);
+    }
+
+    void drawCircle(int16_t x, int16_t y, int16_t r, uint16_t color) override {
+        m_gfx.drawCircle(x, y, r, color);
+    }
+
+    void fillCircle(int16_t x, int16_t y, int16_t r, uint16_t color) override {
+        m_gfx.fillCircle(x, y, r, color);
+    }
+
     // --- Text ---
     void setCursor(int16_t x, int16_t y) override {
         m_gfx.setCursor(x, y);

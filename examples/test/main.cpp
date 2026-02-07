@@ -1,49 +1,112 @@
-// =============================================================================
-// STM32 HAL/BSP Stubs for Windows Compilation Testing
-//
-// These are empty implementations that allow the demo to link on Windows.
-// They do nothing - the actual implementations exist in the STM32 HAL/BSP
-// libraries on the real target.
-// =============================================================================
+// main.cpp
 
-#include <cstdint>
+// Tell SDL we handle our own main() entry point
+#ifdef AFUI_USE_SDL
+#define SDL_MAIN_HANDLED
+#endif
 
+#include "AFDisplayAdafruitGFX.h"
 
 
-extern "C" {
 
-// GPIO
-typedef struct {
-      uint32_t dummy;
-} GPIO_TypeDef;
+#ifdef AFUI_USE_SDL
+#include "gfx_sdl.hpp"
+#include "AFTouchSDL.h"
+#else
+#include <Adafruit_ILI9341.h>
+#endif
 
-typedef struct {
-      uint32_t dummy;
-} GPIO_InitTypeDef;
+#include "AFButton.h"
+#include "AFLabel.h"
+#include "AFModalDialog.h"
+#include "AFScreen.h"
+#include "AFWorld.h"
 
-typedef enum { GPIO_PIN_RESET = 0, GPIO_PIN_SET = 1 } GPIO_PinState;
 
-void HAL_GPIO_Init(GPIO_TypeDef* GPIOx, GPIO_InitTypeDef* GPIO_Init) {
+
+#ifdef AFUI_USE_SDL
+// SDL desktop simulation - 320x240 display at 2x scale
+GFX_SDL      tft(240, 320);
+AFTouchSDL   touch(2);
+#else
+// Example display - STM32L475 IoT01 board uses no-arg constructor
+// (pins are configured via BSP/HAL)
+Adafruit_ILI9341 tft;
+#endif
+
+AFDisplayAdafruitGFX display(tft);
+
+AFWorld*       world;
+AFScreen*      mainScreen;
+AFModalDialog* dialog;
+
+void setup() {
+#ifdef AFUI_USE_SDL
+      SDL_SetMainReady();
+#endif
+      tft.begin();
+
+      tft.setRotation(1);
+
+#ifdef AFUI_USE_SDL
+      AFWorld::init(display, &touch);
+#else
+      AFWorld::init(display);
+#endif
+      world      = AFWorld::instance();
+      mainScreen = world->createScreen(true);
+
+      // ------------------------------------------------------------
+      // Main screen button
+      // ------------------------------------------------------------
+      AFButton* openBtn = new AFButton(120, 40, 160, 50, makeID("Open"), "Open Dialog");
+      openBtn->setOnClickCallback([]() { dialog->show(*mainScreen); });
+      mainScreen->addWidget(openBtn);
+
+      // ------------------------------------------------------------
+      // Modal dialog
+      // ------------------------------------------------------------
+      dialog = new AFModalDialog(20, 40, 200, 140, makeID("HDlg"));
+
+      AFLabel* lbl = new AFLabel(30, 60, "Hello from AFUI!", makeID("Helo"));
+      dialog->addChild(lbl);
+
+      AFButton* okBtn = new AFButton(50, 100, 100, 40, makeID("OKBt"), "OK");
+      okBtn->setOnClickCallback([]() { dialog->dismiss(); });
+      dialog->addChild(okBtn);
 }
 
 
 
-void HAL_GPIO_WritePin(GPIO_TypeDef* GPIOx, uint16_t GPIO_Pin, GPIO_PinState PinState) {
+void loop() {
+#ifdef AFUI_USE_SDL
+      // Process SDL events and feed touch input
+      SDL_Event e;
+      while (SDL_PollEvent(&e)) {
+            if (e.type == SDL_QUIT) {
+                  exit(0);
+            }
+            touch.handleEvent(e);
+      }
+#endif
+
+      world->loop();
+
+#ifdef AFUI_USE_SDL
+      // Update the SDL window
+      tft.present();
+      SDL_Delay(16);  // ~60 FPS
+#endif
 }
 
-// Delay
-void HAL_Delay(uint32_t Delay) {
-}
-
-// SPI BSP
-int32_t BSP_SPI1_Init(void) {
+// Entry point for Windows/Linux builds
+// On actual STM32, the Arduino framework or your startup code calls setup()/loop()
+#if defined(_WIN32) || defined(__linux__)
+int main() {
+      setup();
+      while (true) {
+            loop();
+      }
       return 0;
 }
-
-
-
-int32_t BSP_SPI1_Send(uint8_t* pData, uint16_t Length) {
-      return 0;
-}
-
-} // extern "C"
+#endif

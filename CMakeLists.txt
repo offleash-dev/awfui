@@ -15,8 +15,8 @@ set(CMAKE_CXX_EXTENSIONS OFF)
 # -----------------------------------------------------------------------------
 # Options
 # -----------------------------------------------------------------------------
-option(AFUI_BUILD_EXAMPLES "Build the AFUI example applications" OFF)
-option(AFUI_USE_SDL "Build with SDL backend for desktop simulation" OFF)
+option(AFUI_BUILD_EXAMPLES "Build the AFUI example applications" ON)
+option(AFUI_USE_SDL "Build with SDL backend for desktop simulation" ON)
  
 # -----------------------------------------------------------------------------
 # Compiler settings (GCC-friendly, cross-platform)
@@ -39,11 +39,14 @@ endif()
 # -----------------------------------------------------------------------------
 set(AFUI_SOURCES
     src/AFButton.cpp
+    src/AFCheckbox.cpp
     src/AFDialog.cpp
     src/AFDisplayAdafruitGFX.cpp
     src/AFFullscreenDialog.cpp
     src/AFLabel.cpp
     src/AFModalDialog.cpp
+    src/AFRadioButton.cpp
+    src/AFRadioButtonGroup.cpp
     src/AFScreen.cpp
     src/AFScreenList.cpp
     src/AFWidget.cpp
@@ -54,6 +57,7 @@ set(AFUI_HEADERS
     include/AFAdafruitCompat.h
     include/AFBase.h
     include/AFButton.h
+    include/AFCheckbox.h
     include/AFDialog.h
     include/AFDisplayAdafruitGFX.h
     include/AFDisplayInterface.h
@@ -62,6 +66,8 @@ set(AFUI_HEADERS
     include/AFFullscreenDialog.h
     include/AFLabel.h
     include/AFModalDialog.h
+    include/AFRadioButton.h
+    include/AFRadioButtonGroup.h
     include/AFResult.h
     include/AFScreen.h
     include/AFScreenList.h

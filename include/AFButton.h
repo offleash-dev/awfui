@@ -54,21 +54,8 @@ public:
       void onRelease(const AFEvent& e) override;
       void onClick(const AFEvent& e) override;
 
-      // Set callback function for press event 
-      //
-      void setOnPressCallback(AFButtonCallback cb) {
-            m_onPressCallback = cb;
-      }
-      
-      
-      // Set callback function for release event 
-      //
-      void setOnReleaseCallback(AFButtonCallback cb) {
-            m_onReleaseCallback = cb;
-      }
 
-
-      // Set callback function for combined event 
+      // Set callback function for click event 
       //
       void setOnClickCallback(AFButtonCallback cb) {
             m_onClickCallback = cb;

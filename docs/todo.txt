@@ -10,11 +10,10 @@ optional refinements you might want later:
 
 Add setFont() and support for AFTheme
 
-layout support  
+
+layout support via build script (see thoughts doc)
+
 
 image support (AFImage, AFImageButton)
 AFImage
 AFImageButton includes AFImage
-AFCheckbox derives from AFImageButton
-AFRadioButton derives from AFCheckbox
-AFRadioGroup is grouping and control mechanism for AFRadioButtons
