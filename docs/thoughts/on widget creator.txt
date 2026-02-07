@@ -1,0 +1,106 @@
+So I have AFDialog, AFButton, AFLabel, and eventually other widgets.  There isn't a AFDialog::createWidget() factory intentionally.  But I suppose a small routine that creates AF objects from a string could be useful.  The below is me thinking out loud.
+
+Boiler plate widget creation might be simplified and a required widget id would be a part and let the developer modify created objects later, 
+
+It would just be a helper that could be use if wanted.  I don't think it should be full on solver ala Qt (which I really like), but an aid.  IT coudld be an included C file, or maybe it should be just a script that kicked out a function like void buildKeypadDialog(AFSCreen* aScreen) {...} that the project can include.
+
+
+int theScreenWidth=currentScreenWidth();
+int theStandardPadding = 10;
+const char* warningDialog = 
+"createDialog(text:"Warning", id:WARN, size:theScreenWidth-theStandardPadding)
+{
+ createLabel(text:"Something happened!", id:"What"){},
+ createButton(text:"OK", id:"BtOK"){},
+}"
+
+or 
+
+const char* keypad =
+AFFullScreenDialog["", id:NPad] 
+{ 
+_AFRow{AFButton[text:"1",id:key1], AFButton[text:"2",id:key2], AFButton[text:"3",id:key3],
+_AFRow{AFButton[text:"4",id:key4], AFButton[text:"5",id:key5], AFButton[text:"6",id:key6],
+_AFRow{AFButton[text:"7",id:key7], AFButton[text:"8",id:key8], AFButton[text:"9",id:key9],
+_AFRow{afSpace[], AFButton[text:"0", id:key0], afSpace[]
+}
+
+
+The syntax above is just me typing, nothing formal yet.
+kStandardPadding=10 is something that is a default if not defined on the lines preceding the construct.
+It uses the object name (AFButton)
+The warningDialog I actually put some C lines for definitions.  That seems fine for a script.  It would look for them and included them.  Doesn't work for a in-program object generator.
+The keypad use some pseudo-AF objects. and a list construct, and there is an implicit solver.
+
+Thoughts?
+
+
+ keep AFUI lean, keep the core pure, and let a helper script generate the boilerplate when someone wants it.  
+
+A compile‑time helper script that generates C++
+This is the cleanest, safest, most embedded‑friendly option.
+
+You write something like:
+
+Code
+Dialog "Warning" id:WARN size:(screenWidth - 10) {
+    Label "Something happened!" id:WHAT
+    Button "OK" id:BtOK
+}
+A Python script (or CMake custom command) turns that into:
+
+cpp
+void buildWarningDialog(AFScreen* s) {
+    auto* dlg = new AFDialog(…, WARN);
+    dlg->addWidget(new AFLabel(…, "Something happened!", WHAT));
+    dlg->addWidget(new AFButton(…, "OK", BtOK));
+    s->addWidget(dlg);
+}
+Pros:
+
+zero runtime cost
+
+no parser on device
+
+no memory overhead
+
+no dynamic allocation unless you choose it
+
+easy to debug (you can inspect the generated C++)
+
+easy to extend
+
+This is the “Qt .ui file” model, but tiny and embedded‑friendly.
+
+
+
+
+Dialog "Warning" id:WARN size:(screenWidth - 10) {
+    Label "Something happened!" id:WHAT
+    Button "OK" id:BtOK
+}
+And your keypad:
+
+Code
+Dialog Fullscreen id:NPad {
+    Row {
+        Button "1" id:key1
+        Button "2" id:key2
+        Button "3" id:key3
+    }
+    Row {
+        Button "4" id:key4
+        Button "5" id:key5
+        Button "6" id:key6
+    }
+    Row {
+        Button "7" id:key7
+        Button "8" id:key8
+        Button "9" id:key9
+    }
+    Row {
+        Spacer
+        Button "0" id:key0
+        Spacer
+    }
+}

@@ -68,9 +68,9 @@ technologies.  Code should return something checkable if an error is possible
 Language and Formatting Conventions
 There is no big F-35 style guide.  The code is a template for the style.  Try to follow it for consistency. Use the formatting script on occasion. Thanks.
 
-Other than that, here are a few conventions that are worth pointing out.
+Other than that, here are a few conventions that are used and worth pointing out.
 
-AWFUI doesn't use namespaces.  It small enough that they probably aren't needed.
+AWFUI doesn't use c++ namespaces.  It small enough that they probably aren't needed.
 All objects use the the AF* prefix.
 
 Constants don't use all caps.  Instead k* (e.g. kCenterJustification) is used.
@@ -80,12 +80,14 @@ Classes use the following patterns:
 	s_* for static variables (we don't have any yet)
 	virtual methods should use override
 
-Patterns like sentinels and factories are great when appropriate (e.g. screen factory in AFWorld)
-
 K&R bracket style is used.
 
 #includes are not a random jumble (but then they aren't alphabetized either!)
 #include order is C, then ETL and/or platform (libraries), then AF
+
+Patterns like sentinels and factories are great when appropriate, but not always.  
+A AFScreen factory is used in AFWorld because the world needs to know about screens
+AFDialogs do not provide a factory widget because new widget types might be created.  Create what you need in code and add it.
 
 AWFUI is spaced for readability
 3 lines between big definition chunks in cpp (e.g functions, classes, #include vs implementation sections)
