@@ -64,6 +64,19 @@ public:
     }
 
 
+    void setEnabled(bool e) {
+        if (m_enabled != e) {
+            m_enabled = e;
+            markDirty();
+        }
+    }
+
+
+    bool isEnabled() const {
+        return m_enabled;
+    }
+
+
     void markDirty() {
         m_dirty = true;
     }
@@ -118,6 +131,7 @@ public:
 protected:
     int16_t   m_x, m_y;
     int16_t   m_width, m_height;
+    bool      m_enabled = true;
     bool      m_visible = true;
     bool      m_dirty   = true;  // Start dirty so initial draw happens
     uint32_t   m_id;

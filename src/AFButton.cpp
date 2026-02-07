@@ -70,6 +70,12 @@ void AFButton::draw(AFDisplayInterface& gfx) {
       uint16_t bg     = m_pressed ? m_bgColorPressed : m_bgColor;
       uint16_t fg     = m_pressed ? m_fgColorPressed : m_fgColor;
       uint16_t border = m_pressed ? m_borderColorPressed : m_borderColor;
+      // now override that if disabled
+      if (!m_enabled) {
+            bg     = AFWorld::instance()->getTheme().disabledBgColor;
+            fg     = AFWorld::instance()->getTheme().disabledFgColor;
+            border = AFWorld::instance()->getTheme().borderColor;
+      }
 
       uint8_t radius = AFWorld::instance()->getTheme().cornerRadius;
 

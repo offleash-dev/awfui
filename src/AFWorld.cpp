@@ -48,6 +48,8 @@ AFWorld::AFWorld(AFDisplayInterface& displayRef, AFTouchInterface* touch)
     m_theme.textColor     = 0xFFFF; // white
     m_theme.bgColor       = 0x0000; // black
     m_theme.fgColor       = 0xFFFF; // white
+    m_theme.disabledFgColor = 0x8410; // dark gray
+    m_theme.disabledBgColor = 0x4208; // medium-dark gray
     m_theme.accentColor   = 0xF800; // red
     m_theme.borderColor   = 0xFFFF; // white
     m_theme.padding       = 4;

@@ -72,10 +72,23 @@ void AFCheckbox::draw(AFDisplayInterface& gfx) {
 
       const AFTheme& theme = AFWorld::instance()->getTheme();
       uint8_t radius       = theme.cornerRadius;
+      uint16_t bgColor     = theme.bgColor;
+      uint16_t boxColor    = theme.bgColor;
+      uint16_t checkColor  = theme.accentColor;
+      uint16_t borderColor = theme.borderColor;
+      uint16_t labelColor  = theme.fgColor;
+
+      // set colors to theme colors if disabled
+      if (!m_enabled) {
+            boxColor    = theme.disabledBgColor;
+            checkColor  = theme.disabledFgColor;
+            borderColor = theme.borderColor;
+            labelColor  = theme.disabledFgColor;
+      }
 
       // Draw checkbox box
-      gfx.fillRoundRect(m_x, m_y, m_boxSize, m_boxSize, radius, m_boxColor);
-      gfx.drawRoundRect(m_x, m_y, m_boxSize, m_boxSize, radius, m_borderColor);
+      gfx.fillRoundRect(m_x, m_y, m_boxSize, m_boxSize, radius, boxColor);
+      gfx.drawRoundRect(m_x, m_y, m_boxSize, m_boxSize, radius, borderColor);
 
       // Draw check mark if checked
       if (m_checked) {
@@ -85,14 +98,14 @@ void AFCheckbox::draw(AFDisplayInterface& gfx) {
             int16_t x1 = m_x + m_boxSize - 3;
             int16_t y1 = m_y + m_boxSize - 3;
 
-            gfx.drawLine(x0, y0, x1, y1, m_checkColor);
-            gfx.drawLine(x0, y1, x1, y0, m_checkColor);
+            gfx.drawLine(x0, y0, x1, y1, checkColor);
+            gfx.drawLine(x0, y1, x1, y0, checkColor);
       }
 
       // Draw label (if any)
       if (m_label && strlen(m_label) > 0) {
             gfx.setTextSize(m_textSize);
-            gfx.setTextColor(m_labelColor);
+            gfx.setTextColor(labelColor);
 
             int16_t  x1, y1;
             uint16_t w, h;

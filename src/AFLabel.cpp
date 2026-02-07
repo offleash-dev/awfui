@@ -40,6 +40,11 @@ void AFLabel::draw(AFDisplayInterface& gfx) {
       uint16_t color = (m_color < 0) ? AFWorld::instance()->getTheme().textColor : static_cast<uint16_t>(m_color);
       gfx.setTextColor(color);
 
+      if (!m_enabled) {
+            color = AFWorld::instance()->getTheme().disabledFgColor;
+            gfx.setTextColor(color);
+      }
+
       if (m_width == 0 && m_height == 0) {
             // this just a positioned text label
             gfx.setCursor(m_x, m_y);

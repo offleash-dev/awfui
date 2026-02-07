@@ -59,18 +59,28 @@ void AFRadioButton::draw(AFDisplayInterface& gfx) {
     if (!m_visible)
         return;
 
+    uint16_t circleColor = AFWorld::instance()->getTheme().borderColor;
+    uint16_t dotColor    = AFWorld::instance()->getTheme().accentColor;
+    uint16_t labelColor  = AFWorld::instance()->getTheme().fgColor;
+
+    if (!m_enabled) {
+        circleColor = AFWorld::instance()->getTheme().disabledFgColor;
+        dotColor    = AFWorld::instance()->getTheme().disabledFgColor;
+        labelColor  = AFWorld::instance()->getTheme().disabledFgColor;
+    }
+
     // Outer circle
-    gfx.drawCircle(m_x + m_radius, m_y + m_radius, m_radius, m_circleColor);
+    gfx.drawCircle(m_x + m_radius, m_y + m_radius, m_radius, circleColor);
 
     // Filled dot if selected
     if (m_selected) {
-        gfx.fillCircle(m_x + m_radius, m_y + m_radius, m_radius / 2, m_dotColor);
+        gfx.fillCircle(m_x + m_radius, m_y + m_radius, m_radius / 2, dotColor);
     }
 
     // Label
     if (m_label && strlen(m_label) > 0) {
         gfx.setTextSize(m_textSize);
-        gfx.setTextColor(m_labelColor);
+        gfx.setTextColor(labelColor);
 
         int16_t x1, y1;
         uint16_t w, h;

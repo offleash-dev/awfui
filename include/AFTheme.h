@@ -17,6 +17,8 @@ struct AFTheme {
       uint16_t textColor;
       uint16_t bgColor;
       uint16_t fgColor;
+      uint16_t disabledFgColor;
+      uint16_t disabledBgColor;
       uint16_t accentColor;
       uint16_t borderColor;
       uint8_t  padding;

@@ -21,7 +21,7 @@ AFWidget::AFWidget(int16_t x_, int16_t y_, int16_t w_, int16_t h_, uint32_t id_)
 // Hit test: simple bounding box
 //
 bool AFWidget::hitTest(int16_t px, int16_t py) const {
-      if (!m_visible) {
+      if (!m_visible || !m_enabled) {
             return false;
       }
 
