@@ -9,8 +9,6 @@
 //// Licensed under the MIT License. See LICENSE file for details.
 
 
-#include "AFAdafruitCompat.h"
-
 #include "AFWidget.h"
 
 
@@ -45,7 +43,7 @@ public:
       }
       
 
-      virtual void draw(Adafruit_GFX& gfx) override;
+      virtual void draw(AFDisplayInterface& gfx) override;
 
       
 private:

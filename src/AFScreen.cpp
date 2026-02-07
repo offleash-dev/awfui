@@ -5,10 +5,6 @@
 //// Licensed under the MIT License. See LICENSE file for details.
 
 
-#include "AFAdafruitCompat.h"
-
-
-
 #include "AFDialog.h"
 #include "AFModalDialog.h"
 #include "AFScreen.h"
@@ -18,10 +14,10 @@
 
 // Constructor
 //
-AFScreen::AFScreen(Adafruit_GFX& displayRef, uint32_t id, bool useCanvas) : m_display(displayRef), m_id(id) {
+AFScreen::AFScreen(AFDisplayInterface& displayRef, uint32_t id, bool useCanvas) : m_display(displayRef), m_id(id) {
       if (useCanvas) {
             // Create an off-screen buffer matching the display size
-            m_canvas = new GFXcanvas16(m_display.width(), m_display.height());
+            m_canvas = m_display.createCanvas();
       }
 }
 
@@ -149,12 +145,15 @@ void AFScreen::setNeedsFullRedraw() {
 // Clear the screen to the specified color (default from theme)
 //
 void AFScreen::clear(uint16_t color) {
-      Adafruit_GFX* gfx = m_canvas ? (Adafruit_GFX*) m_canvas : &m_display;
+      AFDisplayInterface* gfx = m_canvas ? m_canvas : &m_display;
       gfx->fillScreen(color);
 
       // If using canvas, push to display
       if (m_canvas) {
-            m_display.drawRGBBitmap(0, 0, m_canvas->getBuffer(), m_display.width(), m_display.height());
+            const uint16_t* buf = m_canvas->getCanvasBuffer();
+            if (buf) {
+                  m_display.drawRGBBitmap(0, 0, buf, m_display.width(), m_display.height());
+            }
       }
 }
 
@@ -197,7 +196,7 @@ void AFScreen::draw() {
         m_needsScreenRedraw = false;
     }
 
-    Adafruit_GFX* gfx = m_canvas ? (Adafruit_GFX*) m_canvas : &m_display;
+    AFDisplayInterface* gfx = m_canvas ? m_canvas : &m_display;
 
     // Draw root-level widgets (only dirty ones in non-canvas mode)
     for (auto* w : m_widgets) {
@@ -223,6 +222,9 @@ void AFScreen::draw() {
 
     // If using canvas, push to display
     if (m_canvas) {
-        m_display.drawRGBBitmap(0, 0, m_canvas->getBuffer(), m_display.width(), m_display.height());
+        const uint16_t* buf = m_canvas->getCanvasBuffer();
+        if (buf) {
+            m_display.drawRGBBitmap(0, 0, buf, m_display.width(), m_display.height());
+        }
     }
 }

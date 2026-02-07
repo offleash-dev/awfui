@@ -8,9 +8,6 @@
 //// Copyright (c) 2026 Matt Foster
 //// Licensed under the MIT License. See LICENSE file for details.
 
-#include "AFAdafruitCompat.h"
-#undef swap
-
 #include "AFTheme.h"
 #include "AFWidget.h"
 
@@ -50,7 +47,7 @@ public:
       }
 
       // Drawing
-      void draw(Adafruit_GFX& gfx) override;
+      void draw(AFDisplayInterface& gfx) override;
 
       // Event handling
       void onPress(const AFEvent& e) override;

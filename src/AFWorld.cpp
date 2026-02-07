@@ -5,10 +5,6 @@
 //// Licensed under the MIT License. See LICENSE file for details.
 
 
-#include "AFAdafruitCompat.h"
-
-
-
 #include "AFScreen.h"
 #include "AFWorld.h"
 
@@ -22,7 +18,7 @@ AFWorld* AFWorld::s_instance = nullptr;
 // Initialize the singleton
 // Returns false if already initialized or allocation fails
 //
-bool AFWorld::init(Adafruit_GFX& display, AFTouchInterface* touch) {
+bool AFWorld::init(AFDisplayInterface& display, AFTouchInterface* touch) {
     if (s_instance != nullptr) {
         return false;  // Already initialized
     }
@@ -43,7 +39,7 @@ AFWorld* AFWorld::instance() {
 
 // Private constructor
 //
-AFWorld::AFWorld(Adafruit_GFX& displayRef, AFTouchInterface* touch)
+AFWorld::AFWorld(AFDisplayInterface& displayRef, AFTouchInterface* touch)
     : m_display(displayRef)
     , m_touch(touch)
 {

@@ -5,10 +5,6 @@
 //// Licensed under the MIT License. See LICENSE file for details.
 
 
-#include "AFAdafruitCompat.h"
-
-
-
 #include "AFFullscreenDialog.h"
 #include "AFScreen.h"
 
@@ -30,7 +26,7 @@ AFFullscreenDialog::AFFullscreenDialog(uint32_t id)
 //
 void AFFullscreenDialog::show(AFScreen& screen) {
       // Get screen dimensions and resize to fill
-      Adafruit_GFX& display = screen.getDisplay();
+      AFDisplayInterface& display = screen.getDisplay();
       m_x = 0;
       m_y = 0;
       m_width = display.width();
@@ -44,7 +40,7 @@ void AFFullscreenDialog::show(AFScreen& screen) {
 
 // Draw: fullscreen, no border, simple background
 //
-void AFFullscreenDialog::draw(Adafruit_GFX& gfx) {
+void AFFullscreenDialog::draw(AFDisplayInterface& gfx) {
       if (!m_visible)
             return;
 

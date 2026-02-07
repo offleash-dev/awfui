@@ -10,7 +10,7 @@
 
 #include <stdint.h>
 
-#include "AFAdafruitCompat.h"
+#include "AFDisplayInterface.h"
 
 #include "AFBase.h"
 #include "AFEvent.h"
@@ -22,7 +22,7 @@ public:
     AFWidget(int16_t x, int16_t y, int16_t w, int16_t h, uint32_t id = 0);
     virtual ~AFWidget() = default;
 
-    virtual void draw(Adafruit_GFX& gfx) = 0;
+    virtual void draw(AFDisplayInterface& gfx) = 0;
     virtual bool hitTest(int16_t px, int16_t py) const;
 
 

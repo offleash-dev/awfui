@@ -40,6 +40,7 @@ endif()
 set(AFUI_SOURCES
     src/AFButton.cpp
     src/AFDialog.cpp
+    src/AFDisplayAdafruitGFX.cpp
     src/AFFullscreenDialog.cpp
     src/AFLabel.cpp
     src/AFModalDialog.cpp
@@ -54,6 +55,8 @@ set(AFUI_HEADERS
     include/AFBase.h
     include/AFButton.h
     include/AFDialog.h
+    include/AFDisplayAdafruitGFX.h
+    include/AFDisplayInterface.h
     include/AFEvent.h
     include/AFFt6206Touch.h
     include/AFFullscreenDialog.h

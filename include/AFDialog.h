@@ -26,7 +26,7 @@ public:
 
       AFWidget* childAt(int16_t px, int16_t py);
 
-      virtual void draw(Adafruit_GFX& gfx) override;
+      virtual void draw(AFDisplayInterface& gfx) override;
       virtual void handleEvent(const AFEvent& e);
 
       

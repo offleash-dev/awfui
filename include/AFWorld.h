@@ -11,6 +11,7 @@
 
 #include <etl/vector.h>
 
+#include "AFDisplayInterface.h"
 #include "AFEvent.h"
 #include "AFScreenList.h"
 #include "AFTheme.h"
@@ -22,7 +23,7 @@ class AFWorld {
 public:
     // Singleton access
     // touch is optional - pass nullptr for display-only applications
-    static bool init(Adafruit_GFX& display, AFTouchInterface* touch = nullptr);
+    static bool init(AFDisplayInterface& display, AFTouchInterface* touch = nullptr);
     static AFWorld* instance();
 
     // No copy/move
@@ -40,7 +41,7 @@ public:
     }
 
 
-    Adafruit_GFX& getDisplay() {
+    AFDisplayInterface& getDisplay() {
         return m_display;
     }
 
@@ -63,11 +64,11 @@ public:
 
     
 private:
-    AFWorld(Adafruit_GFX& display, AFTouchInterface* touch);
+    AFWorld(AFDisplayInterface& display, AFTouchInterface* touch);
 
     static AFWorld* s_instance;
 
-    Adafruit_GFX&      m_display;
+    AFDisplayInterface& m_display;
     AFTouchInterface*  m_touch;
     AFTheme            m_theme;
 

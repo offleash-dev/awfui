@@ -5,7 +5,7 @@
 #define SDL_MAIN_HANDLED
 #endif
 
-#include "AFAdafruitCompat.h"
+#include "AFDisplayAdafruitGFX.h"
 
 
 
@@ -34,6 +34,7 @@ AFTouchSDL   touch(2);
 Adafruit_ILI9341 tft;
 #endif
 
+AFDisplayAdafruitGFX display(tft);
 
 AFWorld*       world;
 AFScreen*      mainScreen;
@@ -48,9 +49,9 @@ void setup() {
       tft.setRotation(1);
 
 #ifdef AFUI_USE_SDL
-      AFWorld::init(tft, &touch);
+      AFWorld::init(display, &touch);
 #else
-      AFWorld::init(tft);
+      AFWorld::init(display);
 #endif
       world      = AFWorld::instance();
       mainScreen = world->createScreen(true);

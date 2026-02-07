@@ -62,7 +62,7 @@ void AFButton::setPressedColors(uint16_t bg, uint16_t fg, uint16_t border) {
 
 // Draw the button
 //
-void AFButton::draw(Adafruit_GFX& gfx) {
+void AFButton::draw(AFDisplayInterface& gfx) {
       if (!m_visible)
             return;
 

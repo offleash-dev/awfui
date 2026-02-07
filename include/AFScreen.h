@@ -10,7 +10,7 @@
 
 #include <etl/vector.h>
 
-#include "AFAdafruitCompat.h"
+#include "AFDisplayInterface.h"
 
 #include "AFBase.h"
 #include "AFDialog.h"
@@ -22,7 +22,7 @@
 
 class AFScreen {
 public:
-      AFScreen(Adafruit_GFX& display, uint32_t id = 0, bool useCanvas = false);
+      AFScreen(AFDisplayInterface& display, uint32_t id = 0, bool useCanvas = false);
       virtual ~AFScreen();
 
       void addWidget(AFWidget* w);
@@ -43,7 +43,7 @@ public:
       // Mark all widgets dirty to force a full redraw
       void setNeedsFullRedraw();
 
-      Adafruit_GFX& getDisplay() {
+      AFDisplayInterface& getDisplay() {
             return m_display;
       }
 
@@ -54,8 +54,8 @@ public:
 
       
 private:
-      Adafruit_GFX& m_display;
-      GFXcanvas16*  m_canvas = nullptr;
+      AFDisplayInterface& m_display;
+      AFDisplayInterface*  m_canvas = nullptr;
       bool          m_needsScreenRedraw = false;
       uint32_t      m_id;
 

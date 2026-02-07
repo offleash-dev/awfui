@@ -6,7 +6,6 @@
 
 
 
-#include "AFAdafruitCompat.h"
 #include "AFWorld.h"
 
 #include "AFDialog.h"
@@ -69,7 +68,7 @@ AFWidget* AFDialog::childAt(int16_t px, int16_t py) {
 
 // Draw dialog and children
 //
-void AFDialog::draw(Adafruit_GFX& gfx) {
+void AFDialog::draw(AFDisplayInterface& gfx) {
       if (!m_visible)
             return;
 
