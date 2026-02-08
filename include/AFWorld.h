@@ -51,15 +51,14 @@ public:
     }
 
 
-    // Factory: creates, stores, and returns a new screen
-    // returns nullptr if allocation fails or max screens reached
+    // Factory: creates, stores, and returns a new screen.  Returns nullptr if allocation fails or max screens reached
     AFScreen* createScreen(bool useCanvas = false);
 
     // Accessors for screenList
     void setActiveScreen(AFScreen* screen);
     AFScreen* getActiveScreen();
 
-    // Main UI loop
+    // Main UI loop.  Call from main while loop or UI task
     void loop();
 
     

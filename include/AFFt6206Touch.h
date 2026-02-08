@@ -24,8 +24,7 @@ public:
     }
 
 
-    // Set rotation to match display rotation (0-3)
-    // Also set the panel dimensions in native orientation (before rotation)
+    // Set rotation to match display rotation (0-3) and sets the panel dimensions in native orientation (before rotation)
     void setRotation(uint8_t rotation, int16_t width = 240, int16_t height = 320) {
         m_rotation = rotation % 4;
         m_width = width;

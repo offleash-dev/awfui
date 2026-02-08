@@ -60,7 +60,6 @@ public:
       }
 
 
-      // Drawing
       void draw(AFDisplayInterface& gfx) override;
 
       // Event handling
