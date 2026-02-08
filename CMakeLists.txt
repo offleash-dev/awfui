@@ -43,6 +43,9 @@ set(AFUI_SOURCES
     src/AFDialog.cpp
     src/AFDisplayAdafruitGFX.cpp
     src/AFFullscreenDialog.cpp
+    src/AFImage.cpp
+    src/AFImageWidget.cpp
+    src/AFImageButton.cpp
     src/AFLabel.cpp
     src/AFModalDialog.cpp
     src/AFRadioButton.cpp
@@ -64,6 +67,9 @@ set(AFUI_HEADERS
     include/AFEvent.h
     include/AFFt6206Touch.h
     include/AFFullscreenDialog.h
+    include/AFImage.h
+    include/AFImageWidget.h
+    include/AFImageButton.h
     include/AFLabel.h
     include/AFModalDialog.h
     include/AFRadioButton.h
