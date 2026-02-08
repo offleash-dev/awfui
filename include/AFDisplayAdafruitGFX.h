@@ -30,29 +30,36 @@ public:
         m_gfx.fillScreen(color);
     }
 
+
     void fillRect(int16_t x, int16_t y, int16_t w, int16_t h, uint16_t color) override {
         m_gfx.fillRect(x, y, w, h, color);
     }
+
 
     void drawRect(int16_t x, int16_t y, int16_t w, int16_t h, uint16_t color) override {
         m_gfx.drawRect(x, y, w, h, color);
     }
 
+
     void fillRoundRect(int16_t x, int16_t y, int16_t w, int16_t h, int16_t radius, uint16_t color) override {
         m_gfx.fillRoundRect(x, y, w, h, radius, color);
     }
+
 
     void drawRoundRect(int16_t x, int16_t y, int16_t w, int16_t h, int16_t radius, uint16_t color) override {
         m_gfx.drawRoundRect(x, y, w, h, radius, color);
     }
 
+
     void drawLine(int16_t x0, int16_t y0, int16_t x1, int16_t y1, uint16_t color) override {
         m_gfx.drawLine(x0, y0, x1, y1, color);
     }
 
+
     void drawCircle(int16_t x, int16_t y, int16_t r, uint16_t color) override {
         m_gfx.drawCircle(x, y, r, color);
     }
+
 
     void fillCircle(int16_t x, int16_t y, int16_t r, uint16_t color) override {
         m_gfx.fillCircle(x, y, r, color);
@@ -63,17 +70,21 @@ public:
         m_gfx.setCursor(x, y);
     }
 
+
     void setTextColor(uint16_t color) override {
         m_gfx.setTextColor(color);
     }
+
 
     void setTextSize(uint8_t size) override {
         m_gfx.setTextSize(size);
     }
 
+
     void print(const char* text) override {
         m_gfx.print(text);
     }
+
 
     void getTextBounds(const char* str, int16_t x, int16_t y,
                        int16_t* x1, int16_t* y1,
@@ -95,6 +106,7 @@ public:
     // Access the underlying Adafruit_GFX for backend-specific operations
     Adafruit_GFX& getGFX() { return m_gfx; }
 
+
 private:
     Adafruit_GFX& m_gfx;
 };
@@ -110,6 +122,7 @@ public:
     const uint16_t* getCanvasBuffer() const override {
         return m_canvas.getBuffer();
     }
+
 
 private:
     GFXcanvas16 m_canvas;

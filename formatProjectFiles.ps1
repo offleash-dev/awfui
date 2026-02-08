@@ -229,19 +229,37 @@ function Fix-HeaderSpacing {
 # ---------------------------------------------------------
 #   MAIN DRIVER
 # ---------------------------------------------------------
-Get-ChildItem -Path $Path -Recurse -Include *.cpp, *.h | Where-Object {
-    -not (Is-IgnoredPath $_.FullName)
-} | ForEach-Object {
+Get-ChildItem -Path $Path -Recurse -Include *.cpp, *.h |
+Where-Object { -not (Is-IgnoredPath $_.FullName) } |
+ForEach-Object {
+
     $file = $_.FullName
     Write-Host "Post-format spacing $file"
 
+    # Read original file EXACTLY as-is (preserves CRLF/LF)
+    $original = Get-Content -LiteralPath $file -Raw
+
+    # Read as lines for processing
     $lines = Get-Content -LiteralPath $file
 
+    # Apply your transformations
     if ($file.ToLower().EndsWith(".cpp")) {
         $lines = Fix-CppSpacing $lines
     } elseif ($file.ToLower().EndsWith(".h")) {
         $lines = Fix-HeaderSpacing $lines
     }
 
-    Set-Content -LiteralPath $file -Value $lines
+    # Detect original line ending style
+    $eol =
+        if ($original -match "`r`n") { "`r`n" }
+        elseif ($original -match "`n") { "`n" }
+        else { "`r`n" }
+
+    # Reassemble using original EOL
+    $new = ($lines -join $eol)
+
+    # Only write if content actually changed
+    if ($new -ne $original) {
+        Set-Content -LiteralPath $file -Value $new -NoNewline
+    }
 }

@@ -38,6 +38,7 @@ public:
     void draw(AFDisplayInterface& gfx) override;
     void onClick(const AFEvent& e) override;
 
+
 private:
     friend class AFRadioButtonGroup;
 
