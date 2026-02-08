@@ -74,7 +74,7 @@ void AFCheckbox::draw(AFDisplayInterface& gfx) {
 
       const AFTheme& theme = AFWorld::instance()->getTheme();
       uint8_t radius       = theme.cornerRadius;
-      uint16_t bgColor     = theme.bgColor;
+//      uint16_t bgColor     = theme.bgColor;
       uint16_t boxColor    = theme.bgColor;
       uint16_t checkColor  = theme.accentColor;
       uint16_t borderColor = theme.borderColor;

@@ -49,7 +49,7 @@ private:
     uint16_t    m_dotColor;
     uint16_t    m_labelColor;
 
-    uint8_t     m_radius;
+    uint16_t     m_radius;
     uint8_t     m_textSize = 1;
 
     AFRadioButtonGroup* m_group = nullptr;

@@ -32,8 +32,8 @@ void AFTouchSDL::handleEvent(const SDL_Event& e) {
     switch (e.type) {
         case SDL_MOUSEBUTTONDOWN:
             isDown = true;
-            lastX = e.button.x / scale;
-            lastY = e.button.y / scale;
+            lastX = (int16_t)(e.button.x / scale);
+            lastY = (int16_t)(e.button.y / scale);
             break;
 
         case SDL_MOUSEBUTTONUP:
@@ -42,8 +42,8 @@ void AFTouchSDL::handleEvent(const SDL_Event& e) {
 
         case SDL_MOUSEMOTION:
             if (isDown) {
-                lastX = e.motion.x / scale;
-                lastY = e.motion.y / scale;
+                lastX = (int16_t)(e.motion.x / scale);
+                lastY = (int16_t)(e.motion.y / scale);
             }
             break;
     }

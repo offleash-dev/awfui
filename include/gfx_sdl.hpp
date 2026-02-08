@@ -12,6 +12,7 @@
 
 #include <cstdint>
 
+#include "AFAdafruitCompat.h"
 #include "Adafruit_GFX.h"
 
 
