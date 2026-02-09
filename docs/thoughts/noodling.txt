@@ -1,149 +1,3 @@
-Awfui
-A widget framework for UI/
-A clean, modern, extensible UI layer for Adafruit_GFX
-
-
-
-AFWorld → runtime + event loop
-
-AFScreenList → state machine
-
-AFScreen → root of widget tree + canvas
-
-AFDialog → container widget
-
-AFModalDialog → blocking container
-
-AFFullscreenDialog → full‑screen overlay without canvas
-
-AFWidget → base class for everything
-
-
-
-AFWorld.init(ada_gfx_ptr);  
-sets the default theme*, etc.  
-instantiates the screenManager (a screenlist - screens are outside the widget list)
-manages the event loop
-
-AFWorld.setLayout(horizontal/vertical)
-
-*theme is a:
-fontSize (large, medium, small) or a fixed size?
-colors: screenBackgroundColor, dialogBackgroundColor, dialogBorderColor, widgetBackgroumdColor, widgetBorderColor, widgetTextColor, enabled/disabled versions of each
-padding
-
-
-AFScreen fills the whole screen. AFScreen has an optional AFCanvas accessible.  If available, double buffering happens.
- ├── owns widgets (AFButton, AFLabel, etc.) and/or a dialog  (has a AFWidgetList)
- ├── draws widgets into the canvas (or direct to screen)
- ├── flushes canvas to the display
- └── recieves and dispatches from the event loop
-
- All events originate at the event loop and are dispatched to the current screen:
-    Touch events
-    Hardware button events
-    Keyboard events (future)
-    And the AFScreen decides:
-        If a modal dialog is active → send events there
-        Otherwise → hit-test widgets
-        Otherwise → background behavior
-
-        Hardware event
-        ↓
-        AFScreen (root)
-        ↓
-        Active modal dialog? → Yes → send to modal
-                            → No  → hit-test children
-        ↓
-        AFWidget::handleEvent()
-        ↓
-        onPress / onRelease / onClick / onKey / onButton
-
-
-The screen loop is
-    draw widgets
-    A place to call widget->draw()
-    A place to call widget->handleEvent()
-
-widgets:
-AFWidget(left top width height) etc from which all widgets descend
-    Event model
-    onPress
-    onRelease
-    onClick
-    onKey - for thinking about.  initially there is no keyboard support
-    onButton - well, the STM board has a user button.  this shoudl be allowed for hardware
-    onEvent(button, etc) as an option? does onkey replace this?  is it a shortcut
-
-
-AFDialog - a dialog UI, which is defined for absraction but probably not directly used
-    A dialog is simply:
-    A widget with children
-    A background
-    A border
-    A z-order
-    Optional modal behavior
-    A dialog, if active, recieves all events until focus is lost
-    Optionally dims the background
-    A modal dialog recieves the focus and blocks events to widgets beneath it
-    A non-modal dialog would allow focus to change
-    A dialog can be fullScreen
-
-AFModalDialog - a fixed position/size dialog that takes control of the event loop until dismissed. A modal dialog would always be smaller than the screen?
-AFMovableDialog - modal behavior is false
-AFPanel - an organization (parent?) for widgets eventually layout based, and has local coordinates (oh, then we need localToParent, localToScreen etc)
-AFButton
-AFLabel
-AFTextEdit
-AFMenu
-AFImage
-AFProgressBar
-AFContainer
-    AFDialog
-    AFScreen
-    AFModalDialog
-other widgets
-
-AFLayout - a base layout mechanism.  how elaborate?  
-AFPixelLayout - the first one. has no autolayout
-AFAutoLayout - one day?  
-
-AFWidgetList - a widget tree for a collection of widgets, eg. screen (which is a dialog) has one, each dialog has one
-    has Focus widget (e.g for text to start (we aren't worried about accessility, are we?)
-
-
-Concerns
-accessibility? (really?)
-focus widget (needed for text, tab support)
-widget hierarchy
-images
-AFPanel instead of modeless dialog? (backgroundless)
-
-.............................
-
-
-AFScreens can be switched, maybe with simple animation (grow to?, slide?, fade in/outf?)
-should this apply to dialogs (or differently - dialogs zoom from center out and in?)
-
-Handles touch dispatch
-Uses zero heap unless you want it
-Is display‑agnostic 
-Is small enough for microcontrollers
-
-
-
-Rendering model
-Dirty‑rect redraw
-Full redraw fallback
-Optional double‑buffering
-
-Touch dispatcher
-Hit‑testing
-
-Focus management
-
-
-
 
 -------------------
 // ------------------------------------------------------------
@@ -169,7 +23,7 @@ public:
             }
         }
         return false;
-    }
+    }s
 
     // Topmost dialog hit-test
     AFDialog* hitTest(int16_t x, int16_t y) const {
@@ -194,7 +48,7 @@ private:
 
 
 
-hy a dialog list becomes essential with top/bottom bars
+Why a dialog list becomes essential with top/bottom bars
 Imagine a screen layout like:
 
 Code
@@ -208,23 +62,21 @@ Code
 | [Bottom Bar: nav, status, buttons]   |  ← persistent UI layer
 +--------------------------------------+
 In AwFui terms:
-The top bar is a dialog
-The bottom bar is a dialog
+The top bar is a dialog or panel
+The bottom bar is a dialog or panel
 The main content is either:
 widgets, or
 a custom drawing screen (game, canvas, etc.)
 
 These bars are not modal.
 They are not part of the widget tree.
-They are not children of the main content.
+They are not normal children of the main content.
 
-They are UI layers.
-
-This implies need for a dialog list.
+So maybe this means a need for a dialog list. 
 
 1. They draw above widgets
 Top bar and bottom bar must always be on top.
-Dialogs already draw after widgets.
+Dialogs already draw after screen widgets.
 
 2. They receive events before widgets
 Touch on the top bar should not hit the game canvas.
@@ -239,13 +91,13 @@ You can switch screens and keep the bars consistent.
 5. They can be themed separately
 Bars often have different colors, fonts, padding.
 
-6. They can be animated
-Slide in/out, fade, resize — dialogs support this naturally.
+6. They could be animated.  Uh, really, but nice to have
+Slide in/out, fade, resize — 
 
 
-When you have multiple persistent dialogs, you suddenly need:
+When you have multiple persistent dialogs, you need:
 
-1. Z‑ordering
+1. Z‑ordering for drawing and events
 Top bar above bottom bar?
 Bottom bar above floating toolbar?
 DialogList can manage:
@@ -253,61 +105,38 @@ bringToFront
 sendToBack
 layering rules
 
-2. Hit‑testing priority
-Top bar should intercept touches before bottom bar.
-DialogList can encapsulate:
-dialogList.hitTest(x, y)
-
-3. Layout helpers
-You might want:
-dockTop(dialog)
-dockBottom(dialog)
-dockLeft(dialog)
-dockRight(dialog)
-
-This belongs in DialogList, not AFScreen.
-
-4. Persistent vs transient dialogs
-DialogList can track:
-persistent bars
-temporary overlays
-modal dialogs (separate path)
-
-5. Event routing rules
 DialogList can handle:
 pointer capture
 focus
 keyboard routing (future)
 
-Animation and transitions would probably need AFDialogList for
-slide‑in top bar
-fade‑in bottom bar
-animated toolbars
+DialogList can track:
+persistent bars
+temporary overlays
+modal dialogs (separate path or order list with top z order at front of list)
 
+2. Hit‑testing priority
+Does the top bar get touches before bottom bar?  And eventually one has focus, so the panel has focus.
+DialogList can encapsulate:
+dialogList.hitTest(x, y)
 
-Awfui doesn't need DialogList today, but it will when we add:
-top bars
-bottom bars
-side panels
-floating toolbars
-HUD overlays
+3. Layout helpers
+dockTop(dialog)
+dockBottom(dialog)
+dockLeft(dialog)
+dockRight(dialog)
 
+Does this belong in DialogList or AFScreen (as a helper? suggesting coorindates).
+
+4. When we have dialogs/panels
 AFScreen becomes cleaner:
 dialogList.draw(gfx);
 dialogList.handleEvent(e);
 Instead of manually iterating.
 
-As soon as a screen has multiple persistent UI layers (like a top bar and bottom bar), a dedicated DialogList becomes the right abstraction.
-
-It gives you:
-layering
-hit‑testing
-focus
-docking
-animations
-clean event routing
-
 AwFui is already structured to grow into this naturally — you’re just seeing the next layer of the architecture before you need it.
+
+
 
 
 

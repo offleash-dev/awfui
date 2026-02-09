@@ -358,7 +358,10 @@ Stored in AFWorld and inherited by screens/widgets unless overridden.
 The initial widgets are:
 
 - AFButton, AFLabel
-- Additional widgets possible with the initial architecture:   AFSpinButton, AFCheckbox, AFRadioButton, AFMenu, AFImage, AFProgressBar
+-  AFCheckbox, AFRadioButton
+- AFImageWidget
+- AFImageButton
+- Additional widgets possible with the initial architecture:   AFSpinButton,, AFMenu, , AFProgressBar
 
 
 
