@@ -13,7 +13,7 @@
 
 // Constructor
 //
-AFModalDialog::AFModalDialog(int16_t x, int16_t y, int16_t w, int16_t h, uint32_t id) : AFDialog(x, y, w, h, id) {
+AFModalDialog::AFModalDialog(int16_t x, int16_t y, int16_t w, int16_t h, uint32_t id) : AFPanel(x, y, w, h, id) {
       // Modal dialogs are visible by default
       m_visible = true;
 }

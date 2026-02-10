@@ -5,7 +5,7 @@
 //// Licensed under the MIT License. See LICENSE file for details.
 
 
-#include "AFDialog.h"
+#include "AFPanel.h"
 #include "AFModalDialog.h"
 #include "AFScreen.h"
 #include "AFWorld.h"
@@ -45,12 +45,12 @@ void AFScreen::addWidget(AFWidget* w) {
 
 
 
-// Add a non-modal dialog
+// Add a panel
 //
-void AFScreen::addDialog(AFDialog* d) {
-      if (!m_dialogs.full()) {
-            m_dialogs.push_back(d);
-            d->m_parent = nullptr;
+void AFScreen::addPanel(AFPanel* p) {
+      if (!m_panels.full()) {
+            m_panels.push_back(p);
+            p->m_parent = nullptr;
       }
 }
 
@@ -73,8 +73,8 @@ void AFScreen::dismissModal(AFModalDialog* d) {
             for (auto* w : m_widgets) {
                   w->markDirty();
             }
-            for (auto* dlg : m_dialogs) {
-                  dlg->markDirty();
+            for (auto* p : m_panels) {
+                  p->markDirty();
             }
 
             m_needsScreenRedraw = true;
@@ -92,11 +92,11 @@ void AFScreen::handleEvent(const AFEvent& e) {
             return;
       }
 
-      // First route to dialogs (topmost last)
-      for (int i = static_cast<int>(m_dialogs.size()) - 1; i >= 0; --i) {
-            AFDialog* d = m_dialogs[i];
-            if (d->isVisible() && d->hitTest(e.x, e.y)) {
-                  d->handleEvent(e);
+      // First route to panels (topmost last)
+      for (int i = static_cast<int>(m_panels.size()) - 1; i >= 0; --i) {
+            AFPanel* p = m_panels[i];
+            if (p->isVisible() && p->hitTest(e.x, e.y)) {
+                  p->handleEvent(e);
                   return;
             }
       }
@@ -132,8 +132,8 @@ void AFScreen::setNeedsFullRedraw() {
       for (auto* w : m_widgets) {
             w->markDirty();
       }
-      for (auto* d : m_dialogs) {
-            d->markDirty();
+      for (auto* p : m_panels) {
+            p->markDirty();
       }
       if (m_activeModal) {
             m_activeModal->markDirty();
@@ -170,8 +170,8 @@ bool AFScreen::needsRedraw() const {
             return true;
         }
     }
-    for (auto* d : m_dialogs) {
-        if (d->isVisible() && d->isDirty()) {
+    for (auto* p : m_panels) {
+        if (p->isVisible() && p->isDirty()) {
             return true;
         }
     }
@@ -206,11 +206,11 @@ void AFScreen::draw() {
         }
     }
 
-    // Draw dialogs
-    for (auto* d : m_dialogs) {
-        if (d->isVisible() && d->isDirty()) {
-            d->draw(*gfx);
-            d->clearDirty();
+    // Draw panels
+    for (auto* p : m_panels) {
+        if (p->isVisible() && p->isDirty()) {
+            p->draw(*gfx);
+            p->clearDirty();
         }
     }
 

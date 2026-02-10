@@ -34,7 +34,7 @@ public:
 
 
 private:
-    AFRadioButton* m_buttons[MAX_WIDGETS_PER_DIALOG];
+    AFRadioButton* m_buttons[MAX_WIDGETS_PER_PANEL];
     uint8_t        m_count = 0;
 
     AFRadioButton* m_selected = nullptr;

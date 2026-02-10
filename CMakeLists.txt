@@ -40,8 +40,7 @@ endif()
 set(AFUI_SOURCES
     src/AFButton.cpp
     src/AFCheckbox.cpp
-    src/AFDialog.cpp
-    src/AFDisplayAdafruitGFX.cpp
+    src/AFPanel.cpp
     src/AFFullscreenDialog.cpp
     src/AFImage.cpp
     src/AFImageWidget.cpp
@@ -57,15 +56,12 @@ set(AFUI_SOURCES
 )
 
 set(AFUI_HEADERS
-    include/AFAdafruitCompat.h
     include/AFBase.h
     include/AFButton.h
     include/AFCheckbox.h
-    include/AFDialog.h
-    include/AFDisplayAdafruitGFX.h
+    include/AFPanel.h
     include/AFDisplayInterface.h
     include/AFEvent.h
-    include/AFFt6206Touch.h
     include/AFFullscreenDialog.h
     include/AFImage.h
     include/AFImageWidget.h
@@ -84,18 +80,32 @@ set(AFUI_HEADERS
 )
 
 # -----------------------------------------------------------------------------
+# Adafruit backend sources (display + touch for Adafruit_GFX-based drivers)
+# -----------------------------------------------------------------------------
+set(AFUI_ADAFRUIT_SOURCES
+    backends/adafruit/AFDisplayAdafruitGFX.cpp
+)
+set(AFUI_ADAFRUIT_HEADERS
+    backends/adafruit/AFAdafruitCompat.h
+    backends/adafruit/AFDisplayAdafruitGFX.h
+    backends/adafruit/AFFt6206Touch.h
+)
+list(APPEND AFUI_SOURCES ${AFUI_ADAFRUIT_SOURCES})
+list(APPEND AFUI_HEADERS ${AFUI_ADAFRUIT_HEADERS})
+
+# -----------------------------------------------------------------------------
 # SDL backend sources (optional)
 # -----------------------------------------------------------------------------
 if(AFUI_USE_SDL)
     set(AFUI_SDL_SOURCES
-        src/gfx_sdl.cpp
-        src/AFTouchSDL.cpp
+        backends/sdl/gfx_sdl.cpp
+        backends/sdl/AFTouchSDL.cpp
         # Adafruit_GFX source - needed for SDL builds (embedded builds link the full library)
         ${CMAKE_CURRENT_SOURCE_DIR}/../Drivers/Adafruit/Adafruit-GFX/Adafruit_GFX.cpp
     )
     set(AFUI_SDL_HEADERS
-        include/gfx_sdl.hpp
-        include/AFTouchSDL.h
+        backends/sdl/gfx_sdl.hpp
+        backends/sdl/AFTouchSDL.h
     )
     list(APPEND AFUI_SOURCES ${AFUI_SDL_SOURCES})
     list(APPEND AFUI_HEADERS ${AFUI_SDL_HEADERS})
@@ -109,8 +119,15 @@ add_library(afui STATIC ${AFUI_SOURCES} ${AFUI_HEADERS})
 target_include_directories(afui
     PUBLIC
         $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+        $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/backends/adafruit>
         $<INSTALL_INTERFACE:include>
 )
+
+if(AFUI_USE_SDL)
+    target_include_directories(afui
+        PUBLIC $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/backends/sdl>
+    )
+endif()
 
 # -----------------------------------------------------------------------------
 # Dependencies

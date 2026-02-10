@@ -13,7 +13,7 @@
 #include "AFDisplayInterface.h"
 
 #include "AFBase.h"
-#include "AFDialog.h"
+#include "AFPanel.h"
 #include "AFEvent.h"
 #include "AFModalDialog.h"
 #include "AFWidget.h"
@@ -26,7 +26,7 @@ public:
       virtual ~AFScreen();
 
       void addWidget(AFWidget* w);
-      void addDialog(AFDialog* d);
+      void addPanel(AFPanel* p);
 
       void showModal(AFModalDialog* d);
       void dismissModal(AFModalDialog* d);
@@ -59,7 +59,7 @@ private:
       bool          m_needsScreenRedraw = false;
       uint32_t      m_id;
 
-      etl::vector<AFWidget*, MAX_WIDGETS_PER_DIALOG> m_widgets;
-      etl::vector<AFDialog*, MAX_DIALOGS_PER_SCREEN> m_dialogs;
+      etl::vector<AFWidget*, MAX_WIDGETS_PER_SCREEN> m_widgets;
+      etl::vector<AFPanel*, MAX_DIALOGS_PER_SCREEN> m_panels;
       AFModalDialog*                                 m_activeModal = nullptr;
 };

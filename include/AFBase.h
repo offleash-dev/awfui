@@ -20,7 +20,7 @@
 #include "AFVersion.h"
 
 
-constexpr size_t MAX_WIDGETS_PER_DIALOG = 32;
+constexpr size_t MAX_WIDGETS_PER_PANEL  = 32;
 constexpr size_t MAX_WIDGETS_PER_SCREEN = 32;
 constexpr size_t MAX_DIALOGS_PER_SCREEN = 8;
 constexpr size_t MAX_SCREENS_PER_WORLD  = 8;

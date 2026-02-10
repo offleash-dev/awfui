@@ -138,6 +138,6 @@ protected:
     AFWidget* m_parent  = nullptr;
     AFJustification m_justification = AFJustificationCenter;
 
-    friend class AFDialog;
+    friend class AFPanel;
     friend class AFScreen;
 };

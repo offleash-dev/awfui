@@ -12,14 +12,14 @@
 
 
 AFRadioButtonGroup::AFRadioButtonGroup() {
-    for (uint8_t i = 0; i < MAX_WIDGETS_PER_DIALOG; ++i)
+    for (uint8_t i = 0; i < MAX_WIDGETS_PER_PANEL; ++i)
         m_buttons[i] = nullptr;
 }
 
 
 
 bool AFRadioButtonGroup::addButton(AFRadioButton* btn) {
-    if (m_count >= MAX_WIDGETS_PER_DIALOG)
+    if (m_count >= MAX_WIDGETS_PER_PANEL)
         return false;
 
     m_buttons[m_count++] = btn;
