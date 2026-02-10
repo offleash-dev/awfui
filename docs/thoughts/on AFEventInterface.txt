@@ -1,0 +1,83 @@
+AFEventInterface - Hardware Event Abstraction
+==============================================
+
+Problem: AFWorld currently only knows about touch (AFTouchInterface).  For GPIO
+buttons, rotary encoders, gamepads, UART keyboards, or any other custom input
+source, there's no way to inject events without modifying AFWorld.
+
+Idea: A single event queue that external sources push into.  AFWorld drains it
+each loop iteration alongside the touch poll.  AWFUI doesn't need to know about
+each source — it just sees AFEvents.
+
+AFEvent would gain a custom event type and a small payload:
+
+    // addition to AFEventType enum
+    kCustom
+
+    // additions to AFEvent struct
+    uint16_t customType;    // application-defined sub-type (e.g. kGamepadA, kEncoderCW)
+    int32_t  customData;    // application-defined payload
+
+The interface itself is minimal — just a fixed-size queue:
+
+    class AFEventInterface {
+    public:
+        virtual ~AFEventInterface() = default;
+
+        // Called by AFWorld each loop iteration
+        virtual bool hasEvent() const = 0;
+        virtual AFEvent nextEvent() = 0;
+
+        // Called by external code (ISR, RTOS task, etc.)
+        virtual bool postEvent(const AFEvent& e) = 0;
+    };
+
+A concrete implementation would use an etl::queue internally:
+
+    class AFEventQueue : public AFEventInterface {
+    public:
+        bool hasEvent() const override { return !m_queue.empty(); }
+
+        AFEvent nextEvent() override {
+            AFEvent e = m_queue.front();
+            m_queue.pop();
+            return e;
+        }
+
+        bool postEvent(const AFEvent& e) override {
+            if (m_queue.full()) return false;
+            m_queue.push(e);
+            return true;
+        }
+
+    private:
+        etl::queue<AFEvent, 8> m_queue;
+    };
+
+Usage from an STM32 GPIO ISR or RTOS task:
+
+    AFEventQueue eventQueue;
+
+    // In GPIO callback or button-polling task:
+    AFEvent e{};
+    e.type = AFEventType::kCustom;
+    e.customType = kGamepadA;
+    e.customData = 1;
+    eventQueue.postEvent(e);
+
+    // At init:
+    AFWorld::init(display, &touch, &eventQueue);
+
+AFWorld::loop() would drain the queue after polling touch:
+
+    while (m_eventSource && m_eventSource->hasEvent()) {
+        AFEvent e = m_eventSource->nextEvent();
+        activeScreen->handleEvent(e);
+    }
+
+Notes:
+- One queue, many producers.  The queue doesn't care who posts.
+- For RTOS, the concrete implementation could add a mutex around push/pop.
+- Queue size of 8 is a starting point.  Configurable via template or constant.
+- kCustom events flow through the same dispatch path as touch events.
+  Widgets that care about custom events override onButton() or a new onCustom().
