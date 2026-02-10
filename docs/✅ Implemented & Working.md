@@ -28,7 +28,7 @@ Comparison of Spec vs Implementation:
 
 | Component          | Spec                                        | Status                  |
 | :----------------- | :------------------------------------------ | :---------------------- |
-| AFDialog           | Container widget, routes events to children | ⚠️ Code exists, untested |
+| AFPanel            | Container widget, routes events to children | ⚠️ Code exists, untested |
 | AFFullscreenDialog | Full-screen modal                           | ⚠️ Code exists, untested |
 
 ------

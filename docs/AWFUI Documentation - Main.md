@@ -1,37 +1,34 @@
 ## Welcome!
 
-AWFUI (AwFui, pronounce awww fooey) is a lightweight, object oriented, embedded‑friendly UI framework originally built on top of **Adafruit_GFX**, which I was given for a class.  I soon discovered the Adafruit library was pretty minimal, basically drawing primitives.  I spent many years working in proprietary and open frameworks and was dismayed.  Web searches offered nothing better.  So, AWFUI started as a framework with a button and a label with a plan to make it more complete.  But not too complete - it is intended for embedded, so all additions are made with an eye toward keeping it small.  In the first release, it provides a consistent widget model, a screen/state system, dialogs and modal overlays, an event model with C callbacks, and images.  Pretty good.  It's a static library, so a good compiler will trim what you don't use, always thinking small.  There are abstractions for the screen and touch so that other hardware (TFT_eSPI?) could be supported (the idea is that any drawPixel() based libraries could be used).  
+AWFUI (AwFui, pronounce awww fooey) is a lightweight, object oriented, embedded‑friendly UI framework originally built on top of **Adafruit_GFX**, which I was given for a class.  I quickly discovered the Adafruit library was pretty minimal, basically drawing primitives.  Having spent many years working in proprietary and open frameworks, I was dismayed.  Web searches offered nothing better.  So, AWFUI started as a framework with a button and a label and a plan to make it more complete.  
 
-There are prettier frameworks out there, but they are larger and you would probably build something beautiful with them using a big step up in hardware.  I look at them with a little envy, but AWFUI is intend for a different environment.  The framework avoids heavy dependencies and is suitable for STM32, RP2040, ESP32, and similar MCUs. It is designed for RTOS environments but works without one. It will hopefully help you get started in embedded and RTOS, allowing you to have pleasant UI development experience.
+But not too complete - it is intended for embedded, so all additions are made with an eye toward keeping it small.  In the first release, it provides a consistent widget model, a screen/state system, dialogs and modal overlays, an event model with C callbacks, and images.  Pretty good.  It's a static library, so a good compiler will trim what you don't use, always thinking small.  There are abstractions for the screen and touch so that other hardware (TFT_eSPI?) could be supported (the idea is that any drawPixel() based libraries could be used).  It has a SDL based simulator to simplify development.
 
-Version 1 is for click and react widgets and intentionally lacks concepts like layered UI and widget focus.  Maybe version 2 adds those.  Same thing for double‑buffering via a full‑screen canvas for a screen, which could reduce flash.  It would be cool to have some UI transitions so that it could be used with a game.  You might see references to these ideas in the headers. That was me thinking out loud, planning (and hopefully accommodating) the future.
+The goal is simple: a UI framework that feels familiar, stays tiny, avoids heavy dependencies. There are prettier frameworks out there, but they are larger and useful for build something amazing with a big step up in hardware.  I look at them with a little envy, but AWFUI is intend for a different environment.  The framework avoids heavy dependencies and is suitable for STM32, RP2040, ESP32, and similar MCUs. It is designed for RTOS environments but works without one.
+
+Version 1 is for click and react widgets and intentionally lacks concepts like layered UI and widget focus. See the [Futures](AWFUI%20Documentation%20-%20Futures.md) document for what might come next.  References to these ideas in the headers is just early thinking out loud anticipating the future.
 
 For now, enjoy.
 
 **The Name**
 
-AWFUI could, I guess, stand for 'a widget-set for user interfaces'.  Because of the Adafruit connection it started as AFUI, but with the hardware abstraction layer, AWFUI is more appropriate.  Really, though, I found some humor in pronouncing it aw...fooey. 
+AWFUI could stand for 'a widget-set for user interfaces', but that is forcing an acronym on some letters.  Because of the Adafruit connection it started as AFUI, but with the hardware abstraction layer, AWFUI is more appropriate.  Really, though, there is  just some humor in pronouncing it aw...fooey. 
+
+
 
 ## Overview
 
-AWFUI is a collection of UI objects.  If you've used any UI library, you will have a pretty good idea of how it works.  The key concepts are:
+AWFUI is a collection of UI objects arranged in a familiar hierarchy.  If you've used any UI library, you will have a pretty good idea of how it works.  The key concepts are:
 
-AWFUI Foundations and Widgets
+#### AWFUI Foundations and Containers
 
-​	Consistent coordinates: all widgets use upper‑left origin.  Rotation is supported.
+- **AFWorld** — a singleton that owns the runtime (e.g., the screen and it's interfaces), theme, and event loop. 
+- **AFScreenList** — manages screens, including tracking the active one.
+- **AFScreen** — Root container for one "page" of your UI. Owns widgets, panels (dialogs), and optional canvas. 
 
-	Foundations: 
-		AFWorld: top‑level runtime and event loop
-
-​	AFScreenList: manages screens and active screen selection
-
-​	AFScreen: root of a widget tree for a given app state
-
-Widgets
-
-​	AFWidget: base class for all UI elements
-
-​	AFDialog / AFModalDialog / AFFullscreenDialog: container widgets with different behavior
+- **AFPanel** — a container widget that holds child widgets, draws a background, and routes events to its children.
+- **AFModalDialog** — a panel that captures all input until dismissed. Inherits from AFPanel.
+- **AFFullscreenDialog** — a modal that auto-sizes to fill the screen. Inherits from AFModalDialog.
 
 ```
 AFWorld
@@ -39,50 +36,32 @@ AFWorld
  └── AFScreenList
        └── AFScreen
              ├── Canvas	
-             └── Widgets
-                   ├── Dialogs
+             ├── Widgets
+             └── Panels/Dialogs
                         └── Widgets
-                   ├── Modal Dialog (optional)
-                   └── Fullscreen Dialog (optional)
 ```
 
-AFWorld owns the runtime, theme, and event loop. 
+#### Widgets
 
-AFScreenList manages screens, which are containers for your UI.
+Widgets are individual elements of a visual user interface. The can be for display, like a label, or interactive, like a check box.
 
-AFScreen owns widgets, dialogs, and optional canvas. 
+​	AFWidget: base class for all UI elements
 
-AFDialogs and AFWidgets form a tree of UI elements.
+​		Widget implementations (e.g. AFPushButton, AFImageWidget)
 
-There is a clear separation of:
+#### Separation of Responsibilities
 
-​	Application state (AFScreen)
+\- Application state → AFScreen
 
-​	Overlays (AFDialog, AFModalDialog, AFFullscreenDialog)
+\- Overlays → AFDialog, AFModalDialog, AFFullscreenDialog
 
-​	Elements (AFWidget and descendants)
+\- Elements → AFWidget and descendants
+
+
 
 ## Memory
 
-Strings in AWFUI 
-String lifetime management is the application's responsibility.
-
-AFButton, AFLabel, and similar widgets store const char* pointers. This means:
-    The widget doesn't own the string
-    The string must outlive the widget
-    The caller is responsible for keeping the string valid
-
-So, best practices are:
-    Use string literals where possible
-    Define constants at file/class scope: static const char* kButtonLabels[] = {"OK", "Cancel", "Apply"};
-    For dynamic text (like sensor readings), maintain a buffer that outlives the widget
-    Never pass temporary string objects
-
-Again, string lifetime management is the application's responsibility.
-
-
-
-AWFUI does not manage memory for widgets. Instead, widgets are typically created on the stack and registered with a screen or dialog. Screens are long‑lived objects, while dialogs are usually temporary.
+AWFUI avoids dynamic allocation. Widgets are created by the application and registered with screens or dialogs. AWFUI stores non‑owning pointers and never frees widget memory. 
 
 - **Screens** persist for the lifetime of the application. Widgets added to a screen should therefore also be long‑lived (often static or global).
 - **Dialogs** are temporary. Widgets created inside a function and added to a dialog will be destroyed automatically when the dialog goes out of scope.
@@ -91,182 +70,205 @@ AWFUI stores **non‑owning pointers** to widgets. It never allocates or frees w
 
 This design avoids dynamic allocation, garbage collection, and complex ownership models, making AWFUI predictable and safe for embedded systems.
 
+### Strings in AWFUI 
+
+Widgets like AFButton and AFLabel store `const char*` pointers — they do not copy the string. The caller must keep the string valid for the widget's lifetime.
+
+**Safe:**
+
+```cpp
+button.setLabel("OK");                          // string literal — lives forever
+static const char* kLabels[] = {"OK", "Cancel"};
+button.setLabel(kLabels[0]);                    // static storage — fine
+```
+
+**Unsafe:**
+
+```cpp
+button.setLabel(String("OK").c_str());          // temporary — dangling pointer
+```
+
+For dynamic text (sensor readings, etc.), maintain a buffer that outlives the widget.
+
+So, best practices are:
+
+- ​    Use string literals where possible
+- ​    Define constants at file/class scope: static const char* kButtonLabels[] = {"OK", "Cancel", "Apply"};
+- ​    For dynamic text (like sensor readings), maintain a buffer that outlives the widget
+- ​    Never pass temporary string objects
+
+### Images
+
+Images are embedded in the application code - there is no formal resource manager.  The image pixels are drawn on the screen directly from the in coded image in memory.
+
+
+
 ## Events
 
-	4.2 Flow
-AFWorld polls hardware → builds AFEvent
+AWFUI uses an explicit event loop with no hidden blocking.
 
-AFWorld → activeScreen->handleEvent(e)
+### AFEvent
 
-AFScreen:
+Represents a hardware or logical event.
 
-If activeModal → send to modal
+```cpp
+enum class AFEventType { kNone, kTouchDown, kTouchUp, kTouchMove, kButton, kKey, kTimer };
 
-Else → hit‑test dialogs/widgets
+struct AFEvent {
+    AFEventType type;
+    int16_t     x, y;         // touch coordinates
+    uint8_t     buttonId;     // hardware button
+    uint16_t    keycode;      // keyboard (future)
+    uint32_t    timestamp;
+};
+```
 
-AFWidget receives event via onPress/onRelease/onClick/...
+### Event Flow
+
+1. `AFWorld::loop()` polls hardware and builds an `AFEvent`.
+2. The event is sent to the active screen via `AFScreen::handleEvent()`.
+3. The screen decides where it goes:
+   - If a modal dialog is active → the modal gets the event exclusively.
+   - Otherwise → hit-test panels, then root-level widgets.
+4. The widget receives the event through virtual handlers: `onPress()`, `onRelease()`, `onClick()`, `onKey()`, `onButton()`.
+5. If a callback is registered (e.g., `setOnClickCallback()`), it fires.
+
+### Callbacks
+
+allbacks are plain C function pointers. No `std::function`, no lambdas, no allocations.
+
+```cpp
+void onOkClicked() {
+    // handle it
+}
+
+okButton.setOnClickCallback(onOkClicked);
+```
 
 
 
 ## Themes
 
-​	shared colors, fonts, spacing, etc.
+`AFTheme` is a simple struct of shared colors and metrics. Set it once on `AFWorld` and all widgets pick it up.
 
-## 5. Event Model
-
-Explicit event loop** — no hidden blocking.
-
-AFScreen fills the whole screen.
- └── recieves and dispatches from the event loop
-
- All events originate at the event loop and are dispatched to the current screen:
-    Touch events
-    Hardware button events
-    Keyboard events (future)
-    And the AFScreen decides:
-        If a modal dialog is active → send events there
-        Otherwise → hit-test widgets
-        Otherwise → background behavior
-
-        Hardware event
-        ↓
-        AFScreen (root)
-        ↓
-        Active modal dialog? → Yes → send to modal
-                            → No  → hit-test children
-        ↓
-        AFWidget::handleEvent()
-        ↓
-        onPress / onRelease / onClick / onKey / onButton
-
-### 5.1 AFEvent
-
-Represents a hardware or logical event.
-
-**Fields**
-
-```
-enum class Type { TouchDown, TouchUp, TouchMove, Button, Key, Timer };
-
-Type type;
-int16_t x, y;        // touch
-uint8_t buttonId;    // hardware button
-uint16_t keycode;    // keyboard (future)
-uint32_t timestamp;
+```cpp
+struct AFTheme {
+    uint16_t screenBgColor;
+    uint16_t textColor;
+    uint16_t bgColor, fgColor;
+    uint16_t disabledFgColor, disabledBgColor;
+    uint16_t accentColor;
+    uint16_t borderColor;
+    uint8_t  padding;
+    uint8_t  cornerRadius;
+};
 ```
 
+Widgets that are disabled draw using `disabledFgColor` and `disabledBgColor` automatically.
 
 
-### 5.2 Event Flow
-
-1. **AFWorld** polls hardware → builds `AFEvent`
-2. AFWorld → `activeScreen->handleEvent(e)`
-3. **AFScreen** dispatch:
-   - If modal dialog active → send to modal
-   - Else → hit‑test dialogs
-   - Else → hit‑test widgets
-4. **AFWidget** receives event via virtual handlers
-5. host receives event via supplied (e. onClick)
 
 ## Drawing
 
-AFScreen fills the whole screen. AFScreen has an optional AFCanvas accessible.  If available, double buffering happens.
- ├── owns widgets (AFButton, AFLabel, etc.) and/or a dialog  (has a AFWidgetList)
- ├── draws widgets into the canvas (or direct to screen)
+#### Two Modes
+
+- **Direct mode** — widgets draw straight to the display. Simple, no extra RAM.  This is currently the only mode
+- **Canvas mode** — widgets draw to an offscreen buffer, which is then flushed to the display in one
+  operation. Smoother, but costs a full-screen buffer of RAM.  This is planned.
+
+Canvas mode is enabled per-screen when you create it via `AFWorld::createScreen(true)`.
+
+#### Dirty Tracking
+
+Each widget has a dirty flag. `AFScreen::draw()` only redraws widgets that are marked dirty. Calling `markDirty()` on a widget (or changing its state via setters) schedules it for the next draw pass.
+
+AFScreen has an optional AFCanvas accessible.  If available, double buffering happens.
+ ├── draws widgets into the canvas
  └── flushes canvas to the display
 
-### 6.1 AFScreen::draw()
+#### Canvases
 
-AFScreen has two  drawing modes:
+An offscreen buffer can take a big chunk of memory.  If using the canvas, be aware that:
 
-**Canvas mode**
+- One full-screen canvas at most, owned by AFScreen.
 
-- An offscreen buffer for smooth rendering
-- Clear canvas
-- Draw widgets/dialogs into canvas
-- Flush canvas to display
+- Panels and widgets do not allocate canvases.
 
-**Direct mode**
+- AFFullscreenDialog reuses the screen's canvas.
 
-- Draw widgets/dialogs directly to display
-
-
-
-### 6.2 Redraw Strategy
-
-**Deterministic rendering** — full redraw initially; dirty‑rect later.
-
-**Single‑canvas model** — at most one full‑screen canvas per screen.
-
-Initial version:
-
-- Full redraw each frame
-
-Future:
-
-- Per‑widget `needsRedraw`
-
-- Dirty‑rect tracking
+- Screen transitions, if required, must be requested at startup to guaranteed use of an extra buffering, pre-allocated screen.
 
   
 
-AFScreen::draw():
-
-If canvas:
-
-Clear canvas
-
-Draw widgets/dialogs into canvas
-
-Flush canvas to display
-
-Else:
-
-Draw widgets/dialogs directly to display
-
-Optional:
-
-Dirty‑rect tracking later
-
-Simple “needsRedraw” flag per widget/screen initially
-
-
-
 ## Using AWFUI
 
-C++ Use
+### Minimal Example
 
-AWFUI uses C++, but it does so in a most minimal way.  There are many valuable C++ language features, but they are not all compatible with generating a small embeddable binary.  You can choose to disregard AWFUI's choices in your own code, but you should be aware for compatibility that AWFUI follows these two rules to reduce compiled size
+Integrating and using AWFUI is straight forward.
 
-- **No STL** — use ETL containers.
-- **No exceptions** — return `bool`, `nullptr`, or an `AFResult` enum.
+```cpp
+#include "AFWorld.h"
+#include "AFDisplayAdafruitGFX.h"
+#include "AFButton.h"
+
+// Wrap your display
+AFDisplayAdafruitGFX display(tft);
+
+void setup() {
+    AFWorld::init(display, &touch);
+
+    AFWorld* world = AFWorld::instance();
+    AFScreen* screen = world->createScreen();
+    world->setActiveScreen(screen);
+
+    static AFButton okBtn(10, 10, 100, 40, 0, "OK");
+    okBtn.setOnClickCallback([]() { /* ... */ });
+    screen->addWidget(&okBtn);
+}
+
+void loop() {
+    AFWorld::instance()->loop();
+}
+```
 
 
-​	Memory Model
 
-- Only one full‑screen canvas active at a time (owned by AFScreen)
-- Dialogs and widgets do not allocate canvases
-- AFFullscreenDialog reuses the screen’s canvas
-- Screens are long‑lived; dialogs/widgets may be dynamic
-- Screen transitions, if required, must be requested at startup to guaranteed use of an extra buffering, pre-allocated screen.
+#### C++ Use
 
-Examples
+AWFUI uses C++, but it does so in a most minimal way.  There are many valuable C++ language features, but they are not all compatible with generating a small embeddable binary.  Y
+
+- **No STL** — ETL containers are used instead.
+- **No exceptions** — functions return `bool`, `nullptr`, or an `AFResult` enum.
+- **No RTTI** — disabled to save space.
+
+You are free to use whatever you like in your own code, but be aware of these choices for compatibility.
 
 ​	
 
-With and RTOS
+## Using with an RTOS
 
-​		RTOS‑friendly: explicit event loop, no hidden blocking
+`AFWorld::loop()` is designed to be called from a dedicated UI task. Keep these rules in mind:
 
-6. RTOS considerations
-AFWorld::loop() is called from a dedicated UI task
+- No blocking calls inside widgets or callbacks.
 
-​	No blocking calls inside widgets
+- Hardware input can be polled in the UI task, or posted into a queue that the UI task drains into `AFEvent` structs.
 
-​	Hardware input can be:	
+- Screen transitions and modal show/dismiss are synchronous from the UI task's perspective.
 
-​		Polled in UI task, or
+- Hardware input can be:	
 
-​		Posted into a queue that UI task drains into AFEvents
+  - Polled in UI task, or
 
-​		Screen transitions and dialog show/dismiss are synchronous from the UI task’s perspective
+
+  - Posted into a queue that UI task drains into AFEvents
+
+
+  - Screen transitions and dialog show/dismiss are synchronous from the UI task’s perspective
+
+
+
+## Related Documents
+
+- [Widgets](AWFUI%20Documentation%20-%20Widgets.md) — class-by-class reference
+- [Futures](AWFUI%20Documentation%20-%20Futures.md) — what's missing and what might come next
+- [Developing](AWFUI%20Documentation%20-%20Developing.md) — conventions for contributors
