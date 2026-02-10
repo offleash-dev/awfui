@@ -1,5 +1,5 @@
-//// AFDialog.cpp
-//// Implementation of the AWFUI dialog widget.
+//// AFPanel.cpp
+//// Implementation of the AWFUI panel widget.
 ////
 //// Copyright (c) 2026 Matt Foster
 //// Licensed under the MIT License. See LICENSE file for details.
@@ -7,23 +7,26 @@
 
 
 #include "AFWorld.h"
-#include "AFDialog.h"
+
+
+
+#include "AFPanel.h"
 #include "AFWidget.h"
 
 
 
 // Constructor
 //
-AFDialog::AFDialog(int16_t x, int16_t y, int16_t w, int16_t h, uint32_t id) : AFWidget(x, y, w, h, id) {
-      // Dialogs default to visible
+AFPanel::AFPanel(int16_t x, int16_t y, int16_t w, int16_t h, uint32_t id) : AFWidget(x, y, w, h, id) {
+      // Panels default to visible
       m_visible = true;
 }
 
 
 
-// Add a child widget to the dialog
+// Add a child widget to the panel
 //
-bool AFDialog::addChild(AFWidget* w) {
+bool AFPanel::addChild(AFWidget* w) {
       bool success = false;
 
       if (!m_children.full()) {
@@ -37,9 +40,9 @@ bool AFDialog::addChild(AFWidget* w) {
 
 
 
-// Remove a child widget from the dialog 
+// Remove a child widget from the panel 
 //
-void AFDialog::removeChild(AFWidget* w) {
+void AFPanel::removeChild(AFWidget* w) {
       for (size_t i = 0; i < m_children.size(); ++i) {
             if (m_children[i] == w) {
                   m_children.erase(m_children.begin() + i);
@@ -53,7 +56,7 @@ void AFDialog::removeChild(AFWidget* w) {
 
 // Find child at a screen point
 //
-AFWidget* AFDialog::childAt(int16_t px, int16_t py) {
+AFWidget* AFPanel::childAt(int16_t px, int16_t py) {
       for (int i = static_cast<int>(m_children.size()) - 1; i >= 0; --i) {
             AFWidget* w = m_children[i];
             if (w->isVisible() && w->hitTest(px, py)) {
@@ -65,9 +68,9 @@ AFWidget* AFDialog::childAt(int16_t px, int16_t py) {
 
 
 
-// Draw dialog and children
+// Draw panel and children
 //
-void AFDialog::draw(AFDisplayInterface& gfx) {
+void AFPanel::draw(AFDisplayInterface& gfx) {
       if (!m_visible)
             return;
 
@@ -89,7 +92,7 @@ void AFDialog::draw(AFDisplayInterface& gfx) {
 
 // Event routing
 //
-void AFDialog::handleEvent(const AFEvent& e) {
+void AFPanel::handleEvent(const AFEvent& e) {
       // Only route touch events
       switch (e.type) {
             case AFEventType::kTouchDown:

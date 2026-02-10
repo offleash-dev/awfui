@@ -1,9 +1,9 @@
 #pragma once
 
-//// AFDialog.h
+//// AFPanel.h
 //// Part of the AWFUI library
 ////
-//// Lightweight dialog widget for embedded UIs.
+//// Lightweight panel widget for embedded UIs.
 ////
 //// Copyright (c) 2026 Matt Foster
 //// Licensed under the MIT License. See LICENSE file for details.
@@ -16,10 +16,10 @@
 
 
 
-class AFDialog : public AFWidget {
+class AFPanel : public AFWidget {
 public:
-      AFDialog(int16_t x, int16_t y, int16_t w, int16_t h, uint32_t id = 0);
-      virtual ~AFDialog() = default;
+      AFPanel(int16_t x, int16_t y, int16_t w, int16_t h, uint32_t id = 0);
+      virtual ~AFPanel() = default;
 
       bool addChild(AFWidget* w); // returns if successfully added (false indicates full)
       void removeChild(AFWidget* w);
@@ -49,7 +49,7 @@ public:
 
 
 protected:
-      etl::vector<AFWidget*, MAX_WIDGETS_PER_DIALOG> m_children;
+      etl::vector<AFWidget*, MAX_WIDGETS_PER_PANEL> m_children;
 
       bool m_opaque = true;
       int  m_zOrder = 0; // unused as yet
