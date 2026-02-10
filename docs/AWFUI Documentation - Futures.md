@@ -1,31 +1,46 @@
-## Possible Future Extensions
+- # AWFUI Futures
 
-The initial release of AWFUI is, as state elsewhere, made of click and react widgets.  There is much more that could be added to a UI toolkit.  What is added will depend on demand, but always be done with the idea of keeping the focus on a the lightweight and embedded goals.  Additions might be integrated or made to add in as needed.
+  Version 1 is click-and-react. This document acknowledges what's missing, sometimes why, and sketches what might come next. Additions will always be weighed against the lightweight, embedded-first goals of the framework.  They might be integrated or made to add-in as needed
 
-Additional widgets possible with the initial architecture:   
+  See also [Developing](AWFUI%20Documentation%20-%20Developing.md) for contributor guidance.
 
-AFSpinButton - one of those widgets with up/down arrows for inputting a value
 
-AFMenu - a popup menu offering text choices.
+  ## Widgets That Could Be Added
 
-AFProgressBar - some mechanism for showing delays/progress.  These can be tricky for percentage progress, so maybe it's just a cylon eye.
+  These fit within the current architecture without major changes:
 
-AFList - like a menu, but in a list.  Of course, that means scrollbars, too.
+  - **AFSpinButton** — up/down arrows for numeric input. Simple to build on AFButton.
+  - **AFMenu** — a popup offering text choices. Likely a modal panel with a list of items.
+  - **AFProgressBar** — visual feedback for long operations. Could be a determinate bar or an indeterminate animation (the "cylon eye" approach avoids the need for accurate percentages).
+  - **AFList** — a scrollable list of items. Implies scroll tracking and a scrollbar widget.
 
-AFPanel (layout container) - basically a container for organizing your massive embedded UIs.  Hmmm.  It could be a variant of AFDialog without chrome.  Probably has local coordinates (oh, then we need localToParent, localToScreen etc)
 
-AFLayout - This has already been punted.  A script to generate a C function that builds your UI is possible, though.
+  ## Architectural Extensions
 
-Screen transitions (slide, fade, zoom) - there are already screens and they can be switch.  It would be amusing to see them switch with style.
+  These require deeper changes and are intentionally deferred:
 
-Background dimming for dialogs - just an enhancement.  Again, we have screeens.
+  #### Focus and TextEdit
 
-Dirty‑rect rendering - instead of the simple dirty widget mechanism, use a more refine approach to redraws to reduce load and flicker.
+  - **AFEventInterface** — a single event queue abstraction that lets external sources (GPIO buttons, gamepads, encoders, UART keyboards) post `AFEvent` structs into AWFUI. AFWorld would drain the queue each loop iteration. A `kCustom` event type with a sub-type and integer payload would cover arbitrary hardware. See `docs/thoughts/on AFEventInterface.txt` for a prototype.
+  - **Focus management** — Version 1 has no concept of an "active" widget that receives keyboard or button input. Adding focus means new events (`kGetFocus`, `kLoseFocus`), a focus chain, and tab-order tracking. It's a prerequisite for text editing and non-touch input.
+  - **AFTextEdit** — text input needs focus, a cursor, and keyboard events. A significant addition.
+  - **AFWidgetList** — if focus is added, containers will need a managed widget list to track focus order and state. Currently, containers use a simple `etl::vector` of pointers.
 
-Focus management - AWFUI doesn't have widget focus, ie. there is no 'active' widget that receives input events.  That is needed for text editing (which would also imply keboard support) or custom button input events.   Focus means new events like kGetFocus and kLoseFocus.  
+  #### Rendering
 
-AFTextEdit - a way to type a value, which needs focus, cursors, and keyboard events.  
+  - **Screen transitions** — screens can already be switched. Adding animated transitions (slide, fade, zoom) would make the experience more polished but isn't essential for embedded utility UIs.
+  - **Dirty-rect rendering** — the current dirty-widget mechanism redraws entire widgets. A finer-grained dirty-rect system would reduce overdraw and flicker, but adds complexity.
+  - **Background dimming for modals** — a visual nicety. Drawing a semi-transparent overlay behind a modal would require blending support or a pre-rendered dim buffer.
+  - **Panel layering / z-order** — the `m_zOrder` field exists on AFPanel but is unused. Enabling it would allow stacked panels with proper ordering, but the use case on small screens is limited. This might require some type of AFDialogList.
 
-AFWidgetList - adding focus realistically means that AWFUI containers need a widget list to help manage the overall state.
+#### Backend Packaging
 
-AFDialogList - for layered AFDialogs, allowing z order, or panels on top and bottom of screen
+**Legacy Adafruit_GFX support.** Older versions of Adafruit_GFX (e.g., the stripped-down version used in some coursework) are missing `getTextBounds()`, `drawRGBBitmap()`, and the `Print` base class. A legacy backend (`AFDisplayAdafruitGFXLegacy`) could fill these gaps: `getTextBounds` via manual character-width calculation, `drawRGBBitmap` via a pixel-by-pixel loop, and `print` via repeated `drawChar` calls. The rest of the API surface is identical between old and new versions.
+
+  **TFT_eSPI support** should be possible.  No explored yet.
+
+  ## Extension by Script 
+
+  - **Layout** —Layout as a dynamic part of the the AF library is not planned.  Instead, layout would be provided by a script to generate a C function that builds your UI for inclusion in you project.
+
+    

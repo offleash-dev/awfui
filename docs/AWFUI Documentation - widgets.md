@@ -1,79 +1,68 @@
+# AWFUI Widgets
+
+This document covers the core components and widgets in AWFUI. It describes purpose and behavior rather than exhaustive API — the headers are the definitive reference.
+
+
 ## Core Components
 
 ### AFWorld
 
-Top‑level runtime and orchestrator.
+Singleton that owns the runtime. Initialize once with `AFWorld::init()`, then access via `AFWorld::instance()`.
 
-**Responsibilities**
+**Responsibilities:**
 
-- Owns global `AFTheme`
-- Owns `AFScreenList`
-- Holds references to hardware interfaces (display, touch, buttons)
-- Runs the event loop
-- Polls hardware and builds `AFEvent`
-- Dispatches events to active screen
-- Triggers redraws
+- Owns the global `AFTheme`
+- Owns the `AFScreenList`
+- Holds references to the display (`AFDisplayInterface`) and touch (`AFTouchInterface`)
+- Runs the event loop (`loop()`)
+- Polls hardware, builds `AFEvent` structs, and dispatches them to the active screen
 
-**Key API**
+**Key API:**
 
-```
-void setTheme(const AFTheme& theme);
-bool addScreen(AFScreen* screen);
+```cpp
+static bool init(AFDisplayInterface& display, AFTouchInterface* touch = nullptr);
+static AFWorld* instance();
+void setTheme(const AFTheme& t);
+AFScreen* createScreen(bool useCanvas = false);
 void setActiveScreen(AFScreen* screen);
-void loop();   // called from main or RTOS task
+void loop();
 ```
 
+`createScreen()` is a factory — AFWorld allocates and owns the screen internally.
 
 
 ### AFScreenList
 
-Used by AFWorld to manage application screens.
+Manages the collection of screens and tracks which one is active. Used internally by AFWorld.
 
-**Responsibilities**
+**Key API:**
 
-- Stores screens
-- Tracks active screen
-- Handles screen switching
-- Planned transition support (fade, slide, etc.)
-
-**Key API**
-
-```
-bool add(AFScreen* screen);
+```cpp
+void add(AFScreen* screen);
 void remove(AFScreen* screen);
-void setActive(AFScreen* screen);
+bool setActive(AFScreen* screen);
+bool setActive(uint32_t screenId);
 AFScreen* getActive() const;
 ```
 
 
+### AFScreen
 
-### 4.3 AFScreen
+Top-level container representing one "page" of your UI. Each screen owns its root-level widgets, panels, and an optional offscreen canvas.
 
-Represents a top‑level UI container.
+**Responsibilities:**
 
-**Responsibilities**
+- Owns root-level widgets and panels
+- Owns an optional full-screen canvas for double-buffered drawing
+- Hit-tests and dispatches events
+- Manages modal dialog blocking
+- Draws itself and all children
 
-- Owns root level widgets and dialogs
-- Owns optional full‑screen canvas (`GFXcanvas16`)
-- Handles hit‑testing and event dispatch
-- Handles modal blocking
-- Draws itself and children
+**Key API:**
 
-**Properties**
-
-```
-Adafruit_GFX& display;
-GFXcanvas16* canvas;     // nullable
-etl::vector<AFWidget*> widgets;
-etl::vector<AFDialog*> dialogs;
-AFModalDialog* activeModal;  // nullable
-```
-
-**Key API**
-
-```
+```cpp
 void addWidget(AFWidget* w);
-void addDialog(AFDialog* d);
+void addPanel(AFPanel* p);
 void showModal(AFModalDialog* d);
 void dismissModal(AFModalDialog* d);
 void handleEvent(const AFEvent& e);
@@ -81,31 +70,16 @@ void draw();
 ```
 
 
+### AFWidget
 
-### AFWidget (base class)
+Abstract base class for all visible UI elements. Every widget has position, size, visibility, enabled state, and a dirty flag.
 
-Base class for all visible UI elements.
+**Geometry:** upper-left origin. All coordinates are `int16_t`.
 
-**Geometry**
+**Virtual API:**
 
-```
-int16_t x, y;
-int16_t width, height;
-bool visible;
-AFWidget* parent;
-```
-
-**Responsibilities**
-
-- Draw itself
-- Hit‑test
-- Receive events
-- Optionally request redraw
-
-**Virtual API**
-
-```
-virtual void draw(Adafruit_GFX& gfx) = 0;
+```cpp
+virtual void draw(AFDisplayInterface& gfx) = 0;
 virtual bool hitTest(int16_t px, int16_t py) const;
 virtual void onPress(const AFEvent& e);
 virtual void onRelease(const AFEvent& e);
@@ -114,79 +88,155 @@ virtual void onKey(const AFEvent& e);
 virtual void onButton(const AFEvent& e);
 ```
 
+**State:** `setVisible()`, `setEnabled()`, and `markDirty()` all trigger a redraw on the next pass. Disabled widgets still draw (using theme disabled colors) but do not respond to input.
 
 
-### AFDialog (inherits AFWidget)
+## Containers
 
-Container widget.
+### AFPanel
 
-**Responsibilities**
+A container widget that holds child widgets. Draws an optional opaque background with border, then draws its children. Routes touch events to children via hit-testing.
 
-- Owns child widgets
-- Draws background/border
-- Routes events to children
+Inherits from AFWidget.
 
-**Properties**
+**Key API:**
 
-Code
-
-```
-etl::vector<AFWidget*> children;
-```
-
-**API**
-
-```
-void addChild(AFWidget* w);
-void draw(Adafruit_GFX& gfx) override;
+```cpp
+bool addChild(AFWidget* w);
+void removeChild(AFWidget* w);
+AFWidget* childAt(int16_t px, int16_t py);
 void handleEvent(const AFEvent& e);
 ```
 
+**Note:** child widget coordinates are currently in screen space, not local to the panel.
 
 
-### AFModalDialog (inherits AFDialog)
+### AFModalDialog
 
-A dialog that captures all input.
+A panel that captures all input while active. The owning screen routes every event to the modal exclusively until it is dismissed.
 
-**Responsibilities**
+Inherits from AFPanel.
 
-- Blocks underlying widgets
-- Must be explicitly dismissed
+**Key API:**
 
-**API**
-
-```
+```cpp
 void show(AFScreen& screen);
+void show();       // convenience — shows on the active screen
 void dismiss();
-bool isModal() const;
 ```
 
+`show()` and `dismiss()` call `onShow()` and `onHide()` virtual hooks for setup/teardown.
 
 
-### AFFullscreenDialog (inherits AFModalDialog)
+### AFFullscreenDialog
 
-A modal overlay that fills the entire screen.
+A modal that automatically sizes itself to fill the entire screen when shown. No border or chrome by default. Ideal for menus, wizards, or alert overlays.
 
-**Behavior**
-
-- `x = 0, y = 0, width = screenWidth, height = screenHeight`
-- No border/chrome by default
-- Drawn into the screen’s canvas (no own canvas)
-- Blocks input while active
-- Ideal for menus, wizards, alerts
+Inherits from AFModalDialog.
 
 
+## Widgets
 
-Widgets
+### AFLabel
 
-AFLabel
+Displays a text string. Comes in two forms:
 
-AFPushButton
+- **Positioned label** — just x, y, and text. Width/height are implicit from the text.
+- **Bounded label** — x, y, w, h, and text. Supports justification (left, center, right).
 
-AFCheckbox
+Text color defaults to the theme's `textColor` but can be overridden with `setColor()`.
 
-AFRadioButton/AFRadioButtonGroup
 
-AFImageButton
+### AFButton
 
-AFImageWidget
+A rectangular push button with a text label. Draws with theme colors and swaps to pressed colors on touch-down. Supports an `onClick` callback via `setOnClickCallback()`.
+
+**Behavior:**
+
+- `onPress()` — visual press state
+- `onRelease()` — visual release
+- `onClick()` — fires the callback
+
+Colors can be customized per-button with `setColors()` and `setPressedColors()`, or left at theme defaults.
+
+Disabled buttons draw with `disabledFgColor`/`disabledBgColor` and ignore input.
+
+
+### AFCheckbox
+
+A square checkbox with an optional text label. Toggles on click. Fires an `onChange` callback with the new checked state.
+
+**Key API:**
+
+```cpp
+void setChecked(bool checked);
+bool isChecked() const;
+void toggle();
+void setOnChangeCallback(AFCheckboxCallback cb);  // void (*)(bool checked)
+```
+
+Box size defaults from the theme if not specified.
+
+
+### AFRadioButton / AFRadioButtonGroup
+
+Radio buttons provide mutually exclusive selection within a group.
+
+**AFRadioButton** draws a circle with a filled dot when selected. Each radio button is added to an **AFRadioButtonGroup**, which enforces exclusivity — selecting one deselects the others.
+
+```cpp
+AFRadioButtonGroup group;
+group.addButton(&radio1);
+group.addButton(&radio2);
+group.setOnChangeCallback(onRadioChanged);  // void (*)(uint32_t id)
+```
+
+The callback receives the `id` of the newly selected button.
+
+
+### AFImageWidget
+
+Displays an `AFImage` as a non-interactive widget. Supports 1-bit and RGB565 image formats.
+
+- **1-bit images** draw using the theme's `fgColor` (or `disabledFgColor` when disabled).
+- **RGB565 images** draw as-is.
+
+Width and height are taken from the image.
+
+
+### AFImageButton
+
+A button whose face is an image instead of text. Inherits from AFButton, so it gets press/release behavior and click callbacks for free.
+
+- **1-bit images** swap to `disabledFgColor` when disabled.
+- **RGB565 images** draw unchanged regardless of enabled state.
+
+
+### AFImage
+
+Not a widget — a plain data class that wraps image pixel data. Constructed from a byte array with a small header (width, height, format) followed by raw pixel data. See `AFImage.h` for the header format and an example.
+
+```cpp
+enum AFImageFormat { kAFImageFormatRGB565 = 0, kAFImageFormat1bit = 1 };
+```
+
+AFImages are drawn from memory.  No additional memory is used.
+
+
+
+## Display Abstraction
+
+### AFDisplayInterface
+
+Pure virtual interface for all drawing operations. Widgets draw through this, never through a concrete library directly.
+
+### AFDisplayAdafruitGFX
+
+Backend that wraps an `Adafruit_GFX` reference. Pass your TFT object to the constructor and hand the wrapper to `AFWorld::init()`.
+
+```cpp
+AFDisplayAdafruitGFX display(tft);
+AFWorld::init(display, &touch);
+```
+
+To support a different graphics library, implement `AFDisplayInterface` with a new backend class.

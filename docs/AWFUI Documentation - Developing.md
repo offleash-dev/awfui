@@ -1,52 +1,101 @@
 ## Developing AWFUI
 
-​	Conventions
-
-​	Extending
-
-​	Porting
+These are notes for anyone working on the framework itself. The guiding principle: **clarity, avoid code overhead and expansion, think embedded.**  AWFUI is a C++ framework, but it is using the language in a minimal way to follow that principle.  
 
 
 
+### Project Structure
 
+AWFUI lives in a `/modules` directory alongside its dependencies. The expected layout:
 
-Project Structure
-AWFUI live in a /modules directory.  Modules is assumed to be a sibling over the project that
-includes AWFUI.  There are application projects in /awfui/examples, but other than these demonstration
-projects, the examples directory is not where you app (the including project) should exist.
-
-AWFUI expects other library like projects to be siblings within the /modules directory.  So,
+```
 /modules
-	/awfui
-	/etl
-	/sdl  (for the desktop simulator, not for an embedded project)
-	/drivers (for your embedded support files such as the adafruit and HAL files)
+	/awfui      # this framework`
+	/etl       	# Embedded Template Library
+	/sdl       	# SDL2 (desktop simulator only)
+	/drivers    # Adafruit, HAL, and other hardware support`
+```
+
+Application projects that use AWFUI are siblings or parents of `/modules` — not inside `/awfui`. The exception to this is the applications in the `/awfui/examples` directory which are example projects for demonstration and testing.
 
 
 
-Strings in AWFUI 
+### C++ Usage
+
+AWFUI uses C++ minimally. Features that add binary expansionare avoided:
+
+- **No STL** — use [ETL](https://www.etlcpp.com/) containers instead.
+- **No exceptions** — return `bool`, `nullptr`, or an `AFResult` enum. 
+- **Asserts** — for programmer errors only.
+- **No RTTI** — disabled to save space.
+
+
+
+### Error Handling
+
+Keep it simple and checkable:
+
+- `bool` for success/failure
+- `nullptr` for "nothing to return"
+- `AFResult` enum for richer error codes
+- `assert` only for conditions that indicate a bug, never for runtime errors
+
+
+
+### Naming Conventions
+
+AWFUI doesn't use C++ namespaces — it's small enough that the `AF` prefix handles it.
+
+- **Classes:** `AF*` prefix (e.g., `AFButton`, `AFPanel`)
+- **Members:** `m_*` (e.g., `m_visible`)
+- **Statics:** `s_*` (e.g., `s_instance`)
+- **Constants:** `k*` prefix, camelCase (e.g., `kAFImageFormat1bit`). Not ALL_CAPS.
+- **Virtual overrides:** always use `override`
+
+  
+### Formatting
+
+The code is the style guide. A few things worth calling out:
+
+- **Braces:** K&R style.
+
+- **Spacing:** 3 blank lines between functions in `.cpp` files, 2 blank lines between declarations in headers. The generous spacing makes individual methods easy to scan.
+
+- **Include order:** C standard headers, then ETL/platform libraries, then `AF*` headers.
+
+  
+
+### Style Automation
+
+`clang-format` is configured via `.clang-format` at the project root. It handles most formatting, but doesn't manage inter-function spacing well. A helper script does both:
+
+```
+formatProjectFiles.sh    # or .ps1
+```
+
+It runs `clang-format` and then fixes the spacing. Run it occasionally.
+
+## String Lifetime
+
 String lifetime management is the application's responsibility.
 
-AFButton, AFLabel, and similar widgets store const char* pointers. This means:
-    The widget doesn't own the string
-    The string must outlive the widget
-    The caller is responsible for keeping the string valid
+Widgets store `const char*` pointers — they do not copy strings. The caller owns the string and must keep it valid for the widget's lifetime.
 
-This Works Fine For:
-    String literals: new AFButton(10, 10, 100, 50, 1, "OK") - the "OK" is in read-only memory
-    Static/global constants:
-        const char* kOkText = "OK";
-        const char* kCancelText = "Cancel";
-    It would work for stack variables (if widget lifetime is shorter), but this is safe only if the label doesn't outlive this scope
+**Safe:**
 
-This Breaks For:
-    Temporary strings:
-        button.setLabel(String("OK").c_str()); // DANGER: dangling pointer
-    Dynamic allocation without tracking:
-        char* temp = new char[10];
-        strcpy(temp, "OK");
-        button.setLabel(temp);
-        delete[] temp; // Now button has dangling pointer
+```cpp
+button.setLabel("OK");                              // literal — lives forever
+static const char* kLabels[] = {"OK", "Cancel"};
+button.setLabel(kLabels[0]);                        // static — fine
+```
+
+**Unsafe:**
+
+```cpp
+button.setLabel(String("OK").c_str());              // temporary — dangling pointer
+```
+
+For dynamic text, maintain a buffer that outlives the widget. This is covered in the main documentation as well, but it's important enough to repeat here.
 
 So, best practices are:
     Use string literals where possible
@@ -54,90 +103,26 @@ So, best practices are:
     For dynamic text (like sensor readings), maintain a buffer that outlives the widget
     Never pass temporary string objects
 
-Again, string lifetime management is the application's responsibility.
+
+
+### Design Patterns
+
+- **Factories** are used where the framework needs to track ownership. `AFWorld::createScreen()` is a factory because the world needs to manage the screen list.
+- **Panels**, on the other hand, do not use a factory for child widgets — you create widgets yourself and add them. This keeps the framework open to new widget types without modification.
+- **Singletons** are used sparingly. `AFWorld` is the only one.
+- **Callbacks** are plain C function pointers. No `std::function`, no lambdas with captures.
 
 
 
-Project Conventions
-When creating AWFUI, the goal/mantra was: Clarity.  No extra junk.  Think embedded.
+### Other Conventions
 
-This is a C++ framework, but it is using the language in a minimal way because it is
-intended to be use for embedded work.  As such, things like RTTI that might add bloat
-are disabled.
-
-Regarding containers, STL is not used.  Instead, the embedded focused ETL is used.
-https://www.etlcpp.com/
-
-For error handling, C++ exceptions should never be used.  They are one of those bloating
-technologies.  Code should return something checkable if an error is possible 
-    A bool for success is fine
-    null is fine
-    an enum defined in AFResult.h is fine
-    asserts are for programmer errors ONLY
+- Consistent geometry: all widgets use upper-left origin.
+- Single-canvas model: at most one full-screen canvas per screen.
+- Argument order in widget constructors: `x, y, w, h, id, ...` (or `x, y, ...` for widgets that derive size from content).
+- Follow existing patterns when adding new widgets. Read a few existing widget implementations before writing a new one.
 
 
 
-Language and Formatting Conventions
-There is no big F-35 style guide.  The code is a template for the style.  Try to follow it for consistency. Use the formatting script on occasion. Thanks.
+### See Also
 
-Other than that, here are a few conventions that are used and worth pointing out.
-
-AWFUI doesn't use c++ namespaces.  It small enough that they probably aren't needed.
-All objects use the the AF* prefix.
-
-Constants don't use all caps.  Instead k* (e.g. kCenterJustification) is used.
-
-Classes use the following patterns fpr identifiable objects:
-
-**Identifiable Object Names** 
-
-- `m_` for members, `s_` for statics, `k*` for constants.
-
-​	m_* for member variables
-​	s_* for static variables (we don't have any yet)
-​	virtual methods should use override
-
-K&R bracket style is used.
-
-#includes are not a random jumble (but then they aren't alphabetized either!)
-#include order is C, then ETL and/or platform (libraries), then AF
-
-Patterns like sentinels and factories are great when appropriate, but not always.  
-A AFScreen factory is used in AFWorld because the world needs to know about screens
-AFDialogs do not provide a factory widget because new widget types might be created.  Create what you need in code and add it.
-
-AWFUI is spaced for readability
-3 lines between big definition chunks in cpp (e.g functions, classes, #include vs implementation sections)
-For headers, its 2 lines.
-
-
-
-Style Automation
-To help maintain the code, clang-format is used.  Basically it's the defaults and the .clang-format is
-at the project root.  Run clang-format and .clang-format settings to format the files on occasion.  
-
-Alas, clang-format is not perfect.  It doesn't handle spacing between functions very well,
-so there is a bonus script to do that.  It calls clang-format for you so it's simple.
-    formatProjectFiles.sh   # or .ps1
-It's actually pretty easy.
-
-
-
-What's with all the spacing?
-I once worked adjacent to whose code was massively spaced for readability.  
-You could argue about readability, but it was did help identify code areas.  I've tone the idea down, but functions are still easy to read.  The goal is to have object methods that are atomically readable.
-
-
-
-The code is the template.  
-
-The main document mentions stuff like:
-
-- **Consistent geometry** — all widgets use upper‑left origin.
-- **Single‑canvas model** — at most one full‑screen canvas per screen.
-
-To this, you could add argument order in widgets, example, and other conventions.  Follow the patterns when possible.
-
-
-
-Thanks!
+- [Futures](AWFUI%20Documentation%20-%20Futures.md) — what's missing and what might come next
