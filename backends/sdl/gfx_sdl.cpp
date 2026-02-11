@@ -57,10 +57,8 @@ GFX_SDL::~GFX_SDL() {
 // Draw a pixel to the framebuffer
 //
 void GFX_SDL::drawPixel(int16_t x, int16_t y, uint16_t color) {
-    // Adafruit_GFX base class handles rotation and transforms coordinates to physical space
-    // before calling this function, so we receive physical coordinates
-    if (x < 0 || y < 0 || x >= m_physWidth || y >= m_physHeight) return;
-    framebuffer[y * m_physWidth + x] = rgb565_to_argb8888(color);
+    if (x < 0 || y < 0 || x >= _width || y >= _height) return;
+    framebuffer[y * _width + x] = rgb565_to_argb8888(color);
 }
 
 
@@ -68,21 +66,35 @@ void GFX_SDL::drawPixel(int16_t x, int16_t y, uint16_t color) {
 // Set rotation and resize SDL window to match
 //
 void GFX_SDL::setRotation(uint8_t r) {
-    // Call base class to update WIDTH/HEIGHT
-    Adafruit_GFX::setRotation(r);
+    // Set rotation value but bypass Adafruit_GFX's internal coordinate transform.
+    // GFX_SDL's framebuffer is in logical (rotated) space, so drawPixel expects
+    // logical coords directly.  We just need _width/_height swapped correctly.
+    rotation = r & 3;
+    switch (rotation) {
+        case 0:
+        case 2:
+            _width  = m_physWidth;
+            _height = m_physHeight;
+            break;
+        case 1:
+        case 3:
+            _width  = m_physHeight;
+            _height = m_physWidth;
+            break;
+    }
     
-    // Resize SDL window to match rotated dimensions
-    int16_t w = _width;   // Rotated width
-    int16_t h = _height; // Rotated height
+    // Recreate framebuffer at rotated dimensions
+    delete[] framebuffer;
+    framebuffer = new uint32_t[_width * _height];
+    memset(framebuffer, 0, _width * _height * sizeof(uint32_t));
 
-    SDL_SetWindowSize(window, w * 2, h * 2);
-    
-    // Recreate texture with new dimensions
+    // Resize window and recreate texture to match
+    SDL_SetWindowSize(window, _width * 2, _height * 2);
     SDL_DestroyTexture(texture);
     texture = SDL_CreateTexture(renderer,
                                 SDL_PIXELFORMAT_ARGB8888,
                                 SDL_TEXTUREACCESS_STREAMING,
-                                w, h);
+                                _width, _height);
 }
 
 
@@ -90,7 +102,7 @@ void GFX_SDL::setRotation(uint8_t r) {
 // Initialize / clear framebuffer
 //
 void GFX_SDL::begin() {
-    memset(framebuffer, 0, m_physWidth * m_physHeight * sizeof(uint32_t));
+    memset(framebuffer, 0, _width * _height * sizeof(uint32_t));
 }
 
 
@@ -100,7 +112,7 @@ void GFX_SDL::begin() {
 void GFX_SDL::present() {
     // Texture dimensions match the rotated WIDTH x HEIGHT
     // Framebuffer pitch is always physical width
-    SDL_UpdateTexture(texture, nullptr, framebuffer, WIDTH * sizeof(uint32_t));
+    SDL_UpdateTexture(texture, nullptr, framebuffer, _width * sizeof(uint32_t));
     SDL_RenderClear(renderer);
     SDL_RenderCopy(renderer, texture, nullptr, nullptr);
     SDL_RenderPresent(renderer);
