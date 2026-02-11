@@ -224,19 +224,3 @@ AFImages are drawn from memory.  No additional memory is used.
 
 
 
-## Display Abstraction
-
-### AFDisplayInterface
-
-Pure virtual interface for all drawing operations. Widgets draw through this, never through a concrete library directly.
-
-### AFDisplayAdafruitGFX
-
-Backend that wraps an `Adafruit_GFX` reference. Pass your TFT object to the constructor and hand the wrapper to `AFWorld::init()`.
-
-```cpp
-AFDisplayAdafruitGFX display(tft);
-AFWorld::init(display, &touch);
-```
-
-To support a different graphics library, implement `AFDisplayInterface` with a new backend class.

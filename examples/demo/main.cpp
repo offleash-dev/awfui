@@ -17,8 +17,7 @@
 
 #else
 #include <Adafruit_ILI9341.h>
-
-
+#include "AFFt6206Touch.h"
 
 #endif
 
@@ -67,6 +66,7 @@ AFTouchSDL   touch(2);
 // Example display - STM32L475 IoT01 board uses no-arg constructor
 // (pins are configured via BSP/HAL)
 Adafruit_ILI9341 tft;
+AFFt6206Touch    touch;
 #endif
 
 AFDisplayAdafruitGFX display(tft);
@@ -84,10 +84,12 @@ void setup() {
 
       tft.setRotation(1);
 
+      touch.begin();
 #ifdef AFUI_USE_SDL
       AFWorld::init(display, &touch, &eventQueue);
 #else
-      AFWorld::init(display, nullptr, &eventQueue);
+      touch.setRotation(1);
+      AFWorld::init(display, &touch, &eventQueue);
 #endif
       world = AFWorld::instance();
 

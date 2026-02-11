@@ -59,6 +59,48 @@ Widgets are individual elements of a visual user interface. The can be for displ
 
 
 
+## Using AWFUI
+
+### Minimal Example
+
+Integrating and using AWFUI is straight forward.
+
+```cpp
+#include "AFWorld.h"
+#include "AFDisplayAdafruitGFX.h"
+#include "AFButton.h"
+
+// Wrap your display
+Adafruit_ILI9341 tft;
+AFDisplayAdafruitGFX display(tft);
+
+// implement AFTouchInterface
+AFFt6206Touch    touch;
+
+
+void setup() {
+    // create the AWFUI world
+    AFWorld::init(display, &touch);
+
+    // make a screen
+    AFWorld* world = AFWorld::instance();
+    AFScreen* screen = world->createScreen();
+    world->setActiveScreen(screen);
+
+    // create a widget and add it to the screen (same kind of thing for a dialog)
+    static AFButton okBtn(10, 10, 100, 40, 0, "OK");
+    okBtn.setOnClickCallback([]() { /* respond to the click here */ });
+    screen->addWidget(&okBtn);
+}
+
+
+void loop() {
+    AFWorld::instance()->loop();
+}
+```
+
+
+
 ## Memory
 
 AWFUI avoids dynamic allocation. Widgets are created by the application and registered with screens or dialogs. AWFUI stores non‑owning pointers and never frees widget memory. 
@@ -105,7 +147,7 @@ Images are embedded in the application code - there is no formal resource manage
 
 ## Events
 
-AWFUI uses an explicit event loop with no hidden blocking.
+AWFUI uses an explicit event loop with no hidden blocking.   The AFWorld dispatches UI events to widgets, but dispatches non-UI events (says a button press) to the active screen for handling.
 
 ### AFEvent
 
@@ -115,11 +157,14 @@ Represents a hardware or logical event.
 enum class AFEventType { kNone, kTouchDown, kTouchUp, kTouchMove, kButton, kKey, kTimer };
 
 struct AFEvent {
-    AFEventType type;
-    int16_t     x, y;         // touch coordinates
-    uint8_t     buttonId;     // hardware button
-    uint16_t    keycode;      // keyboard (future)
-    uint32_t    timestamp;
+      AFEventType type;
+      int16_t     x;
+      int16_t     y;
+      uint8_t     buttonId;
+      uint16_t    keycode;
+      uint32_t    timestamp;
+      uint16_t    customType;   // application-defined sub-type (e.g. gamepad button, encoder direction)
+      int32_t     customData;   // application-defined payload
 };
 ```
 
@@ -129,13 +174,16 @@ struct AFEvent {
 2. The event is sent to the active screen via `AFScreen::handleEvent()`.
 3. The screen decides where it goes:
    - If a modal dialog is active → the modal gets the event exclusively.
-   - Otherwise → hit-test panels, then root-level widgets.
-4. The widget receives the event through virtual handlers: `onPress()`, `onRelease()`, `onClick()`, `onKey()`, `onButton()`.
+     - Otherwise → hit-test panels, then root-level widgets
+   - If the event is a non-UI event (defined or custom) it is passed to the active screen.
+4. The widget receives the event through virtual handlers: `onPress()`, `onRelease()`, `onClick()`.
 5. If a callback is registered (e.g., `setOnClickCallback()`), it fires.
+6. The screen receives the event through the virtual handlers: `onButton()`, onEvent().
+7. Text edit widgets (will one day) receive the text event through the virtual handler `onKey()`.
 
 ### Callbacks
 
-allbacks are plain C function pointers. No `std::function`, no lambdas, no allocations.
+callbacks are plain C function pointers. No `std::function`, no lambdas, no allocations.
 
 ```cpp
 void onOkClicked() {
@@ -153,14 +201,16 @@ okButton.setOnClickCallback(onOkClicked);
 
 ```cpp
 struct AFTheme {
-    uint16_t screenBgColor;
-    uint16_t textColor;
-    uint16_t bgColor, fgColor;
-    uint16_t disabledFgColor, disabledBgColor;
-    uint16_t accentColor;
-    uint16_t borderColor;
-    uint8_t  padding;
-    uint8_t  cornerRadius;
+      uint16_t screenBgColor;
+      uint16_t textColor;
+      uint16_t bgColor;
+      uint16_t fgColor;
+      uint16_t disabledFgColor;
+      uint16_t disabledBgColor;
+      uint16_t accentColor;
+      uint16_t borderColor;
+      uint8_t  padding;
+      uint8_t  cornerRadius;
 };
 ```
 
@@ -173,7 +223,7 @@ Widgets that are disabled draw using `disabledFgColor` and `disabledBgColor` aut
 #### Two Modes
 
 - **Direct mode** — widgets draw straight to the display. Simple, no extra RAM.  This is currently the only mode
-- **Canvas mode** — widgets draw to an offscreen buffer, which is then flushed to the display in one
+- **Canvas mode** — (not yet, but) widgets draw to an offscreen buffer, which is then flushed to the display in one
   operation. Smoother, but costs a full-screen buffer of RAM.  This is planned.
 
 Canvas mode is enabled per-screen when you create it via `AFWorld::createScreen(true)`.
@@ -200,40 +250,7 @@ An offscreen buffer can take a big chunk of memory.  If using the canvas, be awa
 
   
 
-## Using AWFUI
-
-### Minimal Example
-
-Integrating and using AWFUI is straight forward.
-
-```cpp
-#include "AFWorld.h"
-#include "AFDisplayAdafruitGFX.h"
-#include "AFButton.h"
-
-// Wrap your display
-AFDisplayAdafruitGFX display(tft);
-
-void setup() {
-    AFWorld::init(display, &touch);
-
-    AFWorld* world = AFWorld::instance();
-    AFScreen* screen = world->createScreen();
-    world->setActiveScreen(screen);
-
-    static AFButton okBtn(10, 10, 100, 40, 0, "OK");
-    okBtn.setOnClickCallback([]() { /* ... */ });
-    screen->addWidget(&okBtn);
-}
-
-void loop() {
-    AFWorld::instance()->loop();
-}
-```
-
-
-
-#### C++ Use
+## C++ Use
 
 AWFUI uses C++, but it does so in a most minimal way.  There are many valuable C++ language features, but they are not all compatible with generating a small embeddable binary.  Y
 
@@ -243,7 +260,7 @@ AWFUI uses C++, but it does so in a most minimal way.  There are many valuable C
 
 You are free to use whatever you like in your own code, but be aware of these choices for compatibility.
 
-​	
+
 
 ## Using with an RTOS
 

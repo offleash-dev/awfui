@@ -10,10 +10,11 @@ AWFUI lives in a `/modules` directory alongside its dependencies. The expected l
 
 ```
 /modules
-	/awfui      # this framework`
-	/etl       	# Embedded Template Library
-	/sdl       	# SDL2 (desktop simulator only)
-	/drivers    # Adafruit, HAL, and other hardware support`
+	/awfui      	# this framework`
+		/backends 	# hardware support layer
+	/etl       		# Embedded Template Library
+	/sdl       		# SDL2 (desktop simulator only)
+	/drivers    	# Adafruit, HAL, and other hardware support`
 ```
 
 Application projects that use AWFUI are siblings or parents of `/modules` — not inside `/awfui`. The exception to this is the applications in the `/awfui/examples` directory which are example projects for demonstration and testing.
@@ -120,6 +121,37 @@ So, best practices are:
 - Single-canvas model: at most one full-screen canvas per screen.
 - Argument order in widget constructors: `x, y, w, h, id, ...` (or `x, y, ...` for widgets that derive size from content).
 - Follow existing patterns when adding new widgets. Read a few existing widget implementations before writing a new one.
+
+
+
+## Hardware Abstraction
+
+When created, and AFWorld instance is given a three interfaces, a graphics layer, a touch/input layer, and an event layer.  To support specific hardware, these layer types would be subclassed and the implementation done there.  The new hardware instances are then passed to AWFUI.
+
+
+
+## Display Abstraction
+
+### AFDisplayInterface
+
+Pure virtual interface for all drawing operations. Widgets draw through this, never through a concrete library directly.
+
+The original backend, AFDisplayAdafruitGFX, is a good example.  It inherits from AFDisplayInterface and wraps an `Adafruit_GFX` reference. Pass your TFT object to the constructor and hand the wrapper to `AFWorld::init()`.
+
+```cpp
+AFDisplayAdafruitGFX display(tft);
+AFWorld::init(display, &touch);
+```
+
+To support a different graphics library, implement `AFDisplayInterface` with a new backend class.
+
+### AFTouchInterface
+
+Do the same type of thing for touch.s
+
+### AFEventInterface
+
+Non-UI events are passed using the AFEventInteface.  This is different from the display and touch interfaces.  Custom events are pushed on the instantiated queue and AFWorld dispatches them to be process as needed.
 
 
 

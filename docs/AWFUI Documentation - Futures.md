@@ -21,7 +21,6 @@
 
   #### Focus and TextEdit
 
-  - **AFEventInterface** — a single event queue abstraction that lets external sources (GPIO buttons, gamepads, encoders, UART keyboards) post `AFEvent` structs into AWFUI. AFWorld would drain the queue each loop iteration. A `kCustom` event type with a sub-type and integer payload would cover arbitrary hardware. See `docs/thoughts/on AFEventInterface.txt` for a prototype.
   - **Focus management** — Version 1 has no concept of an "active" widget that receives keyboard or button input. Adding focus means new events (`kGetFocus`, `kLoseFocus`), a focus chain, and tab-order tracking. It's a prerequisite for text editing and non-touch input.
   - **AFTextEdit** — text input needs focus, a cursor, and keyboard events. A significant addition.
   - **AFWidgetList** — if focus is added, containers will need a managed widget list to track focus order and state. Currently, containers use a simple `etl::vector` of pointers.
