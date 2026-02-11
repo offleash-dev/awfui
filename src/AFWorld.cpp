@@ -18,11 +18,11 @@ AFWorld* AFWorld::s_instance = nullptr;
 // Initialize the singleton
 // Returns false if already initialized or allocation fails
 //
-bool AFWorld::init(AFDisplayInterface& display, AFTouchInterface* touch) {
+bool AFWorld::init(AFDisplayInterface& display, AFTouchInterface* touch, AFEventQueue* eventQueue) {
     if (s_instance != nullptr) {
         return false;  // Already initialized
     }
-    s_instance = new AFWorld(display, touch);
+    s_instance = new AFWorld(display, touch, eventQueue);
     return (s_instance != nullptr);
 }
 
@@ -39,9 +39,10 @@ AFWorld* AFWorld::instance() {
 
 // Private constructor
 //
-AFWorld::AFWorld(AFDisplayInterface& displayRef, AFTouchInterface* touch)
+AFWorld::AFWorld(AFDisplayInterface& displayRef, AFTouchInterface* touch, AFEventQueue* eventQueue)
     : m_display(displayRef)
     , m_touch(touch)
+    , m_eventQueue(eventQueue)
 {
     // Default theme initialization
     m_theme.screenBgColor = 0x0000; // black
@@ -196,9 +197,17 @@ void AFWorld::loop() {
       AFEvent e;
       pollHardware(e);
 
-      // 2. Dispatch event to active screen
+      // 2. Dispatch hardware event to active screen
       active->handleEvent(e);
 
-      // 3. Draw active screen
+      // 3. Drain the event queue (GPIO buttons, encoders, custom sources)
+      if (m_eventQueue) {
+            while (m_eventQueue->hasEvent()) {
+                  AFEvent qe = m_eventQueue->nextEvent();
+                  active->handleEvent(qe);
+            }
+      }
+
+      // 4. Draw active screen
       active->draw();
 }

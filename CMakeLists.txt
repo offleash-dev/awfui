@@ -62,6 +62,7 @@ set(AFUI_HEADERS
     include/AFPanel.h
     include/AFDisplayInterface.h
     include/AFEvent.h
+    include/AFEventQueue.h
     include/AFFullscreenDialog.h
     include/AFImage.h
     include/AFImageWidget.h

@@ -13,6 +13,7 @@
 
 #include "AFDisplayInterface.h"
 #include "AFEvent.h"
+#include "AFEventQueue.h"
 #include "AFScreenList.h"
 #include "AFTheme.h"
 #include "AFTouchInterface.h"
@@ -22,8 +23,8 @@
 class AFWorld {
 public:
     // Singleton access
-    // touch is optional - pass nullptr for display-only applications
-    static bool init(AFDisplayInterface& display, AFTouchInterface* touch = nullptr);
+    // touch and eventQueue are optional - pass nullptr if not used
+    static bool init(AFDisplayInterface& display, AFTouchInterface* touch = nullptr, AFEventQueue* eventQueue = nullptr);
     static AFWorld* instance();
 
     // No copy/move
@@ -63,12 +64,13 @@ public:
 
     
 private:
-    AFWorld(AFDisplayInterface& display, AFTouchInterface* touch);
+    AFWorld(AFDisplayInterface& display, AFTouchInterface* touch, AFEventQueue* eventQueue);
 
     static AFWorld* s_instance;
 
     AFDisplayInterface& m_display;
     AFTouchInterface*  m_touch;
+    AFEventQueue*      m_eventQueue;
     AFTheme            m_theme;
 
     // Touch state tracking for press/release detection

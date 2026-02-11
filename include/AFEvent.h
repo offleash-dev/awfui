@@ -12,7 +12,7 @@
 
 
 
-enum class AFEventType { kNone, kTouchDown, kTouchUp, kTouchMove, kButton, kKey, kTimer };
+enum class AFEventType { kNone, kTouchDown, kTouchUp, kTouchMove, kButton, kKey, kTimer, kCustom };
 
 
 
@@ -23,4 +23,6 @@ struct AFEvent {
       uint8_t     buttonId;
       uint16_t    keycode;
       uint32_t    timestamp;
+      uint16_t    customType;   // application-defined sub-type (e.g. gamepad button, encoder direction)
+      int32_t     customData;   // application-defined payload
 };
