@@ -5,6 +5,7 @@
 //// Licensed under the MIT License. See LICENSE file for details.
 
 
+#include "AFWorld.h"
 #include "AFWidget.h"
 
 
@@ -26,4 +27,21 @@ bool AFWidget::hitTest(int16_t px, int16_t py) const {
       }
 
       return (px >= m_x) && (py >= m_y) && (px < m_x + m_width) && (py < m_y + m_height);
+}
+
+
+
+void AFWidget::erase(AFDisplayInterface& gfx, int16_t x, int16_t y, int16_t w, int16_t h) {
+      uint16_t fillColor = AFWorld::instance()->getTheme().bgColor;
+      if (!m_enabled)
+            fillColor = AFWorld::instance()->getTheme().disabledBgColor;
+      gfx.fillRect(x, y, w, h, fillColor);
+}
+    
+
+
+void AFWidget::erase(AFDisplayInterface& gfx) {
+      if (m_width != 0 && m_height != 0) {
+            erase(gfx, m_x, m_y, m_width, m_height);
+      }
 }

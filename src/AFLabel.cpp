@@ -5,8 +5,8 @@
 //// Licensed under the MIT License. See LICENSE file for details.
 
 
-#include "AFLabel.h"
 #include "AFWorld.h"
+#include "AFLabel.h"
 
 
 
@@ -37,6 +37,11 @@ void AFLabel::draw(AFDisplayInterface& gfx) {
             return;
       }
 
+      // Erase previous text region before redrawing
+      if (m_lastDrawW > 0 && m_lastDrawH > 0) {
+            AFWidget::erase(gfx, m_lastDrawX, m_lastDrawY, m_lastDrawW, m_lastDrawH);
+      }
+
       uint16_t color = (m_color < 0) ? AFWorld::instance()->getTheme().textColor : static_cast<uint16_t>(m_color);
       gfx.setTextColor(color);
 
@@ -47,8 +52,18 @@ void AFLabel::draw(AFDisplayInterface& gfx) {
 
       if (m_width == 0 && m_height == 0) {
             // this just a positioned text label
+            int16_t  x1, y1;
+            uint16_t w, h;
+            gfx.getTextBounds(m_text, m_x, m_y, &x1, &y1, &w, &h);
+
             gfx.setCursor(m_x, m_y);
             gfx.print(m_text);
+
+            // Save drawn bounds for next erase
+            m_lastDrawX = x1;
+            m_lastDrawY = y1;
+            m_lastDrawW = w;
+            m_lastDrawH = h;
       } else {
             // this is a bordered text label that supports justification
             int16_t  x1, y1;
@@ -76,5 +91,27 @@ void AFLabel::draw(AFDisplayInterface& gfx) {
 
             gfx.setCursor(tx, ty);
             gfx.print(m_text);
+
+            // Save drawn bounds for next erase
+            m_lastDrawX = m_x;
+            m_lastDrawY = m_y;
+            m_lastDrawW = m_width;
+            m_lastDrawH = m_height;
+      }
+}
+
+
+
+// Erase the area of the text so it can be rewritten (or hidden or whatever)
+//
+void AFLabel::erase(AFDisplayInterface& gfx) {
+      if (m_width != 0 && m_height != 0) {
+            AFWidget::erase(gfx);
+      } else {
+            // need to calculate our bounding box to erase it.
+            int16_t  x1, y1;
+            uint16_t w, h;
+            gfx.getTextBounds(m_text, m_x, m_y, &x1, &y1, &w, &h);
+            AFWidget::erase(gfx, x1, y1, w, h);
       }
 }

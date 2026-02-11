@@ -22,11 +22,40 @@
 
 #endif
 
+#include <stdio.h>
+
 #include "AFButton.h"
 #include "AFLabel.h"
 #include "AFModalDialog.h"
 #include "AFScreen.h"
 #include "AFWorld.h"
+
+
+
+// ------------------------------------------------------------
+// DemoScreen — subclass AFScreen to handle external events
+// ------------------------------------------------------------
+class DemoScreen : public AFScreen {
+public:
+      DemoScreen(AFDisplayInterface& display, bool useCanvas)
+            : AFScreen(display, makeID("Main"), useCanvas) {}
+
+      void setCounterLabel(AFLabel* lbl) { m_counterLabel = lbl; }
+
+protected:
+      void onExternalEvent(const AFEvent& e) override {
+            if (e.type == AFEventType::kButton && e.buttonId == 1) {
+                  m_count++;
+                  snprintf(m_buf, sizeof(m_buf), "Button presses: %d", m_count);
+                  m_counterLabel->setText(m_buf);
+            }
+      }
+
+private:
+      AFLabel* m_counterLabel = nullptr;
+      int      m_count = 0;
+      char     m_buf[32] = "Button presses: 0";
+};
 
 
 
@@ -43,7 +72,8 @@ Adafruit_ILI9341 tft;
 AFDisplayAdafruitGFX display(tft);
 
 AFWorld*       world;
-AFScreen*      mainScreen;
+DemoScreen*    mainScreen;
+AFEventQueue   eventQueue;
 AFModalDialog* dialog;
 
 void setup() {
@@ -55,12 +85,23 @@ void setup() {
       tft.setRotation(1);
 
 #ifdef AFUI_USE_SDL
-      AFWorld::init(display, &touch);
+      AFWorld::init(display, &touch, &eventQueue);
 #else
-      AFWorld::init(display);
+      AFWorld::init(display, nullptr, &eventQueue);
 #endif
-      world      = AFWorld::instance();
-      mainScreen = world->createScreen(true);
+      world = AFWorld::instance();
+
+      // Create and register our custom screen
+      mainScreen = new DemoScreen(display, true);
+      world->registerScreen(mainScreen);
+      world->setActiveScreen(mainScreen);
+
+      // ------------------------------------------------------------
+      // Counter label — updated by onExternalEvent
+      // ------------------------------------------------------------
+      AFLabel* counterLbl = new AFLabel(60, 10, 200, 20, "Button presses: 0", makeID("Cntr"));
+      mainScreen->addWidget(counterLbl);
+      mainScreen->setCounterLabel(counterLbl);
 
       // ------------------------------------------------------------
       // Main screen button
@@ -82,7 +123,9 @@ void setup() {
       dialog->addChild(okBtn);
 }
 
-
+const int kFps                    = 60;
+const int kButtonIntervalFrames   = 5 * kFps;       // fire every 5 seconds
+int       eventCountdown          = kButtonIntervalFrames;
 
 void loop() {
 #ifdef AFUI_USE_SDL
@@ -95,6 +138,15 @@ void loop() {
             touch.handleEvent(e);
       }
 #endif
+
+      // Simulate a hardware button press every 5 seconds
+      if (--eventCountdown <= 0) {
+            AFEvent buttonEvent{};
+            buttonEvent.type     = AFEventType::kButton;
+            buttonEvent.buttonId = 1;
+            eventQueue.postEvent(buttonEvent);
+            eventCountdown = kButtonIntervalFrames;
+      }
 
       world->loop();
 

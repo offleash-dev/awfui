@@ -21,6 +21,7 @@ public:
       // A bordered label with width/height and justification
       AFLabel(int16_t x, int16_t y, int16_t w, int16_t h, const char* text, uint32_t id = 0);
 
+
       void setText(const char* t) {
             m_text = t;
             markDirty();
@@ -44,9 +45,14 @@ public:
       
 
       virtual void draw(AFDisplayInterface& gfx) override;
+      virtual void erase(AFDisplayInterface& gfx) override;
 
       
 private:
       const char*          m_text;
       int32_t              m_color         = -1;    // -1 = use theme textColor
+      int16_t              m_lastDrawX     = 0;     // last drawn text origin (for erase)
+      int16_t              m_lastDrawY     = 0;
+      uint16_t             m_lastDrawW     = 0;     // last drawn text extent
+      uint16_t             m_lastDrawH     = 0;
 };

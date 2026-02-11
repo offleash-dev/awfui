@@ -55,6 +55,10 @@ public:
     // Factory: creates, stores, and returns a new screen.  Returns nullptr if allocation fails or max screens reached
     AFScreen* createScreen(bool useCanvas = false);
 
+    // Register an externally-created screen (e.g. an AFScreen subclass).
+    // Returns false if max screens reached.
+    bool registerScreen(AFScreen* screen);
+
     // Accessors for screenList
     void setActiveScreen(AFScreen* screen);
     AFScreen* getActiveScreen();

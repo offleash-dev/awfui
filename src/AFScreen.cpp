@@ -92,36 +92,46 @@ void AFScreen::handleEvent(const AFEvent& e) {
             return;
       }
 
-      // First route to panels (topmost last)
-      for (int i = static_cast<int>(m_panels.size()) - 1; i >= 0; --i) {
-            AFPanel* p = m_panels[i];
-            if (p->isVisible() && p->hitTest(e.x, e.y)) {
-                  p->handleEvent(e);
-                  return;
+      // --- Touch events: route by hit-test ---
+      if (e.type == AFEventType::kTouchDown ||
+          e.type == AFEventType::kTouchUp   ||
+          e.type == AFEventType::kTouchMove) {
+
+            // First route to panels (topmost last)
+            for (int i = static_cast<int>(m_panels.size()) - 1; i >= 0; --i) {
+                  AFPanel* p = m_panels[i];
+                  if (p->isVisible() && p->hitTest(e.x, e.y)) {
+                        p->handleEvent(e);
+                        return;
+                  }
             }
+
+            // Then route to root-level widgets
+            for (int i = static_cast<int>(m_widgets.size()) - 1; i >= 0; --i) {
+                  AFWidget* w = m_widgets[i];
+                  if (w->isVisible() && w->hitTest(e.x, e.y)) {
+                        switch (e.type) {
+                              case AFEventType::kTouchDown:
+                                    w->onPress(e);
+                                    break;
+                              case AFEventType::kTouchUp:
+                                    w->onRelease(e);
+                                    w->onClick(e);
+                                    break;
+                              case AFEventType::kTouchMove:
+                                    // Optional: add hover/drag later
+                                    break;
+                              default:
+                                    break;
+                        }
+                        return;
+                  }
+            }
+            return;
       }
 
-      // Then route to root-level widgets 
-      for (int i = static_cast<int>(m_widgets.size()) - 1; i >= 0; --i) {
-            AFWidget* w = m_widgets[i];
-            if (w->isVisible() && w->hitTest(e.x, e.y)) {
-                  switch (e.type) {
-                        case AFEventType::kTouchDown:
-                              w->onPress(e);
-                              break;
-                        case AFEventType::kTouchUp:
-                              w->onRelease(e);
-                              w->onClick(e);
-                              break;
-                        case AFEventType::kTouchMove:
-                              // Optional: add hover/drag later
-                              break;
-                        default:
-                              break;
-                  }
-                  return;
-            }
-      }
+      // --- Non-positional events (kButton, kKey, kCustom): delegate to screen subclass ---
+      onExternalEvent(e);
 }
 
 

@@ -52,6 +52,13 @@ public:
             return m_id;
       }
 
+
+protected:
+      // Override in subclass to handle non-positional events (kButton, kKey, kCustom)
+      virtual void onExternalEvent(const AFEvent& e) {
+            unused(e);
+      }
+
       
 private:
       AFDisplayInterface& m_display;

@@ -24,6 +24,7 @@ public:
 
     virtual void draw(AFDisplayInterface& gfx) = 0;
     virtual bool hitTest(int16_t px, int16_t py) const;
+    virtual void erase(AFDisplayInterface& gfx);
 
 
     virtual void onPress(const AFEvent& e) {
@@ -37,16 +38,6 @@ public:
 
 
     virtual void onClick(const AFEvent& e) {
-          unused(e);
-    }
-
-
-    virtual void onKey(const AFEvent& e) {
-          unused(e);
-    }
-
-
-    virtual void onButton(const AFEvent& e) {
           unused(e);
     }
 
@@ -127,7 +118,10 @@ public:
             return m_justification;
     }
 
-    
+
+    void erase(AFDisplayInterface& gfx, int16_t x, int16_t y, int16_t w, int16_t h);
+
+
 protected:
     int16_t   m_x, m_y;
     int16_t   m_width, m_height;

@@ -80,6 +80,18 @@ AFScreen* AFWorld::createScreen(bool useCanvas) {
 
 
 
+// Register an externally-created screen (e.g. an AFScreen subclass)
+//
+bool AFWorld::registerScreen(AFScreen* screen) {
+      if (!screen || !m_screenList.canAdd()) {
+            return false;
+      }
+      m_screenList.add(screen);
+      return true;
+}
+
+
+
 // Set active screen
 //
 void AFWorld::setActiveScreen(AFScreen* screen) {
