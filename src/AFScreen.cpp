@@ -208,6 +208,9 @@ void AFScreen::draw() {
 
     AFDisplayInterface* gfx = m_canvas ? m_canvas : &m_display;
 
+    // Let subclass paint a custom background (game, camera, map, etc.)
+    onDrawBackground(*gfx);
+
     // Draw root-level widgets (only dirty ones in non-canvas mode)
     for (auto* w : m_widgets) {
         if (w->isVisible() && w->isDirty()) {

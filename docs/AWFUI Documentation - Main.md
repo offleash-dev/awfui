@@ -204,19 +204,27 @@ okButton.setOnClickCallback(onOkClicked);
 ```cpp
 struct AFTheme {
       uint16_t screenBgColor;
-      uint16_t textColor;
-      uint16_t bgColor;
-      uint16_t fgColor;
-      uint16_t disabledFgColor;
-      uint16_t disabledBgColor;
-      uint16_t accentColor;
-      uint16_t borderColor;
-      uint8_t  padding;
-      uint8_t  cornerRadius;
+
+      uint16_t widgetTextColor;
+      uint16_t widgetBgColor;
+      uint16_t widgetFgColor;
+      uint16_t widgetDisabledFgColor;
+      uint16_t widgetDisabledBgColor;
+      uint16_t widgetAccentColor;
+      uint16_t widgetBorderColor;
+      uint8_t  widgetTextSize;
+      uint8_t  smallTextSize;
+      uint8_t  widgetPadding;
+      uint8_t  widgetCornerRadius;
+
+      uint16_t dialogBorderColor;
+      uint8_t  dialogCornerRadius;
 };
 ```
 
-Widgets that are disabled draw using `disabledFgColor` and `disabledBgColor` automatically.
+Theme value purpose should be indicated by the name.  Widgets that are disabled draw using `disabledWidgetFgColor` and `disabledWidgetBgColor` automatically.
+
+Not all theme values are implemented in every theme but are provide for custom widgets.  The smallTextSize by default is the same widgetTextSize but exists if long info text is used and needs a different value.	
 
 
 
@@ -224,9 +232,9 @@ Widgets that are disabled draw using `disabledFgColor` and `disabledBgColor` aut
 
 #### Two Modes
 
-- **Direct mode** — widgets draw straight to the display. Simple, no extra RAM.  This is currently the only mode
-- **Canvas mode** — (not yet, but) widgets draw to an offscreen buffer, which is then flushed to the display in one
-  operation. Smoother, but costs a full-screen buffer of RAM.  This is planned.
+- **Direct mode** — used by widgets to draw straight to the display. Simple, no extra RAM.  This is currently the only mode
+- **Canvas mode** — For screens, a hook is provide to draw the canvas before the widgets  are drawn on top.
+  operation. Smoother, but costs a full-screen buffer of RAM.  A custom screen that needs the canvas should inherit from AFScreen.
 
 Canvas mode is enabled per-screen when you create it via `AFWorld::createScreen(true)`.
 

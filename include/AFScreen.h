@@ -59,10 +59,19 @@ protected:
             unused(e);
       }
 
+      // Override in subclass to draw a custom background before widgets
+      // (e.g. game frame, camera feed, map).  Called each frame before widget drawing.
+      virtual void onDrawBackground(AFDisplayInterface& gfx) {
+            unused(gfx);
+      }
+
       
-private:
+protected:
+     AFDisplayInterface*  m_canvas = nullptr;
+ 
+ 
+ private:
       AFDisplayInterface& m_display;
-      AFDisplayInterface*  m_canvas = nullptr;
       bool          m_needsScreenRedraw = false;
       uint32_t      m_id;
 
