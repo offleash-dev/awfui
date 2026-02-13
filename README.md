@@ -11,7 +11,10 @@ Documentation is in /docs.
 [Main]: ./docs/AWFUIDocumentation-Main.md
 
 (an overview)
-Widgets (widgets provided)
+
+[Widgets]: docs/AWFUIDocumentation-widgets
+
+(widgets provided)
 Developing (some background if you want to contribute)
 Futures (musings on where AWFUI could go)
 
