@@ -99,7 +99,23 @@ void loop() {
 }
 ```
 
-In practice, you would create the specific display adapter and pass it to AFWorld.  Touch and Event adapters are optional and provided if a project needs them, otherwise, pass null.  For development purposes, and SDL adapter is provided so that AWFUI can be used on the desktop.
+In practice, you would create the specific display adapter and pass it to AFWorld.  Touch and Event adapters are optional and provided if a project needs them, otherwise, pass null.  
+
+### Using SDL for Desktop Prototyping
+
+For development purposes, an SDL adapter is provided so that AWFUI can be used on the desktop.  To use it, SDL version 2  should be a sibling directory to AWFUI.
+
+```
+modules
+ └── awfui
+ └── SDL2
+```
+
+This must be SDL version 2.x, not the latest version 3.  In the CMAKE file, set 
+
+```
+option(AFUI_USE_SDL "Build with SDL backend for desktop simulation" ON)
+```
 
 
 
