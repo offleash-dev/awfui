@@ -54,6 +54,8 @@ AFWorld::AFWorld(AFDisplayInterface& displayRef, AFTouchInterface* touch, AFEven
     m_theme.widgetDisabledBgColor  = 0x4208; // medium-dark gray
     m_theme.widgetAccentColor      = 0xF800; // red
     m_theme.widgetBorderColor      = 0xFFFF; // white
+    m_theme.widgetTextSize         = 1;
+    m_theme.smallTextSize          = 1;
     m_theme.widgetPadding          = 4;
     m_theme.widgetCornerRadius     = 4;
 

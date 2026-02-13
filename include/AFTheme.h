@@ -22,6 +22,8 @@ struct AFTheme {
       uint16_t widgetDisabledBgColor;
       uint16_t widgetAccentColor;
       uint16_t widgetBorderColor;
+      uint8_t  widgetTextSize;
+      uint8_t  smallTextSize;
       uint8_t  widgetPadding;
       uint8_t  widgetCornerRadius;
 

@@ -35,6 +35,7 @@ AFCheckbox::AFCheckbox(int16_t x,
       m_checkColor  = theme.widgetAccentColor;
       m_borderColor = theme.widgetBorderColor;
       m_labelColor  = theme.widgetFgColor;
+      m_textSize    = theme.widgetTextSize;
 }
 
 

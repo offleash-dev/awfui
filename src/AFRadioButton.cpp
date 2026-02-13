@@ -33,6 +33,7 @@ AFRadioButton::AFRadioButton(int16_t x,
     m_circleColor = theme.widgetBorderColor;
     m_dotColor    = theme.widgetAccentColor;
     m_labelColor  = theme.widgetFgColor;
+    m_textSize    = theme.widgetTextSize;
 }
 
 

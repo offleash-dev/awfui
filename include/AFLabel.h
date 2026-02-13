@@ -42,6 +42,17 @@ public:
       int32_t getColor() const {
             return m_color;
       }
+
+
+      void setTextSize(uint8_t size) {
+            m_textSize = size;
+            markDirty();
+      }
+
+
+      uint8_t getTextSize() const {
+            return m_textSize;
+      }
       
 
       virtual void draw(AFDisplayInterface& gfx) override;
@@ -51,6 +62,7 @@ public:
 private:
       const char*          m_text;
       int32_t              m_color         = -1;    // -1 = use theme textColor
+      uint8_t              m_textSize      = 1;
       int16_t              m_lastDrawX     = 0;     // last drawn text origin (for erase)
       int16_t              m_lastDrawY     = 0;
       uint16_t             m_lastDrawW     = 0;     // last drawn text extent

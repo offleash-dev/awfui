@@ -25,6 +25,7 @@ AFButton::AFButton(int16_t x, int16_t y, int16_t w, int16_t h, uint32_t id, cons
       m_bgColorPressed     = theme.widgetAccentColor;
       m_fgColorPressed     = theme.widgetFgColor;
       m_borderColorPressed = theme.widgetBorderColor;
+      m_textSize           = theme.widgetTextSize;
 }
 
 

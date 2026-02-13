@@ -17,6 +17,7 @@ AFLabel::AFLabel(int16_t x_, int16_t y_, const char* text_, uint32_t id) : AFWid
       m_width  = 0;
       m_height = 0;
       m_justification = AFJustificationLeft;
+      m_textSize = AFWorld::instance()->getTheme().widgetTextSize;
 }
 
 
@@ -26,6 +27,7 @@ AFLabel::AFLabel(int16_t x, int16_t y, int16_t w, int16_t h, const char* text, u
       m_width  = w;
       m_height = h;
       m_justification = AFJustificationLeft;
+      m_textSize = AFWorld::instance()->getTheme().widgetTextSize;
 }
 
 
@@ -41,6 +43,8 @@ void AFLabel::draw(AFDisplayInterface& gfx) {
       if (m_lastDrawW > 0 && m_lastDrawH > 0) {
             AFWidget::erase(gfx, m_lastDrawX, m_lastDrawY, m_lastDrawW, m_lastDrawH);
       }
+
+      gfx.setTextSize(m_textSize);
 
       uint16_t color = (m_color < 0) ? AFWorld::instance()->getTheme().widgetTextColor : static_cast<uint16_t>(m_color);
       gfx.setTextColor(color);
