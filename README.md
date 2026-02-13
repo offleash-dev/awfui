@@ -8,10 +8,13 @@ While based on Adafruit_GFX, AWFUI uses drawing and event abstraction layer to a
 
 Documentation is in /docs.
 
-[Main](./docs/AWFUI-Documentation-Main.md)  (an overview)
-[Widgets](docs/AWFUI-Documentation-widgets.md)  (widgets provided)
-[Developing](docs/AWFUI-Documentation-Developing.md) (some background if you want to contribute)
-[Futures](docs/AWFUI-Documentation-Futures.md) (musings on where AWFUI could go)
+​	[Main](./docs/AWFUI-Documentation-Main.md)  - an overview
+
+​	[Widgets](docs/AWFUI-Documentation-widgets.md)  - widgets provided
+
+​	[Developing](docs/AWFUI-Documentation-Developing.md) - some background if you want to contribute
+
+[	Futures](docs/AWFUI-Documentation-Futures.md) - musings on where AWFUI could go
 
 
 
