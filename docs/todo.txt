@@ -7,12 +7,6 @@ change theme variables to be more self documenting
 	-eg , dialogBackgroundColor, dialogBorderColor, widgetBackgroumdColor, widgetBorderColor, widgetTextColor, enabled/disabled versions of each
 
 
-change event types so that unimplemented events are removed?  reserved?  renamed?
-    onKey - for thinking about.  initially there is no keyboard support
-    onButton - well, the STM board has a user button.  this shoudl be allowed for hardware
-    onEvent(button, etc) as an option? does onkey replace this?  is it a shortcut
-
-
 polish for AFScreen
 optional refinements you might want later:
     invalidate/dirty‑rect redraw

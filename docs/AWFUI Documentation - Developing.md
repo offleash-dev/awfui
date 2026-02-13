@@ -128,6 +128,16 @@ So, best practices are:
 
 When created, and AFWorld instance is given a three interfaces, a graphics layer, a touch/input layer, and an event layer.  To support specific hardware, these layer types would be subclassed and the implementation done there.  The new hardware instances are then passed to AWFUI.
 
+The expected layout:
+
+```
+	/awfui      	# this framework`
+		/backends 	# hardware support layer
+		/drivers    # Adafruit, HAL, and other hardware support`
+```
+
+Hardware abstractions live in /backends and would access their board APIs in /drivers.
+
 
 
 ## Display Abstraction
@@ -145,13 +155,24 @@ AFWorld::init(display, &touch);
 
 To support a different graphics library, implement `AFDisplayInterface` with a new backend class.
 
+
+
 ### AFTouchInterface
 
-Do the same type of thing for touch.s
+Pure virtual interface for all touch operations.  At this time it is basically get the touched point.
+
+```cpp
+AFFt6206Touch touch();
+AFWorld::init(display, &touch);
+```
+
+To support a different touch library, implement `AFTouchInterface` with a new backend class.
+
+
 
 ### AFEventInterface
 
-Non-UI events are passed using the AFEventInteface.  This is different from the display and touch interfaces.  Custom events are pushed on the instantiated queue and AFWorld dispatches them to be process as needed.
+Non-UI events are passed using the AFEventInteface.  This is different from the display and touch interfaces.  Custom events are pushed on the instantiated queue and AFWorld dispatches them to be process as needed.  There are some stubbed in types (button and key) for possible AWFUI futures, but custom events should support whatever types are needed.
 
 
 

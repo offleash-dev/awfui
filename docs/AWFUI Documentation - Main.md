@@ -99,6 +99,8 @@ void loop() {
 }
 ```
 
+In practice, you would create the specific display adapter and pass it to AFWorld.  Touch and Event adapters are optional and provided if a project needs them, otherwise, pass null.  For development purposes, and SDL adapter is provided so that AWFUI can be used on the desktop.
+
 
 
 ## Memory

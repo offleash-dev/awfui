@@ -190,9 +190,6 @@ void AFWorld::pollHardware(AFEvent& outEvent) {
         
         m_wasTouched = pt.touched;
     }
-
-    // TODO: integrate hardware buttons
-    // TODO: integrate timers
 }
 
 

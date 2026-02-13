@@ -75,6 +75,14 @@ This is the “Qt .ui file” model, but tiny and embedded‑friendly.
 
 
 
+
+
+
+
+-----------------------
+
+
+
 Dialog "Warning" id:WARN size:(screenWidth - 10) {
     Label "Something happened!" id:WHAT
     Button "OK" id:BtOK
@@ -83,6 +91,8 @@ And your keypad:
 
 Code
 Dialog Fullscreen id:NPad {
+Column {Spacer}
+Column {
     Row {
         Button "1" id:key1
         Button "2" id:key2
@@ -104,3 +114,35 @@ Dialog Fullscreen id:NPad {
         Spacer
     }
 }
+Column{}
+}
+
+generates something like
+
+AFFullscreeenDialog* aMPadDialog;
+
+createMPadDialog() {
+
+aMPadDialog = new AFFullscreeenDialog(idFromSting("MPad"));
+AFButton akey1Button = new AFPushButton("idFromString("key1"));
+akey1Button->setText("key1");
+aMPadDialog->addWidget(aKey1Button);
+...
+
+}
+
+
+
+Start with
+Button
+Label
+Checkbox
+
+screenSize.w and screenSize.h can be used and a variable would be stubbed in (functional? uninitialized? based on assumed AFWorld theWorld?)
+
+Column, Row, and Spacer are noops for planning.  at least initially until some better layout thing comes along
+
+only these properties are supported
+text, id, x, y, w, h, cppName
+text and id are requird
+object name is cppName if provided or (a+id)Type if not
