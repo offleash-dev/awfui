@@ -76,8 +76,8 @@ void AFPanel::draw(AFDisplayInterface& gfx) {
 
       if (m_opaque) {
             const AFTheme& theme = AFWorld::instance()->getTheme();
-            gfx.fillRect(m_x, m_y, m_width, m_height, theme.bgColor);
-            gfx.drawRect(m_x, m_y, m_width, m_height, theme.borderColor);
+            gfx.fillRect(m_x, m_y, m_width, m_height, theme.widgetBgColor);
+            gfx.drawRect(m_x, m_y, m_width, m_height, theme.widgetBorderColor);
       }
 
       // Draw children

@@ -45,16 +45,20 @@ AFWorld::AFWorld(AFDisplayInterface& displayRef, AFTouchInterface* touch, AFEven
     , m_eventQueue(eventQueue)
 {
     // Default theme initialization
-    m_theme.screenBgColor = 0x0000; // black
-    m_theme.textColor     = 0xFFFF; // white
-    m_theme.bgColor       = 0x0000; // black
-    m_theme.fgColor       = 0xFFFF; // white
-    m_theme.disabledFgColor = 0x8410; // dark gray
-    m_theme.disabledBgColor = 0x4208; // medium-dark gray
-    m_theme.accentColor   = 0xF800; // red
-    m_theme.borderColor   = 0xFFFF; // white
-    m_theme.padding       = 4;
-    m_theme.cornerRadius  = 4;
+    m_theme.screenBgColor         = 0x0000; // black
+
+    m_theme.widgetTextColor        = 0xFFFF; // white
+    m_theme.widgetBgColor          = 0x0000; // black
+    m_theme.widgetFgColor          = 0xFFFF; // white
+    m_theme.widgetDisabledFgColor  = 0x8410; // dark gray
+    m_theme.widgetDisabledBgColor  = 0x4208; // medium-dark gray
+    m_theme.widgetAccentColor      = 0xF800; // red
+    m_theme.widgetBorderColor      = 0xFFFF; // white
+    m_theme.widgetPadding          = 4;
+    m_theme.widgetCornerRadius     = 4;
+
+    m_theme.dialogBorderColor      = 0xFFFF; // white
+    m_theme.dialogCornerRadius     = 4;
 }
 
 

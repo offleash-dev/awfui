@@ -42,11 +42,11 @@ void AFLabel::draw(AFDisplayInterface& gfx) {
             AFWidget::erase(gfx, m_lastDrawX, m_lastDrawY, m_lastDrawW, m_lastDrawH);
       }
 
-      uint16_t color = (m_color < 0) ? AFWorld::instance()->getTheme().textColor : static_cast<uint16_t>(m_color);
+      uint16_t color = (m_color < 0) ? AFWorld::instance()->getTheme().widgetTextColor : static_cast<uint16_t>(m_color);
       gfx.setTextColor(color);
 
       if (!m_enabled) {
-            color = AFWorld::instance()->getTheme().disabledFgColor;
+            color = AFWorld::instance()->getTheme().widgetDisabledFgColor;
             gfx.setTextColor(color);
       }
 

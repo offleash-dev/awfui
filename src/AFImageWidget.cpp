@@ -29,7 +29,7 @@ void AFImageWidget::draw(AFDisplayInterface& gfx)
 
     if (m_img->format() == kAFImageFormat1bit) {
         const AFTheme& theme = AFWorld::instance()->getTheme();
-        uint16_t color = m_enabled ? theme.fgColor : theme.disabledFgColor;
+        uint16_t color = m_enabled ? theme.widgetFgColor : theme.widgetDisabledFgColor;
         gfx.drawBitmap(m_x, m_y, m_img->pixels(), m_img->width(), m_img->height(), color);
     } else {
         gfx.drawRGBBitmap(m_x, m_y, reinterpret_cast<const uint16_t*>(m_img->pixels()),

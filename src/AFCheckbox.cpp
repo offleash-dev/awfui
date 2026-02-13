@@ -31,10 +31,10 @@ AFCheckbox::AFCheckbox(int16_t x,
             m_boxSize = 16; // Default box size if not specified
       }
       
-      m_boxColor    = theme.bgColor;
-      m_checkColor  = theme.accentColor;
-      m_borderColor = theme.borderColor;
-      m_labelColor  = theme.fgColor;
+      m_boxColor    = theme.widgetBgColor;
+      m_checkColor  = theme.widgetAccentColor;
+      m_borderColor = theme.widgetBorderColor;
+      m_labelColor  = theme.widgetFgColor;
 }
 
 
@@ -73,19 +73,18 @@ void AFCheckbox::draw(AFDisplayInterface& gfx) {
       }
 
       const AFTheme& theme = AFWorld::instance()->getTheme();
-      uint8_t radius       = theme.cornerRadius;
-//      uint16_t bgColor     = theme.bgColor;
-      uint16_t boxColor    = theme.bgColor;
-      uint16_t checkColor  = theme.accentColor;
-      uint16_t borderColor = theme.borderColor;
-      uint16_t labelColor  = theme.fgColor;
+      uint8_t radius       = theme.widgetCornerRadius;
+      uint16_t boxColor    = theme.widgetBgColor;
+      uint16_t checkColor  = theme.widgetAccentColor;
+      uint16_t borderColor = theme.widgetBorderColor;
+      uint16_t labelColor  = theme.widgetFgColor;
 
       // set colors to theme colors if disabled
       if (!m_enabled) {
-            boxColor    = theme.disabledBgColor;
-            checkColor  = theme.disabledFgColor;
-            borderColor = theme.borderColor;
-            labelColor  = theme.disabledFgColor;
+            boxColor    = theme.widgetDisabledBgColor;
+            checkColor  = theme.widgetDisabledFgColor;
+            borderColor = theme.widgetBorderColor;
+            labelColor  = theme.widgetDisabledFgColor;
       }
 
       // Draw checkbox box

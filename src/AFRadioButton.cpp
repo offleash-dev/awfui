@@ -30,9 +30,9 @@ AFRadioButton::AFRadioButton(int16_t x,
     }   
 
     const AFTheme& theme = AFWorld::instance()->getTheme();
-    m_circleColor = theme.borderColor;
-    m_dotColor    = theme.accentColor;
-    m_labelColor  = theme.fgColor;
+    m_circleColor = theme.widgetBorderColor;
+    m_dotColor    = theme.widgetAccentColor;
+    m_labelColor  = theme.widgetFgColor;
 }
 
 
@@ -61,14 +61,14 @@ void AFRadioButton::draw(AFDisplayInterface& gfx) {
     if (!m_visible)
         return;
 
-    uint16_t circleColor = AFWorld::instance()->getTheme().borderColor;
-    uint16_t dotColor    = AFWorld::instance()->getTheme().accentColor;
-    uint16_t labelColor  = AFWorld::instance()->getTheme().fgColor;
+    uint16_t circleColor = AFWorld::instance()->getTheme().widgetBorderColor;
+    uint16_t dotColor    = AFWorld::instance()->getTheme().widgetAccentColor;
+    uint16_t labelColor  = AFWorld::instance()->getTheme().widgetFgColor;
 
     if (!m_enabled) {
-        circleColor = AFWorld::instance()->getTheme().disabledFgColor;
-        dotColor    = AFWorld::instance()->getTheme().disabledFgColor;
-        labelColor  = AFWorld::instance()->getTheme().disabledFgColor;
+        circleColor = AFWorld::instance()->getTheme().widgetDisabledFgColor;
+        dotColor    = AFWorld::instance()->getTheme().widgetDisabledFgColor;
+        labelColor  = AFWorld::instance()->getTheme().widgetDisabledFgColor;
     }
 
     // Outer circle

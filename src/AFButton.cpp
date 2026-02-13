@@ -19,12 +19,12 @@
 AFButton::AFButton(int16_t x, int16_t y, int16_t w, int16_t h, uint32_t id, const char* labelText)
     : AFWidget(x, y, w, h, id), m_label(labelText) {
       const AFTheme& theme = AFWorld::instance()->getTheme();
-      m_bgColor            = theme.bgColor;
-      m_fgColor            = theme.fgColor;
-      m_borderColor        = theme.borderColor;
-      m_bgColorPressed     = theme.accentColor;
-      m_fgColorPressed     = theme.fgColor;
-      m_borderColorPressed = theme.borderColor;
+      m_bgColor            = theme.widgetBgColor;
+      m_fgColor            = theme.widgetFgColor;
+      m_borderColor        = theme.widgetBorderColor;
+      m_bgColorPressed     = theme.widgetAccentColor;
+      m_fgColorPressed     = theme.widgetFgColor;
+      m_borderColorPressed = theme.widgetBorderColor;
 }
 
 
@@ -72,12 +72,12 @@ void AFButton::draw(AFDisplayInterface& gfx) {
       uint16_t border = m_pressed ? m_borderColorPressed : m_borderColor;
       // now override that if disabled
       if (!m_enabled) {
-            bg     = AFWorld::instance()->getTheme().disabledBgColor;
-            fg     = AFWorld::instance()->getTheme().disabledFgColor;
-            border = AFWorld::instance()->getTheme().borderColor;
+            bg     = AFWorld::instance()->getTheme().widgetDisabledBgColor;
+            fg     = AFWorld::instance()->getTheme().widgetDisabledFgColor;
+            border = AFWorld::instance()->getTheme().widgetBorderColor;
       }
 
-      uint8_t radius = AFWorld::instance()->getTheme().cornerRadius;
+      uint8_t radius = AFWorld::instance()->getTheme().widgetCornerRadius;
 
       // Draw background
       gfx.fillRoundRect(m_x, m_y, m_width, m_height, radius, bg);

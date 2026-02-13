@@ -14,13 +14,17 @@
 
 struct AFTheme {
       uint16_t screenBgColor;
-      uint16_t textColor;
-      uint16_t bgColor;
-      uint16_t fgColor;
-      uint16_t disabledFgColor;
-      uint16_t disabledBgColor;
-      uint16_t accentColor;
-      uint16_t borderColor;
-      uint8_t  padding;
-      uint8_t  cornerRadius;
+
+      uint16_t widgetTextColor;
+      uint16_t widgetBgColor;
+      uint16_t widgetFgColor;
+      uint16_t widgetDisabledFgColor;
+      uint16_t widgetDisabledBgColor;
+      uint16_t widgetAccentColor;
+      uint16_t widgetBorderColor;
+      uint8_t  widgetPadding;
+      uint8_t  widgetCornerRadius;
+
+      uint16_t dialogBorderColor;
+      uint8_t  dialogCornerRadius;
 };

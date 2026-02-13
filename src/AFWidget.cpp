@@ -32,9 +32,9 @@ bool AFWidget::hitTest(int16_t px, int16_t py) const {
 
 
 void AFWidget::erase(AFDisplayInterface& gfx, int16_t x, int16_t y, int16_t w, int16_t h) {
-      uint16_t fillColor = AFWorld::instance()->getTheme().bgColor;
+      uint16_t fillColor = AFWorld::instance()->getTheme().widgetBgColor;
       if (!m_enabled)
-            fillColor = AFWorld::instance()->getTheme().disabledBgColor;
+            fillColor = AFWorld::instance()->getTheme().widgetDisabledBgColor;
       gfx.fillRect(x, y, w, h, fillColor);
 }
     
