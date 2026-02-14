@@ -21,14 +21,25 @@ AFPanel::AFPanel(int16_t x, int16_t y, int16_t w, int16_t h, uint32_t id) : AFWi
 
 
 
+// Destructor
+//
+AFPanel::~AFPanel() {
+      for (auto* w : m_widgets) {
+            if (w->m_owned) delete w;
+      }
+}
+
+
+
 // Add a child widget to the panel
 //
-bool AFPanel::addWidget(AFWidget* w) {
+bool AFPanel::addWidget(AFWidget* w, bool owned) {
       bool success = false;
 
-      if (!m_children.full()) {
-            m_children.push_back(w);
+      if (!m_widgets.full()) {
+            m_widgets.push_back(w);
             w->m_parent = this;
+            w->m_owned  = owned;
             success     = true;
       }
 
@@ -40,10 +51,11 @@ bool AFPanel::addWidget(AFWidget* w) {
 // Remove a child widget from the panel 
 //
 void AFPanel::removeWidget(AFWidget* w) {
-      for (size_t i = 0; i < m_children.size(); ++i) {
-            if (m_children[i] == w) {
-                  m_children.erase(m_children.begin() + i);
+      for (size_t i = 0; i < m_widgets.size(); ++i) {
+            if (m_widgets[i] == w) {
+                  m_widgets.erase(m_widgets.begin() + i);
                   w->m_parent = nullptr;
+                  w->m_owned  = false;
                   return;
             }
       }
@@ -54,8 +66,8 @@ void AFPanel::removeWidget(AFWidget* w) {
 // Find child at a screen point
 //
 AFWidget* AFPanel::widgetAt(int16_t px, int16_t py) {
-      for (int i = static_cast<int>(m_children.size()) - 1; i >= 0; --i) {
-            AFWidget* w = m_children[i];
+      for (int i = static_cast<int>(m_widgets.size()) - 1; i >= 0; --i) {
+            AFWidget* w = m_widgets[i];
             if (w->isVisible() && w->hitTest(px, py)) {
                   return w;
             }
@@ -65,7 +77,7 @@ AFWidget* AFPanel::widgetAt(int16_t px, int16_t py) {
 
 
 
-// Draw panel and children
+// Draw panel and child widgets
 //
 void AFPanel::draw(AFDisplayInterface& gfx) {
       if (!m_visible)
@@ -77,8 +89,8 @@ void AFPanel::draw(AFDisplayInterface& gfx) {
             gfx.drawRect(m_x, m_y, m_width, m_height, theme.widgetBorderColor);
       }
 
-      // Draw children
-      for (auto* w : m_children) {
+      // Draw child widgets
+      for (auto* w : m_widgets) {
             if (w->isVisible()) {
                   w->draw(gfx);
             }
@@ -100,9 +112,9 @@ void AFPanel::handleEvent(const AFEvent& e) {
                   return;
       }
 
-      // Hit-test children in reverse order (topmost first)
-      for (int i = static_cast<int>(m_children.size()) - 1; i >= 0; --i) {
-            AFWidget* w = m_children[i];
+      // Hit-test child widgets in reverse order (topmost first)
+      for (int i = static_cast<int>(m_widgets.size()) - 1; i >= 0; --i) {
+            AFWidget* w = m_widgets[i];
 
             if (w->isVisible() && w->hitTest(e.x, e.y)) {
                   // Dispatch based on event type

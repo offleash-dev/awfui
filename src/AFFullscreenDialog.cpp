@@ -48,8 +48,8 @@ void AFFullscreenDialog::draw(AFDisplayInterface& gfx) {
       // Fill entire screen area
       gfx.fillRect(m_x, m_y, m_width, m_height, AFWorld::instance()->getTheme().screenBgColor);
 
-      // Draw children
-      for (auto* w : m_children) {
+      // Draw child widgets
+      for (auto* w : m_widgets) {
             if (w->isVisible()) {
                   w->draw(gfx);
             }

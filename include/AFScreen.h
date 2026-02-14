@@ -25,8 +25,12 @@ public:
       AFScreen(AFDisplayInterface& display, uint32_t id = 0, bool useCanvas = false);
       virtual ~AFScreen();
 
-      bool addWidget(AFWidget* w);  // returns false if max widgets reached
-      bool addPanel(AFPanel* p);    // returns false if max panels reached
+      bool addWidget(AFWidget* w, bool owned = false);  // returns false if max widgets reached
+      bool addPanel(AFPanel* p, bool owned = false);    // returns false if max panels reached
+
+      // detaches only. removes ownership by the panel and th e caller takes responsibility for deleting
+      void removeWidget(AFWidget* w);
+      void removePanel(AFPanel* p);
 
       void showModal(AFModalDialog* d);
       void dismissModal(AFModalDialog* d);

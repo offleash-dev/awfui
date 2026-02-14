@@ -26,6 +26,12 @@ AFScreen::AFScreen(AFDisplayInterface& displayRef, uint32_t id, bool useCanvas) 
 // Destructor
 //
 AFScreen::~AFScreen() {
+      for (auto* w : m_widgets) {
+            if (w->m_owned) delete w;
+      }
+      for (auto* p : m_panels) {
+            if (p->m_owned) delete p;
+      }
       if (m_canvas) {
             delete m_canvas;
             m_canvas = nullptr;
@@ -36,12 +42,13 @@ AFScreen::~AFScreen() {
 
 // Add a normal widget (not a dialog)
 //
-bool AFScreen::addWidget(AFWidget* w) {
+bool AFScreen::addWidget(AFWidget* w, bool owned) {
       bool success = false;
 
       if (!m_widgets.full()) {
             m_widgets.push_back(w);
             w->m_parent = nullptr; // root-level widget
+            w->m_owned  = owned;
 
             success = true;           
       }
@@ -53,18 +60,52 @@ bool AFScreen::addWidget(AFWidget* w) {
 
 // Add a panel
 //
-bool AFScreen::addPanel(AFPanel* p) {
+bool AFScreen::addPanel(AFPanel* p, bool owned) {
       bool success = false;
 
       if (!m_panels.full()) {
             m_panels.push_back(p);
             p->m_parent = nullptr;
+            p->m_owned  = owned;
 
             success = true;
       }
 
       return success;
 }
+
+
+
+// Remove a widget from the screen
+//
+void AFScreen::removeWidget(AFWidget* w) {
+      for (size_t i = 0; i < m_widgets.size(); ++i) {
+            if (m_widgets[i] == w) {
+                  m_widgets.erase(m_widgets.begin() + i);
+                  w->m_parent = nullptr;
+                  w->m_owned  = false;
+                  return;
+            }
+      }
+}
+
+
+
+// Remove a panel from the screen
+//
+
+void AFScreen::removePanel(AFPanel* p) {
+      for (size_t i = 0; i < m_panels.size(); ++i) {
+            if (m_panels[i] == p) {
+                  m_panels.erase(m_panels.begin() + i);
+                  p->m_parent = nullptr;
+                  p->m_owned  = false;
+                  return;
+            }
+      }
+}
+
+
 
 
 

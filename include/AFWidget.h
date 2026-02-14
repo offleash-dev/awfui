@@ -128,6 +128,7 @@ protected:
     bool      m_enabled = true;
     bool      m_visible = true;
     bool      m_dirty   = true;  // Start dirty so initial draw happens
+    bool      m_owned   = false; // If true, container will delete this widget
     uint32_t   m_id;
     AFWidget* m_parent  = nullptr;
     AFJustification m_justification = AFJustificationCenter;
