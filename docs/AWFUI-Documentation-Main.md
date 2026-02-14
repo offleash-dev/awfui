@@ -121,14 +121,16 @@ option(AFUI_USE_SDL "Build with SDL backend for desktop simulation" ON)
 
 ## Memory
 
-AWFUI avoids dynamic allocation. Widgets are created by the application and registered with screens or dialogs. AWFUI stores non‑owning pointers and never frees widget memory. 
+AWFUI avoids dynamic allocation. Widgets are created and owned by the application and registered with screens or dialogs. AWFUI stores non‑owning pointers and never frees widget memory. 
 
-- **Screens** persist for the lifetime of the application. Widgets added to a screen should therefore also be long‑lived (often static or global).
-- **Dialogs** are temporary. Widgets created inside a function and added to a dialog will be destroyed automatically when the dialog goes out of scope.
+- **Screens** and **Panels** persist for the lifetime of the application. Widgets added to a screen should therefore also be long‑lived (often static or global).
+- **Dialogs** are temporary. Widgets declared (not allocated) inside a function and added to a dialog will be destroyed automatically by the function when the dialog goes out of scope.  Allocated widgets are your responsibility.
 
 AWFUI stores **non‑owning pointers** to widgets. It never allocates or frees widget memory. Lifetime is entirely controlled by normal C++ scope rules.
 
 This design avoids dynamic allocation, garbage collection, and complex ownership models, making AWFUI predictable and safe for embedded systems.
+
+At some point an ownership model may be needed, but the current design is intentional with the focus on embedded systems that are not dynamically allocating and creating large UIs.
 
 ### Strings in AWFUI 
 
@@ -311,7 +313,7 @@ You are free to use whatever you like in your own code, but be aware of these ch
 
     - AFEventQueue is lockable using lock/unlock methods.
     - An inheriting, RTOS-based class overrides these methods with a mutex, enabling the safe access to the queue by AFWorld (consuming with nextEvent()) and the RTOS task (adding with postEvent())
-
+    
     ```
     class RTOSEventQueue : public AFEventQueue {
     protected:

@@ -7,9 +7,6 @@
 
 
 #include "AFWorld.h"
-
-
-
 #include "AFPanel.h"
 #include "AFWidget.h"
 

@@ -1,6 +1,17 @@
 #pragma once
 
+//// AFCheckbox.h
+//// Part of the AWFUI library
+////
+//// Lightweight checkbox widget for embedded UIs.
+////
+//// Copyright (c) 2026 Matt Foster
+//// Licensed under the MIT License. See LICENSE file for details.
+
+
 #include <stdint.h>
+
+
 
 //// AImage
 //// Part of the AWFUI library

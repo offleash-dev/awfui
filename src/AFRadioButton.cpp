@@ -8,8 +8,6 @@
 
 #include <string.h>
 
-
-
 #include "AFWorld.h"
 #include "AFRadioButton.h"
 #include "AFRadioButtonGroup.h"
