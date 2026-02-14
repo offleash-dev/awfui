@@ -25,8 +25,8 @@ public:
       AFScreen(AFDisplayInterface& display, uint32_t id = 0, bool useCanvas = false);
       virtual ~AFScreen();
 
-      void addWidget(AFWidget* w);
-      void addPanel(AFPanel* p);
+      bool addWidget(AFWidget* w);  // returns false if max widgets reached
+      bool addPanel(AFPanel* p);    // returns false if max panels reached
 
       void showModal(AFModalDialog* d);
       void dismissModal(AFModalDialog* d);

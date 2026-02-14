@@ -26,7 +26,7 @@ AFPanel::AFPanel(int16_t x, int16_t y, int16_t w, int16_t h, uint32_t id) : AFWi
 
 // Add a child widget to the panel
 //
-bool AFPanel::addChild(AFWidget* w) {
+bool AFPanel::addWidget(AFWidget* w) {
       bool success = false;
 
       if (!m_children.full()) {
@@ -42,7 +42,7 @@ bool AFPanel::addChild(AFWidget* w) {
 
 // Remove a child widget from the panel 
 //
-void AFPanel::removeChild(AFWidget* w) {
+void AFPanel::removeWidget(AFWidget* w) {
       for (size_t i = 0; i < m_children.size(); ++i) {
             if (m_children[i] == w) {
                   m_children.erase(m_children.begin() + i);
@@ -56,7 +56,7 @@ void AFPanel::removeChild(AFWidget* w) {
 
 // Find child at a screen point
 //
-AFWidget* AFPanel::childAt(int16_t px, int16_t py) {
+AFWidget* AFPanel::widgetAt(int16_t px, int16_t py) {
       for (int i = static_cast<int>(m_children.size()) - 1; i >= 0; --i) {
             AFWidget* w = m_children[i];
             if (w->isVisible() && w->hitTest(px, py)) {

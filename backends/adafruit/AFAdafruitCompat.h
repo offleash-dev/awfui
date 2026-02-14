@@ -44,7 +44,8 @@
 #define AF_THIRD_PARTY_WARNINGS_PUSH \
     _Pragma("GCC diagnostic push") \
     _Pragma("GCC diagnostic ignored \"-Wall\"") \
-    _Pragma("GCC diagnostic ignored \"-Wextra\"")
+    _Pragma("GCC diagnostic ignored \"-Wextra\"") \
+    _Pragma("GCC diagnostic ignored \"-Wattributes\"")
 #define AF_THIRD_PARTY_WARNINGS_POP \
     _Pragma("GCC diagnostic pop")
 #else

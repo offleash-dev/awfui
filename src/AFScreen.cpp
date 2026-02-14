@@ -36,22 +36,34 @@ AFScreen::~AFScreen() {
 
 // Add a normal widget (not a dialog)
 //
-void AFScreen::addWidget(AFWidget* w) {
+bool AFScreen::addWidget(AFWidget* w) {
+      bool success = false;
+
       if (!m_widgets.full()) {
             m_widgets.push_back(w);
             w->m_parent = nullptr; // root-level widget
+
+            success = true;           
       }
+
+      return success;
 }
 
 
 
 // Add a panel
 //
-void AFScreen::addPanel(AFPanel* p) {
+bool AFScreen::addPanel(AFPanel* p) {
+      bool success = false;
+
       if (!m_panels.full()) {
             m_panels.push_back(p);
             p->m_parent = nullptr;
+
+            success = true;
       }
+
+      return success;
 }
 
 
