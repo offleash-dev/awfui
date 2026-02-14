@@ -53,7 +53,7 @@ Widgets are individual elements of a visual user interface. The can be for displ
 
 \- Application state → AFScreen
 
-\- Overlays → AFDialog, AFModalDialog, AFFullscreenDialog
+\- Overlays → AFPanel, AFModalDialog, AFFullscreenDialog
 
 \- Elements → AFWidget and descendants
 
@@ -121,16 +121,24 @@ option(AFUI_USE_SDL "Build with SDL backend for desktop simulation" ON)
 
 ## Memory
 
-AWFUI avoids dynamic allocation. Widgets are created and owned by the application and registered with screens or dialogs. AWFUI stores non‑owning pointers and never frees widget memory. 
+AWFUI was designed to avoid dynamic allocation. By default widgets are created and owned by the application and registered with screens or dialogs for use. AWFUI stores non‑owning pointers and never frees widget memory. Since AWFUI is focused on being an embedded library, this stack based, un-owned widgets default is reasonable.  Many embedded apps are static UIs that live for the lifetime of the process.  
 
-- **Screens** and **Panels** persist for the lifetime of the application. Widgets added to a screen should therefore also be long‑lived (often static or global).
-- **Dialogs** are temporary. Widgets declared (not allocated) inside a function and added to a dialog will be destroyed automatically by the function when the dialog goes out of scope.  Allocated widgets are your responsibility.
+**Screens** and **Panels** exist for the lifetime of the application. In this case, widgets added to a screen should also be long‑lived (often static or global).  **Dialogs** are temporary. Widgets declared (not allocated) inside a function and added to a dialog will be destroyed automatically by the function when the dialog goes out of scope. 
 
-AWFUI stores **non‑owning pointers** to widgets. It never allocates or frees widget memory. Lifetime is entirely controlled by normal C++ scope rules.
+**Widget Allocation and Ownership**
+Some projects would prefer a heap allocation model for widgets and then ownership becomes a concern.  AWFUI allows for this by opt-in ownership rules when a widget is added to a containing screen or dialog/panel.  
 
-This design avoids dynamic allocation, garbage collection, and complex ownership models, making AWFUI predictable and safe for embedded systems.
+```
+bool addWidget(AFWidget* w, bool owned = false);
+```
 
-At some point an ownership model may be needed, but the current design is intentional with the focus on embedded systems that are not dynamically allocating and creating large UIs.
+The rule is: ownership transfers into the container on addWidget(..., true), and transfers back out on removeWidget(). If you never remove it, the container cleans it up.
+
+While the ownership rules are intentionally simple, if you prefer to implement a more dynamic system, AWFUI should be compatible.  The m_owned flag doesn't fight smart pointers — it just makes them optional.
+
+### **Memory Allocated per Container**
+
+Because AWFUI uses ETL and not STL, there is a preallocated ETL list for each container.  Bt default this is 32 widget pointers × 4 bytes = 128 bytes per screen/panel, regardless of how many widgets are actually used.  If you are running in tight memory system, change the defaults in AFBase.h
 
 ### Strings in AWFUI 
 
