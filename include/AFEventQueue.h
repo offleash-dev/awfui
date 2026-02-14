@@ -37,25 +37,41 @@ constexpr size_t AF_EVENT_QUEUE_SIZE = 8;
 
 class AFEventQueue {
 public:
-    bool hasEvent() const {
-        return !m_queue.empty();
+    virtual ~AFEventQueue() = default;
+
+    bool hasEvent() {
+        lock();
+        bool result = !m_queue.empty();
+        unlock();
+        return result;
     }
 
 
     AFEvent nextEvent() {
+        lock();
         AFEvent e = m_queue.front();
         m_queue.pop();
+        unlock();
         return e;
     }
 
 
     bool postEvent(const AFEvent& e) {
+        lock();
         if (m_queue.full()) {
+            unlock();
             return false;
         }
         m_queue.push(e);
+        unlock();
         return true;
     }
+
+
+protected:
+    // Override in RTOS subclass to provide mutual exclusion
+    virtual void lock() {}
+    virtual void unlock() {}
 
 
 private:

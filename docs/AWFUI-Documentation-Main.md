@@ -306,7 +306,19 @@ You are free to use whatever you like in your own code, but be aware of these ch
   - Posted into a queue that UI task drains into AFEvents
 
 
-  - Screen transitions and dialog show/dismiss are synchronous from the UI task’s perspective
+  - AFWorld can be created without a touch interface but use the event queue to pass events from an touch task.  
+
+
+    - AFEventQueue is lockable using lock/unlock methods.
+    - An inheriting, RTOS-based class overrides these methods with a mutex, enabling the safe access to the queue by AFWorld (consuming with nextEvent()) and the RTOS task (adding with postEvent())
+
+    ```
+    class RTOSEventQueue : public AFEventQueue {
+    protected:
+        void lock() override   { /* acquire mutex */ }
+        void unlock() override { /* release mutex */ }
+    };
+    ```
 
 
 
