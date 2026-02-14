@@ -210,8 +210,10 @@ void AFWorld::loop() {
       AFEvent e;
       pollHardware(e);
 
-      // 2. Dispatch hardware event to active screen
-      active->handleEvent(e);
+      // 2. Dispatch hardware event to active screen (skip kNone)
+      if (e.type != AFEventType::kNone) {
+            active->handleEvent(e);
+      }
 
       // 3. Drain the event queue (GPIO buttons, encoders, custom sources)
       if (m_eventQueue) {

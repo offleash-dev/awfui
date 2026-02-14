@@ -7,6 +7,7 @@
 
 #include "AFFullscreenDialog.h"
 #include "AFScreen.h"
+#include "AFWorld.h"
 
 
 
@@ -45,7 +46,7 @@ void AFFullscreenDialog::draw(AFDisplayInterface& gfx) {
             return;
 
       // Fill entire screen area
-      gfx.fillRect(m_x, m_y, m_width, m_height, 0x0000); // default black
+      gfx.fillRect(m_x, m_y, m_width, m_height, AFWorld::instance()->getTheme().screenBgColor);
 
       // Draw children
       for (auto* w : m_children) {

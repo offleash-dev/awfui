@@ -174,7 +174,6 @@ void AFScreen::clear(uint16_t color) {
 bool AFScreen::needsRedraw() const {
     if (m_needsScreenRedraw)
         return true;
-      ;
     for (auto* w : m_widgets) {
         if (w->isVisible() && w->isDirty()) {
             return true;
