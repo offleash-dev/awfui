@@ -119,10 +119,8 @@ AFScreen* AFWorld::getActiveScreen() {
 // Transform touch coordinates from physical screen space to rotated display space
 // This is the inverse of Adafruit_GFX's rotation transform
 //
-void AFWorld::transformTouchCoordinates(int16_t& x, int16_t& y) {
-    uint8_t rotation = m_display.getRotation();
-    int16_t w = m_display.width();   // rotated width
-    int16_t h = m_display.height();  // rotated height
+void AFWorld::transformTouchCoordinates(int16_t& x, int16_t& y,
+                                        uint8_t rotation, int16_t w, int16_t h) {
     int16_t tx, ty;
     
     switch (rotation) {

@@ -66,6 +66,11 @@ public:
     // Main UI loop.  Call from main while loop or UI task
     void loop();
 
+    // Transform touch coordinates from physical screen space to rotated display space.
+    // Usable by external touch tasks that post events via the event queue.
+    static void transformTouchCoordinates(int16_t& x, int16_t& y,
+                                          uint8_t rotation, int16_t w, int16_t h);
+
     
 private:
     AFWorld(AFDisplayInterface& display, AFTouchInterface* touch, AFEventQueue* eventQueue);
@@ -86,7 +91,4 @@ private:
     AFScreenList m_screenList;
 
     void pollHardware(AFEvent& outEvent);
-    
-    // Transform touch coordinates from physical screen space to rotated display space
-    void transformTouchCoordinates(int16_t& x, int16_t& y);
 };
