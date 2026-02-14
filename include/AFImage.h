@@ -46,7 +46,7 @@ struct AFImageHeader { uint16_t w; uint16_t h; uint8_t format; uint8_t reserved;
 
 // read from memory without header
 class AFImage { 
-    public: 
+public: 
     // reads from memory with header
     //
     AFImage(const uint8_t* data); 
@@ -60,11 +60,11 @@ class AFImage {
     uint8_t format() const { return m_format; } 
     const uint8_t* pixels() const { return m_data; }
 
+
 private:
     uint8_t m_format;
     const uint8_t* m_data;
     uint16_t m_w;
     uint16_t m_h;
 };
-
 

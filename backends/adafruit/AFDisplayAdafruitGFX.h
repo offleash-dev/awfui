@@ -65,6 +65,7 @@ public:
         m_gfx.fillCircle(x, y, r, color);
     }
 
+
     // --- Text ---
     void setCursor(int16_t x, int16_t y) override {
         m_gfx.setCursor(x, y);
@@ -92,6 +93,7 @@ public:
         m_gfx.getTextBounds(str, x, y, x1, y1, w, h);
     }
 
+
     // --- Bitmap drawing ---
     void drawBitmap(int16_t x, int16_t y,
                     const uint8_t* bitmap,
@@ -100,12 +102,14 @@ public:
         m_gfx.drawBitmap(x, y, bitmap, w, h, color);
     }
 
+
     void drawBitmap(int16_t x, int16_t y,
                     const uint8_t* bitmap,
                     int16_t w, int16_t h,
                     uint16_t color, uint16_t bg) override {
         m_gfx.drawBitmap(x, y, bitmap, w, h, color, bg);
     }
+
 
     // --- RGB bitmap / canvas support ---
     void drawRGBBitmap(int16_t x, int16_t y,
@@ -114,9 +118,11 @@ public:
         m_gfx.drawRGBBitmap(x, y, const_cast<uint16_t*>(bitmap), w, h);
     }
 
+
     // --- Canvas support ---
     AFDisplayInterface* createCanvas() override;
     const uint16_t* getCanvasBuffer() const override;
+
 
     // Access the underlying Adafruit_GFX for backend-specific operations
     Adafruit_GFX& getGFX() { return m_gfx; }

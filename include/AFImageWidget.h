@@ -21,6 +21,7 @@ public:
 
     void draw(AFDisplayInterface& gfx) override;
 
+
 private:
     const AFImage* m_img;
 };

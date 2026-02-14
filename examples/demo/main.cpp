@@ -13,8 +13,6 @@
 #include "gfx_sdl.hpp"
 #include "AFTouchSDL.h"
 
-
-
 #else
 #include <Adafruit_ILI9341.h>
 #include "AFFt6206Touch.h"

@@ -43,6 +43,7 @@ public:
                                int16_t* x1, int16_t* y1,
                                uint16_t* w, uint16_t* h) = 0;
 
+
     // --- Bitmap drawing ---
     // Draw a 1-bit bitmap at (x, y) with the given foreground color.
     // Each byte holds 8 horizontal pixels, MSB first.
@@ -53,6 +54,7 @@ public:
         (void)x; (void)y; (void)bitmap; (void)w; (void)h; (void)color;
     }
 
+
     // Draw a 1-bit bitmap with foreground and background colors.
     virtual void drawBitmap(int16_t x, int16_t y,
                             const uint8_t* bitmap,
@@ -61,6 +63,7 @@ public:
         (void)x; (void)y; (void)bitmap; (void)w; (void)h; (void)color; (void)bg;
     }
    
+
     // Push an RGB565 bitmap to the display at (x, y).
     // Default implementation is a no-op; backends with canvas support override.
     virtual void drawRGBBitmap(int16_t x, int16_t y,
@@ -68,6 +71,7 @@ public:
                                int16_t w, int16_t h) {
         (void)x; (void)y; (void)bitmap; (void)w; (void)h;
     }
+
 
     // --- Canvas (off-screen buffer) support ---
     // Create an off-screen canvas matching the display dimensions.
