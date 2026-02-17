@@ -4,22 +4,24 @@ Comparison of Spec vs Implementation:
 
 ## ✅ Implemented & Working
 
-| Component         | Spec                                           | Status                                  |
-| :---------------- | :--------------------------------------------- | :-------------------------------------- |
-| AFWorld           | Singleton, owns theme, screen list, event loop | ✅ Done - init(), instance(), loop()     |
-| AFScreenList      | Stores/tracks screens, setActive               | ✅ Done                                  |
-| AFScreen          | Owns widgets, dialogs, canvas, event dispatch  | ✅ Done                                  |
-| AFWidget          | Base class, geometry, hitTest, events          | ✅ Done + dirty flag (ahead of spec)     |
-| AFButton          | Clickable widget with callback                 | ✅ Done                                  |
-| AFLabel           | Static text display                            | ✅ Done                                  |
-| AFEvent           | TouchDown/Up/Move, Button, Key, Timer          | ✅ Done                                  |
-| AFTouchInterface  | Abstract touch input                           | ✅ Done (not in spec, but good addition) |
-| AFFt6206Touch     | FT6206 implementation with rotation            | ✅ Done                                  |
-| Dirty flag redraw | Spec says "future"                             | ✅ Done early!                           |
-| No STL/exceptions | ETL only, no exceptions                        | ✅ Done                                  |
-| AFModalDialog     | Blocks input, explicit dismiss                 | ✅ Done                                  |
-| AFTheme           | Colors/fonts inherited by widgets              | ✅ Done                                  |
-| Hardware buttons  | onButton() event type                          | ✅ Done, injected                        |
+| Component          | Spec                                           | Status                                  |
+| :----------------- | :--------------------------------------------- | :-------------------------------------- |
+| AFWorld            | Singleton, owns theme, screen list, event loop | ✅ Done - init(), instance(), loop()     |
+| AFScreenList       | Stores/tracks screens, setActive               | ✅ Done                                  |
+| AFScreen           | Owns widgets, dialogs, canvas, event dispatch  | ✅ Done                                  |
+| AFWidget           | Base class, geometry, hitTest, events          | ✅ Done + dirty flag (ahead of spec)     |
+| AFButton           | Clickable widget with callback                 | ✅ Done                                  |
+| AFLabel            | Static text display                            | ✅ Done                                  |
+| AFEvent            | TouchDown/Up/Move, Button, Key, Timer          | ✅ Done                                  |
+| AFTouchInterface   | Abstract touch input                           | ✅ Done (not in spec, but good addition) |
+| AFFt6206Touch      | FT6206 implementation with rotation            | ✅ Done                                  |
+| Dirty flag redraw  | Spec says "future"                             | ✅ Done early!                           |
+| No STL/exceptions  | ETL only, no exceptions                        | ✅ Done                                  |
+| AFModalDialog      | Blocks input, explicit dismiss                 | ✅ Done                                  |
+| AFTheme            | Colors/fonts inherited by widgets              | ✅ Done                                  |
+| Hardware buttons   | onButton() event type                          | ✅ Done, injected                        |
+| AFPanel            | Container widget, routes events to children    | ✅ Done                                  |
+| AFFullscreenDialog | Full-screen modal                              | ✅ Done                                  |
 
 External Events AF
 
@@ -27,12 +29,9 @@ External Events AF
 
 ## ⚠️ Implemented but Untested/Incomplete
 
-| Component          | Spec                                        | Status                  |
-| :----------------- | :------------------------------------------ | :---------------------- |
-| AFPanel            | Container widget, routes events to children | ⚠️ Code exists, untested |
-| AFFullscreenDialog | Full-screen modal                           | ⚠️ Code exists, untested |
-
-------
+| Component | Spec | Status |
+| :-------- | :--- | :----- |
+| none?     |      |        |
 
 ## ❌ Not Yet Implemented
 
@@ -49,11 +48,8 @@ These are not implemented yet.  Canvas mode stubbed in because I think it has va
 
 ## Summary
 
-Core framework: ~85% complete
+Core framework: complete
 
 The main gaps are:
 
-1. Dialog testing - code exists but unused
-1. Hardware buttons/timers - event types ready, polling not implemented
-
-The dirty-flag optimization you asked for is actually ahead of the spec (listed as "future").
+1. Keys and timers - event types ready, injection not tested by implementation or simulation.
