@@ -29,11 +29,6 @@
   - **AFWidgetList** — if focus is added, containers will need a managed widget list to track focus order and state. Currently, containers use a simple `etl::vector` of pointers.
   - **Encoder / D-pad navigation** — non-touch input devices need focus traversal. Requires a tab-order or spatial navigation scheme.
 
-  #### Ownership and Lifecycle
-
-  - **Widget ownership** — widgets are raw `new`'d pointers added to screens/panels. No ownership semantics — the framework does not delete them. Memory leaks on screen teardown unless the app is careful. Consider RAII wrappers or screen-owned widget storage.
-  - **`etl::vector` capacity feedback** — `addWidget()` and `addPanel()` silently fail (or assert) when `MAX_WIDGETS_PER_SCREEN` / `MAX_DIALOGS_PER_SCREEN` is reached. Should return a bool or provide feedback to the caller.
-
   #### Rendering
 
   - **Screen transitions** — screens can already be switched. Adding animated transitions (slide, fade, zoom) would make the experience more polished but isn't essential for embedded utility UIs.

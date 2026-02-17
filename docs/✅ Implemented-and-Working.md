@@ -19,8 +19,9 @@ Comparison of Spec vs Implementation:
 | No STL/exceptions | ETL only, no exceptions                        | ✅ Done                                  |
 | AFModalDialog     | Blocks input, explicit dismiss                 | ✅ Done                                  |
 | AFTheme           | Colors/fonts inherited by widgets              | ✅ Done                                  |
+| Hardware buttons  | onButton() event type                          | ✅ Done, injected                        |
 
-
+External Events AF
 
 ------
 
@@ -37,13 +38,12 @@ Comparison of Spec vs Implementation:
 
 These are not implemented yet.  Canvas mode stubbed in because I think it has value.  Screen transitions are a fun idea but the board has to be fast enough to support them.  The other stuff is triggered by brainstorming event types and might be relevant or not.  Hardware buttons should be some kind of external event mechanism, not directly in AWFUI.  Same thing for timers, probably.   Keyboard support is different but basically out of scope for the first release.
 
-| Component          | Spec                                   | Status                          |
-| :----------------- | :------------------------------------- | :------------------------------ |
-| Canvas mode        | Off-screen buffer for smooth rendering | ⚠️ Structure exists, untested    |
-| Hardware buttons   | onButton() event type                  | ❌ Event type exists, no polling |
-| Keyboard/keys      | onKey() event type                     | ❌ Event type exists, no polling |
-| Timer events       | kTimer event type                      | ❌ Not implemented               |
-| Screen transitions | Fade, slide (spec says "planned")      | ❌ Future                        |
+| Component          | Spec                                   | Status                                      |
+| :----------------- | :------------------------------------- | :------------------------------------------ |
+| Canvas mode        | Off-screen buffer for smooth rendering | ⚠️ Structure exists, untested                |
+| Keyboard/keys      | onKey() event type, injected           | ❌ Event type exists,  injected, not polling |
+| Timer events       | kTimer event type                      | ❌ Not implemented                           |
+| Screen transitions | Fade, slide (spec says "planned")      | ❌ Future                                    |
 
 ------
 
