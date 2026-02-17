@@ -101,8 +101,16 @@ bool AFWorld::registerScreen(AFScreen* screen) {
 // Set active screen
 //
 void AFWorld::setActiveScreen(AFScreen* screen) {
-      if (screen != nullptr) {
-            m_screenList.setActive(screen);
+      if (screen == nullptr) {
+            return;
+      }
+
+      AFScreen* prev = m_screenList.getActive();
+      m_screenList.setActive(screen);
+
+      // If the screen actually changed, clear display and force full redraw
+      if (screen != prev) {
+            screen->setNeedsFullRedraw();
       }
 }
 

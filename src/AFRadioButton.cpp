@@ -70,6 +70,10 @@ void AFRadioButton::draw(AFDisplayInterface& gfx) {
         labelColor  = AFWorld::instance()->getTheme().widgetDisabledFgColor;
     }
 
+    // Clear interior so deselected dot is erased
+    uint16_t bgColor = AFWorld::instance()->getTheme().screenBgColor;
+    gfx.fillCircle(m_x + m_radius, m_y + m_radius, m_radius, bgColor);
+
     // Outer circle
     gfx.drawCircle(m_x + m_radius, m_y + m_radius, m_radius, circleColor);
 

@@ -192,6 +192,8 @@ void AFScreen::handleEvent(const AFEvent& e) {
 // Mark all widgets dirty to force a full redraw
 //
 void AFScreen::setNeedsFullRedraw() {
+      m_needsScreenRedraw = true;
+
       for (auto* w : m_widgets) {
             w->markDirty();
       }

@@ -29,6 +29,12 @@ void AFModalDialog::show(AFScreen& screen) {
       m_owner = &screen;
       setVisible(true);
       markDirty();
+
+      // Mark all child widgets dirty so they draw with the dialog
+      for (auto* w : m_widgets) {
+            w->markDirty();
+      }
+
       onShow();
       screen.showModal(this);
 }
