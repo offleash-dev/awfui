@@ -63,39 +63,69 @@ Widgets are individual elements of a visual user interface. The can be for displ
 
 ### Minimal Example
 
-Integrating and using AWFUI is straight forward.
+Integrating and using AWFUI is straight forward.  The hardware is handed to the AFWorld, a screen is created as a base container for widgets and then loops.  This example shows heap created widgets that that AWFUI manages.  Widgets can also be created on the stack and managed by code scope.  Button events are handled by callback functions, in this example, that is by hooking them up to dialog methods.
 
 ```cpp
-#include "AFWorld.h"
-#include "AFDisplayAdafruitGFX.h"
-#include "AFButton.h"
-
-// Wrap your display
+// Create hardware instances
 Adafruit_ILI9341 tft;
+AFFt6206Touch    touch;
 AFDisplayAdafruitGFX display(tft);
 
-// implement AFTouchInterface
-AFFt6206Touch    touch;
-
+AFWorld*       world;
+AFScreen*    mainScreen;
+AFModalDialog* dialog;
 
 void setup() {
-    // create the AWFUI world
-    AFWorld::init(display, &touch);
+      // initialize hardware
+      tft.begin();
+      tft.setRotation(1);
+      touch.begin();
 
-    // make a screen
-    AFWorld* world = AFWorld::instance();
-    AFScreen* screen = world->createScreen();
-    world->setActiveScreen(screen);
+      // then use the hardware to initialize the AFWorld
+      AFWorld::init(display, &touch, &eventQueue);
+      world = AFWorld::instance();
 
-    // create a widget and add it to the screen (same kind of thing for a dialog)
-    static AFButton okBtn(10, 10, 100, 40, 0, "OK");
-    okBtn.setOnClickCallback([]() { /* respond to the click here */ });
-    screen->addWidget(&okBtn);
+      // Create a screen to control the UI
+      // More than one screen can be created, with one being active
+      mainScreen = world->createScreen();
+
+      // Create a button and add it to the the main screen to show the dialog.
+      // Widgets can be addded to a screen or a dialog/panel.
+      // the callback is assigned directly to a dialog method, but any callback function can be used
+      AFButton* openBtn = new AFButton(120, 40, 160, 50, makeID("Open"), "Open Dialog");
+      openBtn->setOnClickCallback([]() { dialog->show(*mainScreen); });
+      mainScreen->addWidget(openBtn, true);
+
+      // Creaate a "hello world-ish" modal dialog to display
+      dialog = new AFModalDialog(20, 40, 200, 140, makeID("HDlg"));
+
+      // Add a label for the "hello"
+      AFLabel* lbl = new AFLabel(30, 60, "Hello from AFUI!", makeID("Helo"));
+      dialog->addWidget(lbl, true);
+
+      // Add the button to dismiss the dialog
+      // as above, the callback is assigned to a dialog method, but any callback function can be used
+      AFButton* okBtn = new AFButton(50, 100, 100, 40, makeID("OKBt"), "OK");
+      okBtn->setOnClickCallback([]() { dialog->dismiss(); });
+      dialog->addWidget(okBtn, true);
 }
 
-
 void loop() {
-    AFWorld::instance()->loop();
+      // run the UI loop.
+      // which "shows" the screen and controls the event loop,
+      // which will get and process the touch for the button,
+      // showing the modal dialog and eventually closing it with another touch.
+      world->loop();
+}
+
+// Entry point for a desktop app as a simple example
+// On actual hardware or RTOS, your startup/task code calls setup() and controls the loop()
+int main() {
+      setup();
+      while (true) {
+            loop();
+      }
+      return 0;
 }
 ```
 
