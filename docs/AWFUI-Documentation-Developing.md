@@ -142,16 +142,20 @@ Hardware abstractions live in /backends and would access their board APIs in /dr
 
 ## Display Abstraction
 
-### AFDisplayInterface
+### AFDisplayBase/AFDisplayInterface
 
-Pure virtual interface for all drawing operations. Widgets draw through this, never through a concrete library directly.
+AFDisplayBase is a pure virtual interface for drawing.  It has the core drawing functions needed to support a type of hardware.  AFDisplayInterface inherits from the hardware base and provides basic imlementations of a more complete drawing library.  The drawing functions can be overridden with optimized forms or used as is.  The text sizing function really should be implement for a board's native fonts.  
 
-The original backend, AFDisplayAdafruitGFX, is a good example.  It inherits from AFDisplayInterface and wraps an `Adafruit_GFX` reference. Pass your TFT object to the constructor and hand the wrapper to `AFWorld::init()`.
+Widgets draw through AFDisplayInterface, never through a concrete library directly.
+
+The original backend, AFDisplayAdafruitGFX, is a good example.  It inherits from AFDisplayInterface and wraps an `Adafruit_GFX` reference, providing hardware native drawing. Pass your TFT object to the constructor and hand the wrapper to `AFWorld::init()`.
 
 ```cpp
 AFDisplayAdafruitGFX display(tft);
 AFWorld::init(display, &touch);
 ```
+
+On the the other hand, AWFUI SDL support implements AFDisplayBase and a minimal set of  a extensions to use SDL2 on the desktop.
 
 To support a different graphics library, implement `AFDisplayInterface` with a new backend class.
 
