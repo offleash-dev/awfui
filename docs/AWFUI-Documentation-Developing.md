@@ -148,18 +148,16 @@ AFDisplayBase is a pure virtual interface for drawing.  It has the core drawing 
 
 Widgets draw through AFDisplayInterface, never through a concrete library directly.
 
-The original backend, AFDisplayAdafruitGFX, is a good example.  It inherits from AFDisplayInterface and wraps an `Adafruit_GFX` reference, providing hardware native drawing. Pass your TFT object to the constructor and hand the wrapper to `AFWorld::init()`.
+To support a hardware graphics library, implement `AFDisplayInterface` with a new backend class as needed.
+
+The original embedded backend, AFDisplayAdafruitGFX, is a good example.  It inherits from AFDisplayInterface and wraps an `Adafruit_GFX` reference, providing hardware native drawing. Pass your TFT object to the constructor and hand the wrapper to `AFWorld::init()`.
 
 ```cpp
 AFDisplayAdafruitGFX display(tft);
 AFWorld::init(display, &touch);
 ```
 
-On the the other hand, AWFUI SDL support implements AFDisplayBase and a minimal set of  a extensions to use SDL2 on the desktop.
-
-To support a different graphics library, implement `AFDisplayInterface` with a new backend class.
-
-
+On the the other hand, AFDisplayInterface  as implemented by AFDisplaySDL primarily implements the required virtual functions in AFDisplayBase and only one function, getTextBounds(), from AFDisplayInterface.   The rest of the implementation is to use SDL2 on the desktop.
 
 ### AFTouchInterface
 

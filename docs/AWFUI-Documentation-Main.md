@@ -82,7 +82,7 @@ void setup() {
       touch.begin();
 
       // then use the hardware to initialize the AFWorld
-      AFWorld::init(display, &touch, &eventQueue);
+      AFWorld::init(display, &touch);
       world = AFWorld::instance();
 
       // Create a screen to control the UI
@@ -145,6 +145,36 @@ This must be SDL version 2.x, not the latest version 3.  In the CMAKE file, set
 
 ```
 option(AFUI_USE_SDL "Build with SDL backend for desktop simulation" ON)
+```
+
+
+
+The usage is similar to the hardware example above, ideally with differences limited to the hardware initialization:
+
+```cpp
+// Create SDL "hardware" instances
+AFDisplaySDL display(240, 320, 2);
+AFTouchSDL   touch(2);
+
+AFWorld*        world;
+AFScreen*       mainScreen;
+AFModalDialog*  dialog;
+
+void setup() {
+      SDL_SetMainReady();
+
+      // initialize hardware
+      display.begin();
+      display.setRotation(1);
+      touch.begin();
+
+      // then use the hardware to initialize the AFWorld
+      AFWorld::init(display, &touch);
+    
+      // then the rest is th same...
+    	
+      // ...
+}
 ```
 
 

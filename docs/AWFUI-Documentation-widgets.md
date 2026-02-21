@@ -84,11 +84,10 @@ virtual bool hitTest(int16_t px, int16_t py) const;
 virtual void onPress(const AFEvent& e);
 virtual void onRelease(const AFEvent& e);
 virtual void onClick(const AFEvent& e);
-virtual void onKey(const AFEvent& e);
-virtual void onButton(const AFEvent& e);
 ```
 
 **State:** `setVisible()`, `setEnabled()`, and `markDirty()` all trigger a redraw on the next pass. Disabled widgets still draw (using theme disabled colors) but do not respond to input.
+
 
 
 ## Containers
@@ -133,6 +132,8 @@ void dismiss();
 A modal that automatically sizes itself to fill the entire screen when shown. No border or chrome by default. Ideal for menus, wizards, or alert overlays.
 
 Inherits from AFModalDialog.
+
+
 
 
 ## Widgets

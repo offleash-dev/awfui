@@ -11,4 +11,4 @@
 
 
 #define AF_VERSION_MAJOR 0
-#define AF_VERSION_MINOR 1
+#define AF_VERSION_MINOR 3

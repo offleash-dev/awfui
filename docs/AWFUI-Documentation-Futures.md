@@ -49,7 +49,7 @@
 
   ## Longer-Term / Nice-to-Have
 
-  - **Font management** — currently relies on Adafruit_GFX default font. Supporting custom fonts, font selection per widget, or scaled fonts would improve visual quality.
+  - **Font management** — currently relies on Adafruit_GFX default font or a basic font in the SDL display. Supporting custom fonts, font selection per widget, or scaled fonts would improve visual quality.
   - **Internationalization / UTF-8** — no multi-byte character support. Would require a different text rendering path.
   - **Animations** — widget-level animations (fade, slide, pulse) for feedback and polish.
 
