@@ -9,16 +9,24 @@
 #define SDL_MAIN_HANDLED
 #endif
 
-#include "AFDisplayAdafruitGFX.h"
 
 #ifdef AFUI_USE_SDL
-#include "gfx_sdl.hpp"
+#include "AFDisplaySDL.h"
 #include "AFTouchSDL.h"
+
+
+
 #else
+#include "AFDisplayAdafruitGFX.h"
 #include <Adafruit_ILI9341.h>
+
+
+
 #endif
 
 #include <stdio.h>
+
+
 
 #include "AFButton.h"
 #include "AFCheckbox.h"
@@ -41,13 +49,13 @@
 // ============================================================
 
 #ifdef AFUI_USE_SDL
-GFX_SDL      tft(240, 320);
+AFDisplaySDL    display(240, 320);
 AFTouchSDL   touch(2);
 #else
 Adafruit_ILI9341 tft;
+AFDisplayAdafruitGFX display(tft);
 #endif
 
-AFDisplayAdafruitGFX display(tft);
 
 AFWorld*  world;
 AFScreen* screen1;
@@ -87,6 +95,7 @@ static const uint8_t imgB_data[] = {
 
 static AFImage imageA(imgA_data);
 static AFImage imageB(imgB_data);
+
 
 
 
@@ -291,9 +300,12 @@ static void setupScreen3() {
 void setup() {
 #ifdef AFUI_USE_SDL
       SDL_SetMainReady();
-#endif
+      display.begin();
+      display.setRotation(1);
+#else
       tft.begin();
       tft.setRotation(1);
+#endif
 
 #ifdef AFUI_USE_SDL
       AFWorld::init(display, &touch);
@@ -325,7 +337,7 @@ void loop() {
       world->loop();
 
 #ifdef AFUI_USE_SDL
-      tft.present();
+      display.present();
       SDL_Delay(16);  // ~60 FPS
 #endif
 }

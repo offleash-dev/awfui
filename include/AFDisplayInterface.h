@@ -10,75 +10,206 @@
 //// Copyright (c) 2026 Matt Foster
 //// Licensed under the MIT License. See LICENSE file for details.
 
+
 #include <stdint.h>
+#include <stddef.h>
+#include <cmath>
+#include <cstring>
+
+#include "AFDisplayBase.h"
 
 
 
-class AFDisplayInterface {
+class AFDisplayInterface : public AFDisplayBase {
 public:
-    virtual ~AFDisplayInterface() = default;
+    virtual void drawRect(int16_t x, int16_t y,
+                          int16_t w, int16_t h,
+                          uint16_t color)
+    {
+        drawHLine(x, y, w, color);
+        drawHLine(x, y + h - 1, w, color);
+        drawVLine(x, y, h, color);
+        drawVLine(x + w - 1, y, h, color);
+    }
 
-    // --- Dimensions & orientation ---
-    virtual int16_t width()  const = 0;
-    virtual int16_t height() const = 0;
-    virtual uint8_t getRotation() const = 0;
-    virtual void    setRotation(uint8_t r) = 0;
 
-    // --- Drawing primitives ---
-    virtual void fillScreen(uint16_t color) = 0;
-    virtual void fillRect(int16_t x, int16_t y, int16_t w, int16_t h, uint16_t color) = 0;
-    virtual void drawRect(int16_t x, int16_t y, int16_t w, int16_t h, uint16_t color) = 0;
-    virtual void fillRoundRect(int16_t x, int16_t y, int16_t w, int16_t h, int16_t radius, uint16_t color) = 0;
-    virtual void drawRoundRect(int16_t x, int16_t y, int16_t w, int16_t h, int16_t radius, uint16_t color) = 0;
-    virtual void drawLine(int16_t x0, int16_t y0, int16_t x1, int16_t y1, uint16_t color) = 0;
-    virtual void drawCircle(int16_t x, int16_t y, int16_t r, uint16_t color) = 0;
-    virtual void fillCircle(int16_t x, int16_t y, int16_t r, uint16_t color) = 0;
+    virtual void drawLine(int16_t x0, int16_t y0, int16_t x1, int16_t y1, uint16_t color)  {
+        // Default: Bresenham fallback
+        // (Backends can override with hardware-accelerated versions)
+        int16_t dx = (int16_t)abs(x1 - x0), sx = x0 < x1 ? 1 : -1;
+        int16_t dy = (int16_t)(-abs(y1 - y0)), sy = y0 < y1 ? 1 : -1;
+        int16_t err = dx + dy, e2;
 
-    // --- Text ---
-    virtual void setCursor(int16_t x, int16_t y) = 0;
-    virtual void setTextColor(uint16_t color) = 0;
-    virtual void setTextSize(uint8_t size) = 0;
-    virtual void print(const char* text) = 0;
+        while (true) {
+            drawPixel(x0, y0, color);
+            if (x0 == x1 && y0 == y1) break;
+            e2 = 2 * err;
+            if (e2 >= dy) { err += dy; x0 += sx; }
+            if (e2 <= dx) { err += dx; y0 += sy; }
+        }
+    }
+
+
+    virtual void drawCircle(int16_t x, int16_t y, int16_t r, uint16_t color)  {
+        // Default midpoint circle fallback
+        int16_t f = 1 - r;
+        int16_t ddF_x = 1;
+        int16_t ddF_y = -2 * r;
+        int16_t xi = 0;
+        int16_t yi = r;
+
+        drawPixel(x, y + r, color);
+        drawPixel(x, y - r, color);
+        drawPixel(x + r, y, color);
+        drawPixel(x - r, y, color);
+
+        while (xi < yi) {
+            if (f >= 0) {
+                yi--;
+                ddF_y += 2;
+                f += ddF_y;
+            }
+            xi++;
+            ddF_x += 2;
+            f += ddF_x;
+
+            drawPixel(x + xi, y + yi, color);
+            drawPixel(x - xi, y + yi, color);
+            drawPixel(x + xi, y - yi, color);
+            drawPixel(x - xi, y - yi, color);
+            drawPixel(x + yi, y + xi, color);
+            drawPixel(x - yi, y + xi, color);
+            drawPixel(x + yi, y - xi, color);
+            drawPixel(x - yi, y - xi, color);
+        }
+    }
+
+
+    virtual void drawRoundRect(int16_t x, int16_t y, int16_t w, int16_t h,
+                               int16_t radius, uint16_t color)
+    {
+        int16_t maxR = ((w < h) ? w : h) / 2;
+        if (radius > maxR) radius = maxR;
+
+        // Horizontal edges (between the rounded corners)
+        drawHLine(x + radius, y,         w - 2 * radius, color);  // top
+        drawHLine(x + radius, y + h - 1, w - 2 * radius, color);  // bottom
+        // Vertical edges
+        drawVLine(x,         y + radius, h - 2 * radius, color);  // left
+        drawVLine(x + w - 1, y + radius, h - 2 * radius, color);  // right
+
+        // Four quarter-circles (midpoint algorithm)
+        int16_t cx1 = x + radius;          // top-left center
+        int16_t cy1 = y + radius;
+        int16_t cx2 = x + w - 1 - radius;  // top-right center
+        int16_t cy2 = y + h - 1 - radius;  // bottom-left/right center y
+
+        int16_t f     = 1 - radius;
+        int16_t ddF_x = 1;
+        int16_t ddF_y = -2 * radius;
+        int16_t xi    = 0;
+        int16_t yi    = radius;
+
+        while (xi < yi) {
+            if (f >= 0) { yi--; ddF_y += 2; f += ddF_y; }
+            xi++; ddF_x += 2; f += ddF_x;
+
+            // top-right quarter
+            drawPixel(cx2 + xi, cy1 - yi, color);
+            drawPixel(cx2 + yi, cy1 - xi, color);
+            // top-left quarter
+            drawPixel(cx1 - xi, cy1 - yi, color);
+            drawPixel(cx1 - yi, cy1 - xi, color);
+            // bottom-right quarter
+            drawPixel(cx2 + xi, cy2 + yi, color);
+            drawPixel(cx2 + yi, cy2 + xi, color);
+            // bottom-left quarter
+            drawPixel(cx1 - xi, cy2 + yi, color);
+            drawPixel(cx1 - yi, cy2 + xi, color);
+        }
+    }
+
+
+    virtual void fillRoundRect(int16_t x, int16_t y, int16_t w, int16_t h,
+                               int16_t radius, uint16_t color)
+    {
+        int16_t maxR = ((w < h) ? w : h) / 2;
+        if (radius > maxR) radius = maxR;
+
+        // Central rectangle (full height, between corners)
+        fillRect(x + radius, y, w - 2 * radius, h, color);
+
+        // Two side rectangles (between the rounded parts)
+        fillRect(x, y + radius, radius, h - 2 * radius, color);
+        fillRect(x + w - radius, y + radius, radius, h - 2 * radius, color);
+
+        // Four filled quarter-circles at corners
+        int16_t cx1 = x + radius;
+        int16_t cy1 = y + radius;
+        int16_t cx2 = x + w - 1 - radius;
+        int16_t cy2 = y + h - 1 - radius;
+
+        int16_t f     = 1 - radius;
+        int16_t ddF_x = 1;
+        int16_t ddF_y = -2 * radius;
+        int16_t xi    = 0;
+        int16_t yi    = radius;
+
+        while (xi < yi) {
+            if (f >= 0) { yi--; ddF_y += 2; f += ddF_y; }
+            xi++; ddF_x += 2; f += ddF_x;
+
+            // Horizontal spans for each pair of symmetric points
+            drawHLine(cx2, cy1 - yi, xi + 1, color);  // top-right
+            drawHLine(cx1 - xi, cy1 - yi, xi + 1, color);  // top-left
+            drawHLine(cx2, cy2 + yi, xi + 1, color);  // bottom-right
+            drawHLine(cx1 - xi, cy2 + yi, xi + 1, color);  // bottom-left
+
+            drawHLine(cx2, cy1 - xi, yi + 1, color);
+            drawHLine(cx1 - yi, cy1 - xi, yi + 1, color);
+            drawHLine(cx2, cy2 + xi, yi + 1, color);
+            drawHLine(cx1 - yi, cy2 + xi, yi + 1, color);
+        }
+    }
+
+    
+    virtual void fillCircle(int16_t x, int16_t y, int16_t r, uint16_t color) {
+        // Midpoint filled circle using horizontal spans
+        drawVLine(x, y - r, 2 * r + 1, color);  // center column
+
+        int16_t f     = 1 - r;
+        int16_t ddF_x = 1;
+        int16_t ddF_y = -2 * r;
+        int16_t xi    = 0;
+        int16_t yi    = r;
+
+        while (xi < yi) {
+            if (f >= 0) { yi--; ddF_y += 2; f += ddF_y; }
+            xi++; ddF_x += 2; f += ddF_x;
+
+            drawHLine(x - xi, y + yi, 2 * xi + 1, color);
+            drawHLine(x - xi, y - yi, 2 * xi + 1, color);
+            drawHLine(x - yi, y + xi, 2 * yi + 1, color);
+            drawHLine(x - yi, y - xi, 2 * yi + 1, color);
+        }
+    }
+
+
     virtual void getTextBounds(const char* str, int16_t x, int16_t y,
                                int16_t* x1, int16_t* y1,
-                               uint16_t* w, uint16_t* h) = 0;
-
-
-    // --- Bitmap drawing ---
-    // Draw a 1-bit bitmap at (x, y) with the given foreground color.
-    // Each byte holds 8 horizontal pixels, MSB first.
-    virtual void drawBitmap(int16_t x, int16_t y,
-                            const uint8_t* bitmap,
-                            int16_t w, int16_t h,
-                            uint16_t color) {
-        (void)x; (void)y; (void)bitmap; (void)w; (void)h; (void)color;
+                               uint16_t* w, uint16_t* h) {
+        // crude fallback: assume fixed-width 6x8 font
+        uint16_t len = (uint16_t)strlen(str);
+        *x1 = x;
+        *y1 = y - 8;
+        *w  = len * 6;
+        *h  = 8;
     }
 
 
-    // Draw a 1-bit bitmap with foreground and background colors.
-    virtual void drawBitmap(int16_t x, int16_t y,
-                            const uint8_t* bitmap,
-                            int16_t w, int16_t h,
-                            uint16_t color, uint16_t bg) {
-        (void)x; (void)y; (void)bitmap; (void)w; (void)h; (void)color; (void)bg;
-    }
-   
-
-    // Push an RGB565 bitmap to the display at (x, y).
-    // Default implementation is a no-op; backends with canvas support override.
-    virtual void drawRGBBitmap(int16_t x, int16_t y,
-                               const uint16_t* bitmap,
-                               int16_t w, int16_t h) {
-        (void)x; (void)y; (void)bitmap; (void)w; (void)h;
+    virtual void fillScreen(uint16_t color) {
+        fillRect(0, 0, width(), height(), color);
     }
 
 
-    // --- Canvas (off-screen buffer) support ---
-    // Create an off-screen canvas matching the display dimensions.
-    // Returns a heap-allocated AFDisplayInterface that draws to a buffer.
-    // Caller owns the returned pointer.  Returns nullptr if not supported.
-    virtual AFDisplayInterface* createCanvas() { return nullptr; }
-
-    // Return the raw RGB565 pixel buffer of a canvas, or nullptr if N/A.
-    virtual const uint16_t* getCanvasBuffer() const { return nullptr; }
 };

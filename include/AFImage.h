@@ -1,6 +1,6 @@
 #pragma once
 
-//// AFCheckbox.h
+//// AFImage.h
 //// Part of the AWFUI library
 ////
 //// Lightweight checkbox widget for embedded UIs.
@@ -78,4 +78,3 @@ private:
     uint16_t m_w;
     uint16_t m_h;
 };
-

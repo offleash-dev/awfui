@@ -25,7 +25,22 @@ public:
     uint8_t getRotation() const override { return m_gfx.getRotation(); }
     void    setRotation(uint8_t r) override { m_gfx.setRotation(r); }
 
-    // --- Drawing primitives ---
+    // --- Core drawing primitives (from AFDisplayBase) ---
+    void drawPixel(int16_t x, int16_t y, uint16_t color) override {
+        m_gfx.drawPixel(x, y, color);
+    }
+
+
+    void drawHLine(int16_t x, int16_t y, int16_t w, uint16_t color) override {
+        m_gfx.drawFastHLine(x, y, w, color);
+    }
+
+
+    void drawVLine(int16_t x, int16_t y, int16_t h, uint16_t color) override {
+        m_gfx.drawFastVLine(x, y, h, color);
+    }
+
+    // --- Higher-level drawing (overrides AFDisplayInterface fallbacks) ---
     void fillScreen(uint16_t color) override {
         m_gfx.fillScreen(color);
     }

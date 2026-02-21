@@ -99,13 +99,11 @@ list(APPEND AFUI_HEADERS ${AFUI_ADAFRUIT_HEADERS})
 # -----------------------------------------------------------------------------
 if(AFUI_USE_SDL)
     set(AFUI_SDL_SOURCES
-        backends/sdl/gfx_sdl.cpp
+        backends/sdl/AFDisplaySDL.cpp
         backends/sdl/AFTouchSDL.cpp
-        # Adafruit_GFX source - needed for SDL builds (embedded builds link the full library)
-        ${CMAKE_CURRENT_SOURCE_DIR}/../Drivers/Adafruit/Adafruit-GFX/Adafruit_GFX.cpp
     )
     set(AFUI_SDL_HEADERS
-        backends/sdl/gfx_sdl.hpp
+        backends/sdl/AFDisplaySDL.h
         backends/sdl/AFTouchSDL.h
     )
     list(APPEND AFUI_SOURCES ${AFUI_SDL_SOURCES})
@@ -238,11 +236,15 @@ if(AFUI_BUILD_EXAMPLES)
     
     # Coordinate/rotation test demo
     add_executable(afui_test examples/test/main.cpp)
+
+    # Pure-SDL demo (no Adafruit_GFX dependency from app code)
+    add_executable(afui_justsdl examples/demo-justSdl/main.cpp)
     
     if(AFUI_USE_SDL)
         # SDL desktop build - only needs afui (which brings in SDL)
         target_link_libraries(afui_demo PRIVATE afui)
         target_link_libraries(afui_test PRIVATE afui)
+        target_link_libraries(afui_justsdl PRIVATE afui)
     else()
         # Embedded build - needs STM32 platform and ILI9341 driver
         include(cmake/stm32_platform.cmake)
@@ -254,6 +256,7 @@ if(AFUI_BUILD_EXAMPLES)
     if(MSVC OR (CMAKE_CXX_COMPILER_ID STREQUAL "Clang" AND WIN32))
         target_compile_definitions(afui_demo PRIVATE _CRT_SECURE_NO_WARNINGS)
         target_compile_definitions(afui_test PRIVATE _CRT_SECURE_NO_WARNINGS)
+        target_compile_definitions(afui_justsdl PRIVATE _CRT_SECURE_NO_WARNINGS)
     endif()
 endif()
 

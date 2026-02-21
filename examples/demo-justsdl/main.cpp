@@ -1,27 +1,12 @@
-// main.cpp
+// main.cpp — AWFUI demo using pure-SDL backend (no Adafruit_GFX)
 
 // Tell SDL we handle our own main() entry point
-#ifdef AFUI_USE_SDL
 #define SDL_MAIN_HANDLED
-#endif
 
-#include "AFDisplayAdafruitGFX.h"
-
-
-
-#ifdef AFUI_USE_SDL
 #include "AFDisplaySDL.h"
 #include "AFTouchSDL.h"
 
 
-
-#else
-#include <Adafruit_ILI9341.h>
-#include "AFFt6206Touch.h"
-
-
-
-#endif
 
 #include <stdio.h>
 
@@ -62,19 +47,9 @@ private:
 
 
 
-#ifdef AFUI_USE_SDL
-// SDL desktop simulation - 320x240 display at 2x scale
-AFDisplaySDL      display(240, 320);
+// Pure-SDL display — no Adafruit_GFX in the chain
+AFDisplaySDL display(240, 320, 2);
 AFTouchSDL   touch(2);
-#else
-// Example display - STM32L475 IoT01 board uses no-arg constructor
-// (pins are configured via BSP/HAL)
-Adafruit_ILI9341 tft;
-AFFt6206Touch    touch;
-
-AFDisplayAdafruitGFX display(tft);
-#endif
-
 
 AFWorld*       world;
 DemoScreen*    mainScreen;
@@ -84,20 +59,14 @@ AFModalDialog* dialog;
 
 
 void setup() {
-#ifdef AFUI_USE_SDL
       SDL_SetMainReady();
-#endif
-      display.begin();
 
+      display.begin();
       display.setRotation(1);
 
       touch.begin();
-#ifdef AFUI_USE_SDL
+
       AFWorld::init(display, &touch, &eventQueue);
-#else
-      touch.setRotation(1);
-      AFWorld::init(display, &touch, &eventQueue);
-#endif
       world = AFWorld::instance();
 
       // Create and register our custom screen
@@ -132,14 +101,13 @@ void setup() {
       dialog->addWidget(okBtn);
 }
 
-
-
 const int kFps                    = 60;
 const int kButtonIntervalFrames   = 5 * kFps;       // fire every 5 seconds
 int       eventCountdown          = kButtonIntervalFrames;
 
+
+
 void loop() {
-#ifdef AFUI_USE_SDL
       // Process SDL events and feed touch input
       SDL_Event e;
       while (SDL_PollEvent(&e)) {
@@ -148,7 +116,6 @@ void loop() {
             }
             touch.handleEvent(e);
       }
-#endif
 
       // Simulate a hardware button press every 5 seconds
       if (--eventCountdown <= 0) {
@@ -161,18 +128,14 @@ void loop() {
 
       world->loop();
 
-#ifdef AFUI_USE_SDL
       // Update the SDL window
       display.present();
       SDL_Delay(16);  // ~60 FPS
-#endif
 }
 
 
 
-// Entry point for Windows/Linux builds
-// On actual STM32, the Arduino framework or your startup code calls setup()/loop()
-#if defined(_WIN32) || defined(__linux__)
+// Entry point for Windows/Linux/macOS builds
 int main() {
       setup();
       while (true) {
@@ -180,4 +143,3 @@ int main() {
       }
       return 0;
 }
-#endif
