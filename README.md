@@ -4,7 +4,7 @@ MIT licensed. Designed for clarity, portability, and small systems.
 
 AWFUI (think “awww… fooey”) is a lightweight, embedded‑friendly UI framework. Using intentionally minimal C++, it provides a consistent widget model, a screen/state system, dialogs and modal overlays, and a unified event model.
 
-While based on Adafruit_GFX, AWFUI uses drawing and event abstraction layer to allow support for other hardware backends.  It includes an SDL-based backend to simplify desktop development and rapid prototyping.
+While based on AWFUI uses drawing and event abstraction layer to allow support for hardware backends.  It includes an SDL-based backend to simplify desktop development and rapid prototyping.
 
 Documentation is in /docs.
 
@@ -18,32 +18,38 @@ Documentation is in /docs.
 
 
 
-## macOS build (SDL desktop)
+## (SDL desktop)
 
+For desktop development, use the SDL backend. 
 This repository uses CMake presets (`CMakePresets.json`). On macOS, the easiest path is the SDL desktop build.
 
 Note: SDL presets disable Adafruit backend by default.
 
-Prerequisites:
-
+### Prerequisites:
 - CMake
 - Ninja
-- Clang (Xcode Command Line Tools)
+- C++17 compiler
 - SDL2 (either vendored as `../SDL2` or installed on your system)
 
+Tested C++ compilers include:
+- Clang (Xcode Command Line Tools on Mac)
+- GCC (MinGW on Windows)
+- MSVC (Visual Studio on Windows)
+
+### Build from a script   
 From the `modules/awfui` directory:
 
+#### Build on Mac
 ```sh
 ./buildAwfui.sh
 ```
 
-If ETL is installed elsewhere on your machine, pass it via `ETL_INCLUDE_DIR`:
-
+#### Build on Windows
 ```sh
-CMAKE_ARGS='-DETL_INCLUDE_DIR=/path/to/etl/include' ./buildAwfui.sh
+./buildAwfui.bat
 ```
 
-Or directly via presets:
+Or build directly via presets:
 
 ```sh
 cmake --preset sdl-ninja
