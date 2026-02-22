@@ -345,7 +345,7 @@ void loop() {
 
 
 // Entry point
-#if defined(_WIN32) || defined(__linux__) || defined(__APPLE__)
+#if defined(AFUI_USE_SDL)
 int main() {
       setup();
       while (true) {

@@ -5,22 +5,14 @@
 #define SDL_MAIN_HANDLED
 #endif
 
-#include "AFDisplayAdafruitGFX.h"
-
-
 
 #ifdef AFUI_USE_SDL
 #include "AFDisplaySDL.h"
 #include "AFTouchSDL.h"
-
-
-
 #else
+#include "AFDisplayAdafruitGFX.h"
 #include <Adafruit_ILI9341.h>
 #include "AFFt6206Touch.h"
-
-
-
 #endif
 
 #include <stdio.h>
@@ -169,10 +161,10 @@ void loop() {
 }
 
 
-
-// Entry point for Windows/Linux builds
-// On actual STM32, the Arduino framework or your startup code calls setup()/loop()
-#if defined(_WIN32) || defined(__linux__)
+ 
+ // Entry point for Windows/Linux builds
+ // On actual STM32, the Arduino framework or your startup code calls setup()/loop()
+#if defined(AFUI_USE_SDL)
 int main() {
       setup();
       while (true) {

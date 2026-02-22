@@ -25,7 +25,8 @@
             },
             "cacheVariables": {
                 "AFUI_USE_SDL": "ON",
-                "AFUI_BUILD_EXAMPLES": "ON"
+                "AFUI_BUILD_EXAMPLES": "ON",
+                "AFUI_USE_ADAFRUIT": "OFF"
             }
         },
         {
@@ -36,7 +37,8 @@
             "generator": "Ninja",
             "cacheVariables": {
                 "AFUI_USE_SDL": "ON",
-                "AFUI_BUILD_EXAMPLES": "ON"
+                "AFUI_BUILD_EXAMPLES": "ON",
+                "AFUI_USE_ADAFRUIT": "OFF"
             }
         },
         {

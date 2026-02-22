@@ -18,5 +18,34 @@ Documentation is in /docs.
 
 
 
+## macOS build (SDL desktop)
 
+This repository uses CMake presets (`CMakePresets.json`). On macOS, the easiest path is the SDL desktop build.
 
+Note: SDL presets disable Adafruit backend by default.
+
+Prerequisites:
+
+- CMake
+- Ninja
+- Clang (Xcode Command Line Tools)
+- SDL2 (either vendored as `../SDL2` or installed on your system)
+
+From the `modules/awfui` directory:
+
+```sh
+./buildAwfui.sh
+```
+
+If ETL is installed elsewhere on your machine, pass it via `ETL_INCLUDE_DIR`:
+
+```sh
+CMAKE_ARGS='-DETL_INCLUDE_DIR=/path/to/etl/include' ./buildAwfui.sh
+```
+
+Or directly via presets:
+
+```sh
+cmake --preset sdl-ninja
+cmake --build --preset sdl-ninja
+```

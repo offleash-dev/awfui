@@ -17,6 +17,7 @@ set(CMAKE_CXX_EXTENSIONS OFF)
 # -----------------------------------------------------------------------------
 option(AFUI_BUILD_EXAMPLES "Build the AFUI example applications" ON)
 option(AFUI_USE_SDL "Build with SDL backend for desktop simulation" ON)
+option(AFUI_USE_ADAFRUIT "Build with Adafruit_GFX-based backend" ON)
  
 # -----------------------------------------------------------------------------
 # Compiler settings (GCC-friendly, cross-platform)
@@ -83,16 +84,18 @@ set(AFUI_HEADERS
 # -----------------------------------------------------------------------------
 # Adafruit backend sources (display + touch for Adafruit_GFX-based drivers)
 # -----------------------------------------------------------------------------
-set(AFUI_ADAFRUIT_SOURCES
-    backends/adafruit/AFDisplayAdafruitGFX.cpp
-)
-set(AFUI_ADAFRUIT_HEADERS
-    backends/adafruit/AFAdafruitCompat.h
-    backends/adafruit/AFDisplayAdafruitGFX.h
-    backends/adafruit/AFFt6206Touch.h
-)
-list(APPEND AFUI_SOURCES ${AFUI_ADAFRUIT_SOURCES})
-list(APPEND AFUI_HEADERS ${AFUI_ADAFRUIT_HEADERS})
+if(AFUI_USE_ADAFRUIT)
+    set(AFUI_ADAFRUIT_SOURCES
+        backends/adafruit/AFDisplayAdafruitGFX.cpp
+    )
+    set(AFUI_ADAFRUIT_HEADERS
+        backends/adafruit/AFAdafruitCompat.h
+        backends/adafruit/AFDisplayAdafruitGFX.h
+        backends/adafruit/AFFt6206Touch.h
+    )
+    list(APPEND AFUI_SOURCES ${AFUI_ADAFRUIT_SOURCES})
+    list(APPEND AFUI_HEADERS ${AFUI_ADAFRUIT_HEADERS})
+endif()
 
 # -----------------------------------------------------------------------------
 # SDL backend sources (optional)
@@ -118,9 +121,14 @@ add_library(afui STATIC ${AFUI_SOURCES} ${AFUI_HEADERS})
 target_include_directories(afui
     PUBLIC
         $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
-        $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/backends/adafruit>
         $<INSTALL_INTERFACE:include>
 )
+
+if(AFUI_USE_ADAFRUIT)
+    target_include_directories(afui
+        PUBLIC $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/backends/adafruit>
+    )
+endif()
 
 if(AFUI_USE_SDL)
     target_include_directories(afui
@@ -139,18 +147,22 @@ endif()
 # When building standalone, provide paths via cache variables.
 # -----------------------------------------------------------------------------
 
-# Check if adafruit_gfx target exists (provided by parent project)
-if(TARGET adafruit_gfx)
-    target_link_libraries(afui PUBLIC adafruit_gfx)
-elseif(DEFINED ADAFRUIT_GFX_INCLUDE_DIR)
-    target_include_directories(afui
-        PUBLIC $<BUILD_INTERFACE:${ADAFRUIT_GFX_INCLUDE_DIR}>
-    )
-elseif(EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/../Drivers/Adafruit/Adafruit-GFX)
-    # Default: assume Adafruit_GFX is in Drivers/Adafruit/Adafruit-GFX
-    target_include_directories(afui
-        PUBLIC $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/../Drivers/Adafruit/Adafruit-GFX>
-    )
+if(AFUI_USE_ADAFRUIT)
+    # Check if adafruit_gfx target exists (provided by parent project)
+    if(TARGET adafruit_gfx)
+        target_link_libraries(afui PUBLIC adafruit_gfx)
+    elseif(DEFINED ADAFRUIT_GFX_INCLUDE_DIR)
+        target_include_directories(afui
+            PUBLIC $<BUILD_INTERFACE:${ADAFRUIT_GFX_INCLUDE_DIR}>
+        )
+    elseif(EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/../Drivers/Adafruit/Adafruit-GFX)
+        # Default: assume Adafruit_GFX is in Drivers/Adafruit/Adafruit-GFX
+        target_include_directories(afui
+            PUBLIC $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/../Drivers/Adafruit/Adafruit-GFX>
+        )
+    else()
+        message(FATAL_ERROR "AFUI_USE_ADAFRUIT is ON but Adafruit_GFX headers were not found. Set ADAFRUIT_GFX_INCLUDE_DIR or disable AFUI_USE_ADAFRUIT.")
+    endif()
 endif()
 
 # ETL (header-only library)
@@ -165,15 +177,19 @@ else()
     )
 endif()
 
-# Arduino compatibility layer for non-Arduino builds (e.g., STM32)
-if(DEFINED ARDUINO_COMPAT_INCLUDE_DIR)
-    target_include_directories(afui
-        PUBLIC $<BUILD_INTERFACE:${ARDUINO_COMPAT_INCLUDE_DIR}>
-    )
-elseif(EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/../Drivers/Adafruit/ArduinoCompat)
-    target_include_directories(afui
-        PUBLIC $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/../Drivers/Adafruit/ArduinoCompat>
-    )
+if(AFUI_USE_ADAFRUIT)
+    # Arduino compatibility layer for non-Arduino builds (e.g., STM32)
+    if(DEFINED ARDUINO_COMPAT_INCLUDE_DIR)
+        target_include_directories(afui
+            PUBLIC $<BUILD_INTERFACE:${ARDUINO_COMPAT_INCLUDE_DIR}>
+        )
+    elseif(EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/../Drivers/Adafruit/ArduinoCompat)
+        target_include_directories(afui
+            PUBLIC $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/../Drivers/Adafruit/ArduinoCompat>
+        )
+    else()
+        message(FATAL_ERROR "AFUI_USE_ADAFRUIT is ON but ArduinoCompat headers were not found. Set ARDUINO_COMPAT_INCLUDE_DIR or disable AFUI_USE_ADAFRUIT.")
+    endif()
 endif()
 
 # Define ARDUINO version so Adafruit headers take the right code paths
@@ -191,7 +207,17 @@ if(AFUI_USE_SDL)
         set(SDL_STATIC ON CACHE BOOL "Build SDL2 static library" FORCE)
         add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/../SDL2 ${CMAKE_BINARY_DIR}/SDL2)
         # Link static SDL2 - we use SDL_MAIN_HANDLED so no SDL2main needed
-        target_link_libraries(afui PUBLIC SDL2::SDL2-static)
+        if(TARGET SDL2::SDL2-static)
+            target_link_libraries(afui PUBLIC SDL2::SDL2-static)
+        elseif(TARGET SDL2::SDL2)
+            target_link_libraries(afui PUBLIC SDL2::SDL2)
+        elseif(TARGET SDL3::SDL3-static)
+            target_link_libraries(afui PUBLIC SDL3::SDL3-static)
+        elseif(TARGET SDL3::SDL3)
+            target_link_libraries(afui PUBLIC SDL3::SDL3)
+        else()
+            message(FATAL_ERROR "SDL was added from ../SDL2 but no known SDL2/SDL3 CMake targets were found.")
+        endif()
     else()
         # Fall back to system-installed SDL2
         find_package(SDL2 REQUIRED)

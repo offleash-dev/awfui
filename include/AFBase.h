@@ -16,6 +16,8 @@
 //// Licensed under the MIT License. See LICENSE file for details.
 
 
+#include <cstddef>
+
 #include "AFResult.h"
 #include "AFVersion.h"
 
