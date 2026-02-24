@@ -37,6 +37,7 @@
   - **Panel layering / z-order** — the `m_zOrder` field exists on AFPanel but is unused. Enabling it would allow stacked panels with proper ordering, but the use case on small screens is limited. This might require some type of AFDialogList.
 
   #### Events
+- m_eventMask added to widgets to optimize event delivery, e.g. for text events
 
   - **`onExternalEvent()` routing to panels/dialogs** — currently screen-level only. If a panel or dialog needs to handle a custom event (kButton, kKey, kCustom), the screen subclass must manually route it. Consider propagating non-positional events down the widget tree.
 

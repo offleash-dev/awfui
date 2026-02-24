@@ -79,20 +79,20 @@ AFWidget* AFPanel::widgetAt(int16_t px, int16_t py) {
 
 // Draw panel and child widgets
 //
-void AFPanel::draw(AFDisplayInterface& gfx) {
+void AFPanel::draw(AFDisplayInterface& displayInterface) {
       if (!m_visible)
             return;
 
       if (m_opaque) {
             const AFTheme& theme = AFWorld::instance()->getTheme();
-            gfx.fillRect(m_x, m_y, m_width, m_height, theme.widgetBgColor);
-            gfx.drawRect(m_x, m_y, m_width, m_height, theme.widgetBorderColor);
+            displayInterface.fillRect(m_x, m_y, m_width, m_height, theme.widgetBgColor);
+            displayInterface.drawRect(m_x, m_y, m_width, m_height, theme.widgetBorderColor);
       }
 
       // Draw child widgets
       for (auto* w : m_widgets) {
             if (w->isVisible()) {
-                  w->draw(gfx);
+                  w->draw(displayInterface);
             }
       }
 }
@@ -115,6 +115,8 @@ void AFPanel::handleEvent(const AFEvent& e) {
       // Hit-test child widgets in reverse order (topmost first)
       for (int i = static_cast<int>(m_widgets.size()) - 1; i >= 0; --i) {
             AFWidget* w = m_widgets[i];
+
+            if (!(w->m_eventMask & eventMaskForType(e.type))) continue;
 
             if (w->isVisible() && w->hitTest(e.x, e.y)) {
                   // Dispatch based on event type

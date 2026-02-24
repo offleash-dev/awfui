@@ -39,6 +39,10 @@ struct AFSize {
       int16_t h;
 };
 
+struct AFRect {
+    int16_t x, y, w, h;
+};
+
 
 
 enum AFJustification {

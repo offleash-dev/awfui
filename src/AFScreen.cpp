@@ -162,6 +162,9 @@ void AFScreen::handleEvent(const AFEvent& e) {
             // Then route to root-level widgets
             for (int i = static_cast<int>(m_widgets.size()) - 1; i >= 0; --i) {
                   AFWidget* w = m_widgets[i];
+                  
+                  if (!(w->m_eventMask & eventMaskForType(e.type))) continue;
+
                   if (w->isVisible() && w->hitTest(e.x, e.y)) {
                         switch (e.type) {
                               case AFEventType::kTouchDown:
@@ -210,8 +213,8 @@ void AFScreen::setNeedsFullRedraw() {
 // Clear the screen to the specified color (default from theme)
 //
 void AFScreen::clear(uint16_t color) {
-      AFDisplayInterface* gfx = m_canvas ? m_canvas : &m_display;
-      gfx->fillScreen(color);
+      AFDisplayInterface* displayInterface = m_canvas ? m_canvas : &m_display;
+      displayInterface->fillScreen(color);
 
       // If using canvas, push to display
       if (m_canvas) {
@@ -260,15 +263,15 @@ void AFScreen::draw() {
         m_needsScreenRedraw = false;
     }
 
-    AFDisplayInterface* gfx = m_canvas ? m_canvas : &m_display;
+    AFDisplayInterface* displayInterface = m_canvas ? m_canvas : &m_display;
 
     // Let subclass paint a custom background (game, camera, map, etc.)
-    onDrawBackground(*gfx);
+    onDrawBackground(*displayInterface);
 
     // Draw root-level widgets (only dirty ones in non-canvas mode)
     for (auto* w : m_widgets) {
         if (w->isVisible() && w->isDirty()) {
-            w->draw(*gfx);
+            w->draw(*displayInterface);
             w->clearDirty();
         }
     }
@@ -276,14 +279,14 @@ void AFScreen::draw() {
     // Draw panels
     for (auto* p : m_panels) {
         if (p->isVisible() && p->isDirty()) {
-            p->draw(*gfx);
+            p->draw(*displayInterface);
             p->clearDirty();
         }
     }
 
     // Draw modal dialog last (on top)
     if (m_activeModal && m_activeModal->isVisible() && m_activeModal->isDirty()) {
-        m_activeModal->draw(*gfx);
+        m_activeModal->draw(*displayInterface);
         m_activeModal->clearDirty();
     }
 
