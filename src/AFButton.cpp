@@ -63,7 +63,7 @@ void AFButton::setPressedColors(uint16_t bg, uint16_t fg, uint16_t border) {
 
 // Draw the button
 //
-void AFButton::draw(AFDisplayInterface& gfx) {
+void AFButton::draw(AFDisplayInterface& displayInterface) {
       if (!m_visible)
             return;
 
@@ -81,19 +81,19 @@ void AFButton::draw(AFDisplayInterface& gfx) {
       uint8_t radius = AFWorld::instance()->getTheme().widgetCornerRadius;
 
       // Draw background
-      gfx.fillRoundRect(m_x, m_y, m_width, m_height, radius, bg);
+      displayInterface.fillRoundRect(m_x, m_y, m_width, m_height, radius, bg);
 
       // Draw border
-      gfx.drawRoundRect(m_x, m_y, m_width, m_height, radius, border);
+      displayInterface.drawRoundRect(m_x, m_y, m_width, m_height, radius, border);
 
       // Draw label with justification
       if (m_label && strlen(m_label) > 0) {
-            gfx.setTextSize(m_textSize);
-            gfx.setTextColor(fg);
+            displayInterface.setTextSize(m_textSize);
+            displayInterface.setTextColor(fg);
 
             int16_t  x1, y1;
             uint16_t w, h;
-            gfx.getTextBounds(m_label, 0, 0, &x1, &y1, &w, &h);
+            displayInterface.getTextBounds(m_label, 0, 0, &x1, &y1, &w, &h);
 
             int16_t tx, ty;
 
@@ -114,8 +114,8 @@ void AFButton::draw(AFDisplayInterface& gfx) {
             // Vertical centering
             ty = m_y + (m_height - h) / 2;
 
-            gfx.setCursor(tx, ty);
-            gfx.print(m_label);
+            displayInterface.setCursor(tx, ty);
+            displayInterface.print(m_label);
       }
 }
 

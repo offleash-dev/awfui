@@ -58,7 +58,7 @@ void AFRadioButton::setSelected(bool sel) {
 
 
 
-void AFRadioButton::draw(AFDisplayInterface& gfx) {
+void AFRadioButton::draw(AFDisplayInterface& displayInterface) {
     if (!m_visible)
         return;
 
@@ -74,31 +74,31 @@ void AFRadioButton::draw(AFDisplayInterface& gfx) {
 
     // Clear interior so deselected dot is erased
     uint16_t bgColor = AFWorld::instance()->getTheme().screenBgColor;
-    gfx.fillCircle(m_x + m_radius, m_y + m_radius, m_radius, bgColor);
+    displayInterface.fillCircle(m_x + m_radius, m_y + m_radius, m_radius, bgColor);
 
     // Outer circle
-    gfx.drawCircle(m_x + m_radius, m_y + m_radius, m_radius, circleColor);
+    displayInterface.drawCircle(m_x + m_radius, m_y + m_radius, m_radius, circleColor);
 
     // Filled dot if selected
     if (m_selected) {
-        gfx.fillCircle(m_x + m_radius, m_y + m_radius, m_radius / 2, dotColor);
+        displayInterface.fillCircle(m_x + m_radius, m_y + m_radius, m_radius / 2, dotColor);
     }
 
     // Label
     if (m_label && strlen(m_label) > 0) {
-        gfx.setTextSize(m_textSize);
-        gfx.setTextColor(labelColor);
+        displayInterface.setTextSize(m_textSize);
+        displayInterface.setTextColor(labelColor);
 
         int16_t x1, y1;
         uint16_t w, h;
-        gfx.getTextBounds(m_label, 0, 0, &x1, &y1, &w, &h);
+        displayInterface.getTextBounds(m_label, 0, 0, &x1, &y1, &w, &h);
 
         int16_t gap = 6;
         int16_t tx = m_x + m_radius * 2 + gap;
         int16_t ty = m_y + (m_radius * 2 - h) / 2;
 
-        gfx.setCursor(tx, ty);
-        gfx.print(m_label);
+        displayInterface.setCursor(tx, ty);
+        displayInterface.print(m_label);
     }
 }
 

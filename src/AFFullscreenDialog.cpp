@@ -27,7 +27,7 @@ AFFullscreenDialog::AFFullscreenDialog(uint32_t id)
 //
 void AFFullscreenDialog::show(AFScreen& screen) {
       // Get screen dimensions and resize to fill
-      AFDisplayInterface& display = screen.getDisplay();
+      const AFDisplayInterface& display = screen.getDisplay();
       m_x = 0;
       m_y = 0;
       m_width = display.width();
@@ -41,17 +41,17 @@ void AFFullscreenDialog::show(AFScreen& screen) {
 
 // Draw: fullscreen, no border, simple background
 //
-void AFFullscreenDialog::draw(AFDisplayInterface& gfx) {
+void AFFullscreenDialog::draw(AFDisplayInterface& displayInterface) {
       if (!m_visible)
             return;
 
       // Fill entire screen area
-      gfx.fillRect(m_x, m_y, m_width, m_height, AFWorld::instance()->getTheme().screenBgColor);
+      displayInterface.fillRect(m_x, m_y, m_width, m_height, AFWorld::instance()->getTheme().screenBgColor);
 
       // Draw child widgets
       for (auto* w : m_widgets) {
             if (w->isVisible()) {
-                  w->draw(gfx);
+                  w->draw(displayInterface);
             }
       }
 }

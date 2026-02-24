@@ -37,7 +37,7 @@ public:
 
     void setOnSelectCallback(AFRadioCallback cb) { m_onSelectCallback = cb; }
 
-    void draw(AFDisplayInterface& gfx) override;
+    void draw(AFDisplayInterface& displayInterface) override;
     void onClick(const AFEvent& e) override;
 
 

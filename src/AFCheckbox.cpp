@@ -68,7 +68,7 @@ void AFCheckbox::setChecked(bool checked) {
 
 // Draw the checkbox
 //
-void AFCheckbox::draw(AFDisplayInterface& gfx) {
+void AFCheckbox::draw(AFDisplayInterface& displayInterface) {
       if (!m_visible) {
             return;
       }
@@ -89,8 +89,8 @@ void AFCheckbox::draw(AFDisplayInterface& gfx) {
       }
 
       // Draw checkbox box
-      gfx.fillRoundRect(m_x, m_y, m_boxSize, m_boxSize, radius, boxColor);
-      gfx.drawRoundRect(m_x, m_y, m_boxSize, m_boxSize, radius, borderColor);
+      displayInterface.fillRoundRect(m_x, m_y, m_boxSize, m_boxSize, radius, boxColor);
+      displayInterface.drawRoundRect(m_x, m_y, m_boxSize, m_boxSize, radius, borderColor);
 
       // Draw check mark if checked
       if (m_checked) {
@@ -100,18 +100,18 @@ void AFCheckbox::draw(AFDisplayInterface& gfx) {
             int16_t x1 = m_x + m_boxSize - 3;
             int16_t y1 = m_y + m_boxSize - 3;
 
-            gfx.drawLine(x0, y0, x1, y1, checkColor);
-            gfx.drawLine(x0, y1, x1, y0, checkColor);
+            displayInterface.drawLine(x0, y0, x1, y1, checkColor);
+            displayInterface.drawLine(x0, y1, x1, y0, checkColor);
       }
 
       // Draw label (if any)
       if (m_label && strlen(m_label) > 0) {
-            gfx.setTextSize(m_textSize);
-            gfx.setTextColor(labelColor);
+            displayInterface.setTextSize(m_textSize);
+            displayInterface.setTextColor(labelColor);
 
             int16_t  x1, y1;
             uint16_t w, h;
-            gfx.getTextBounds(m_label, 0, 0, &x1, &y1, &w, &h);
+            displayInterface.getTextBounds(m_label, 0, 0, &x1, &y1, &w, &h);
 
             // Horizontal: box + small gap, then label
             int16_t gap = 4;
@@ -120,8 +120,8 @@ void AFCheckbox::draw(AFDisplayInterface& gfx) {
             // Vertical: center label relative to box
             int16_t ty = m_y + (m_boxSize - h) / 2;
 
-            gfx.setCursor(tx, ty);
-            gfx.print(m_label);
+            displayInterface.setCursor(tx, ty);
+            displayInterface.print(m_label);
       }
 }
 

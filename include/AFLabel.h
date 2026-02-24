@@ -55,8 +55,8 @@ public:
       }
       
 
-      virtual void draw(AFDisplayInterface& gfx) override;
-      virtual void erase(AFDisplayInterface& gfx) override;
+      virtual void draw(AFDisplayInterface& displayInterface) override;
+      virtual void erase(AFDisplayInterface& displayInterface) override;
 
       
 private:

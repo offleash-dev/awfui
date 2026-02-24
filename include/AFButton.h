@@ -47,7 +47,7 @@ public:
       }
 
       // Drawing
-      void draw(AFDisplayInterface& gfx) override;
+      void draw(AFDisplayInterface& displayInterface) override;
 
       // Event handling
       void onPress(const AFEvent& e) override;

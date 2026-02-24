@@ -22,5 +22,5 @@ public:
       void show(AFScreen& screen) override;
 
       // No border/chrome by default
-      virtual void draw(AFDisplayInterface& gfx) override;
+      virtual void draw(AFDisplayInterface& displayInterface) override;
 };

@@ -60,7 +60,7 @@ public:
       }
 
 
-      void draw(AFDisplayInterface& gfx) override;
+      void draw(AFDisplayInterface& displayInterface) override;
 
       // Event handling
       void onClick(const AFEvent& e) override;

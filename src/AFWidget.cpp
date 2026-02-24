@@ -31,17 +31,17 @@ bool AFWidget::hitTest(int16_t px, int16_t py) const {
 
 
 
-void AFWidget::erase(AFDisplayInterface& gfx, int16_t x, int16_t y, int16_t w, int16_t h) {
+void AFWidget::erase(AFDisplayInterface& displayInterface, int16_t x, int16_t y, int16_t w, int16_t h) {
       uint16_t fillColor = AFWorld::instance()->getTheme().widgetBgColor;
       if (!m_enabled)
             fillColor = AFWorld::instance()->getTheme().widgetDisabledBgColor;
-      gfx.fillRect(x, y, w, h, fillColor);
+      displayInterface.fillRect(x, y, w, h, fillColor);
 }
     
 
 
-void AFWidget::erase(AFDisplayInterface& gfx) {
+void AFWidget::erase(AFDisplayInterface& displayInterface) {
       if (m_width != 0 && m_height != 0) {
-            erase(gfx, m_x, m_y, m_width, m_height);
+            erase(displayInterface, m_x, m_y, m_width, m_height);
       }
 }

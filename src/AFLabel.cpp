@@ -34,34 +34,34 @@ AFLabel::AFLabel(int16_t x, int16_t y, int16_t w, int16_t h, const char* text, u
 
 // Draw the label
 //
-void AFLabel::draw(AFDisplayInterface& gfx) {
+void AFLabel::draw(AFDisplayInterface& displayInterface) {
       if (!m_visible || m_text == nullptr) {
             return;
       }
 
       // Erase previous text region before redrawing
       if (m_lastDrawW > 0 && m_lastDrawH > 0) {
-            AFWidget::erase(gfx, m_lastDrawX, m_lastDrawY, m_lastDrawW, m_lastDrawH);
+            AFWidget::erase(displayInterface, m_lastDrawX, m_lastDrawY, m_lastDrawW, m_lastDrawH);
       }
 
-      gfx.setTextSize(m_textSize);
+      displayInterface.setTextSize(m_textSize);
 
       uint16_t color = (m_color < 0) ? AFWorld::instance()->getTheme().widgetTextColor : static_cast<uint16_t>(m_color);
-      gfx.setTextColor(color);
+      displayInterface.setTextColor(color);
 
       if (!m_enabled) {
             color = AFWorld::instance()->getTheme().widgetDisabledFgColor;
-            gfx.setTextColor(color);
+            displayInterface.setTextColor(color);
       }
 
       if (m_width == 0 && m_height == 0) {
             // this just a positioned text label
             int16_t  x1, y1;
             uint16_t w, h;
-            gfx.getTextBounds(m_text, m_x, m_y, &x1, &y1, &w, &h);
+            displayInterface.getTextBounds(m_text, m_x, m_y, &x1, &y1, &w, &h);
 
-            gfx.setCursor(m_x, m_y);
-            gfx.print(m_text);
+            displayInterface.setCursor(m_x, m_y);
+            displayInterface.print(m_text);
 
             // Save drawn bounds for next erase
             m_lastDrawX = x1;
@@ -72,7 +72,7 @@ void AFLabel::draw(AFDisplayInterface& gfx) {
             // this is a bordered text label that supports justification
             int16_t  x1, y1;
             uint16_t w, h;
-            gfx.getTextBounds(m_text, 0, 0, &x1, &y1, &w, &h);
+            displayInterface.getTextBounds(m_text, 0, 0, &x1, &y1, &w, &h);
 
             int16_t tx, ty;
 
@@ -93,8 +93,8 @@ void AFLabel::draw(AFDisplayInterface& gfx) {
             // Vertical centering
             ty = m_y + (m_height - h) / 2;
 
-            gfx.setCursor(tx, ty);
-            gfx.print(m_text);
+            displayInterface.setCursor(tx, ty);
+            displayInterface.print(m_text);
 
             // Save drawn bounds for next erase
             m_lastDrawX = m_x;
@@ -108,14 +108,14 @@ void AFLabel::draw(AFDisplayInterface& gfx) {
 
 // Erase the area of the text so it can be rewritten (or hidden or whatever)
 //
-void AFLabel::erase(AFDisplayInterface& gfx) {
+void AFLabel::erase(AFDisplayInterface& displayInterface) {
       if (m_width != 0 && m_height != 0) {
-            AFWidget::erase(gfx);
+            AFWidget::erase(displayInterface);
       } else {
             // need to calculate our bounding box to erase it.
             int16_t  x1, y1;
             uint16_t w, h;
-            gfx.getTextBounds(m_text, m_x, m_y, &x1, &y1, &w, &h);
-            AFWidget::erase(gfx, x1, y1, w, h);
+            displayInterface.getTextBounds(m_text, m_x, m_y, &x1, &y1, &w, &h);
+            AFWidget::erase(displayInterface, x1, y1, w, h);
       }
 }

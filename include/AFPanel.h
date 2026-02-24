@@ -31,7 +31,7 @@ public:
 
       AFWidget* widgetAt(int16_t px, int16_t py);
 
-      virtual void draw(AFDisplayInterface& gfx) override;
+      virtual void draw(AFDisplayInterface& displayInterface) override;
       virtual void handleEvent(const AFEvent& e);
 
       

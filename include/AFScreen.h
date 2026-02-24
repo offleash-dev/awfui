@@ -51,6 +51,10 @@ public:
             return m_display;
       }
 
+      const AFDisplayInterface& getDisplay() const {
+            return m_display;
+      }
+
 
       uint32_t getId() const {
             return m_id;
@@ -66,8 +70,8 @@ protected:
 
       // Override in subclass to draw a custom background before widgets
       // (e.g. game frame, camera feed, map).  Called each frame before widget drawing.
-      virtual void onDrawBackground(AFDisplayInterface& gfx) {
-            unused(gfx);
+      virtual void onDrawBackground(AFDisplayInterface& displayInterface) {
+            unused(displayInterface);
       }
 
       

@@ -22,9 +22,9 @@ public:
     AFWidget(int16_t x, int16_t y, int16_t w, int16_t h, uint32_t id = 0);
     virtual ~AFWidget() = default;
 
-    virtual void draw(AFDisplayInterface& gfx) = 0;
+    virtual void draw(AFDisplayInterface& displayInterface) = 0;
     virtual bool hitTest(int16_t px, int16_t py) const;
-    virtual void erase(AFDisplayInterface& gfx);
+    virtual void erase(AFDisplayInterface& displayInterface);
 
 
     virtual void onPress(const AFEvent& e) {
@@ -119,7 +119,7 @@ public:
     }
 
 
-    void erase(AFDisplayInterface& gfx, int16_t x, int16_t y, int16_t w, int16_t h);
+    void erase(AFDisplayInterface& displayInterface, int16_t x, int16_t y, int16_t w, int16_t h);
 
 
 protected:
@@ -130,6 +130,7 @@ protected:
     bool      m_dirty   = true;  // Start dirty so initial draw happens
     bool      m_owned   = false; // If true, container will delete this widget
     uint32_t   m_id;
+    uint8_t   m_eventMask = kEventTouch;  // default touch only
     AFWidget* m_parent  = nullptr;
     AFJustification m_justification = AFJustificationCenter;
 
