@@ -11,7 +11,7 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
 
 
-
+ 
 # -----------------------------------------------------------------------------
 # Options
 # -----------------------------------------------------------------------------
@@ -47,6 +47,7 @@ set(AFUI_SOURCES
     src/AFImageWidget.cpp
     src/AFImageButton.cpp
     src/AFLabel.cpp
+    src/AFLayoutHelpers.cpp
     src/AFModalDialog.cpp
     src/AFRadioButton.cpp
     src/AFRadioButtonGroup.cpp
@@ -69,6 +70,7 @@ set(AFUI_HEADERS
     include/AFImageWidget.h
     include/AFImageButton.h
     include/AFLabel.h
+    include/AFLayoutHelpers.h
     include/AFModalDialog.h
     include/AFRadioButton.h
     include/AFRadioButtonGroup.h
@@ -265,12 +267,16 @@ if(AFUI_BUILD_EXAMPLES)
 
     # Pure-SDL demo (no Adafruit_GFX dependency from app code)
     add_executable(afui_justsdl examples/demo-justSdl/main.cpp)
+
+    # Keypad demo
+    add_executable(afui_keypad examples/keypad/main.cpp)
     
     if(AFUI_USE_SDL)
         # SDL desktop build - only needs afui (which brings in SDL)
         target_link_libraries(afui_demo PRIVATE afui)
         target_link_libraries(afui_test PRIVATE afui)
         target_link_libraries(afui_justsdl PRIVATE afui)
+        target_link_libraries(afui_keypad PRIVATE afui)
     else()
         # Embedded build - needs STM32 platform and ILI9341 driver
         include(cmake/stm32_platform.cmake)
@@ -283,6 +289,7 @@ if(AFUI_BUILD_EXAMPLES)
         target_compile_definitions(afui_demo PRIVATE _CRT_SECURE_NO_WARNINGS)
         target_compile_definitions(afui_test PRIVATE _CRT_SECURE_NO_WARNINGS)
         target_compile_definitions(afui_justsdl PRIVATE _CRT_SECURE_NO_WARNINGS)
+        target_compile_definitions(afui_keypad PRIVATE _CRT_SECURE_NO_WARNINGS)
     endif()
 endif()
 
