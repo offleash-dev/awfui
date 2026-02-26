@@ -66,6 +66,11 @@ public:
     // Main UI loop.  Call from main while loop or UI task
     void loop();
 
+    // Optional: set a volatile flag that an ISR sets when the touch controller
+    // has data ready.  When set, pollHardware() skips I2C reads while idle.
+    // Pass nullptr (default) to poll every tick.
+    void setTouchReadyFlag(volatile bool* flag) { m_touchReady = flag; }
+
     // Transform touch coordinates from physical screen space to rotated display space.
     // Usable by external touch tasks that post events via the event queue.
     static void transformTouchCoordinates(int16_t& x, int16_t& y,
@@ -83,9 +88,10 @@ private:
     AFTheme            m_theme;
 
     // Touch state tracking for press/release detection
-    bool    m_wasTouched = false;
-    int16_t m_lastTouchX = 0;
-    int16_t m_lastTouchY = 0;
+    bool    m_wasTouched  = false;
+    int16_t m_lastTouchX  = 0;
+    int16_t m_lastTouchY  = 0;
+    volatile bool* m_touchReady = nullptr;  // optional ISR flag
 
     // Single source of truth for screens
     AFScreenList m_screenList;

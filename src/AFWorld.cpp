@@ -171,6 +171,15 @@ void AFWorld::pollHardware(AFEvent& outEvent) {
 
     // Poll touch if available
     if (m_touch) {
+        // If an ISR flag is provided, skip the read when idle
+        // (no interrupt fired and no active touch in progress)
+        if (m_touchReady && !(*m_touchReady) && !m_wasTouched) {
+            return;
+        }
+        if (m_touchReady) {
+            *m_touchReady = false;
+        }
+
         AFTouchPoint pt = m_touch->getPoint();
 
         if (pt.touched || m_wasTouched) {
