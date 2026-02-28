@@ -51,6 +51,7 @@ public:
             return m_display;
       }
 
+
       const AFDisplayInterface& getDisplay() const {
             return m_display;
       }

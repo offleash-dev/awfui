@@ -27,11 +27,13 @@ public:
         markDirty();
     }
 
+
     void setValue(int v) {
         m_value = v;
         clampValue();
         markDirty();
     }
+
 
     int value() const { return m_value; }
     int minimum() const { return m_minimum; }
@@ -46,6 +48,7 @@ protected:
         if (m_value < m_minimum) m_value = m_minimum;
         if (m_value > m_maximum) m_value = m_maximum;
     }
+
 
     int range() const { return m_maximum - m_minimum; }
 };
