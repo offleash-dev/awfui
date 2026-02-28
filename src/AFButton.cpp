@@ -90,32 +90,7 @@ void AFButton::draw(AFDisplayInterface& displayInterface) {
       if (m_label && strlen(m_label) > 0) {
             displayInterface.setTextSize(m_textSize);
             displayInterface.setTextColor(fg);
-
-            int16_t  x1, y1;
-            uint16_t w, h;
-            displayInterface.getTextBounds(m_label, 0, 0, &x1, &y1, &w, &h);
-
-            int16_t tx, ty;
-
-            // Horizontal justification
-            switch (m_justification) {
-                  case AFJustificationCenter:
-                        tx = m_x + (m_width - w) / 2;
-                        break;
-                  case AFJustificationRight:
-                        tx = m_x + m_width - w;
-                        break;
-                  case AFJustificationLeft:
-                  default:
-                        tx = m_x;
-                        break;
-            }
-
-            // Vertical centering
-            ty = m_y + (m_height - h) / 2;
-
-            displayInterface.setCursor(tx, ty);
-            displayInterface.print(m_label);
+            displayInterface.drawTextJustified(m_label, m_x, m_y, m_width, m_height, m_justification);
       }
 }
 

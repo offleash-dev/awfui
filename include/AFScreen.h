@@ -87,4 +87,5 @@ private:
       etl::vector<AFWidget*, MAX_WIDGETS_PER_SCREEN> m_widgets;
       etl::vector<AFPanel*, MAX_DIALOGS_PER_SCREEN> m_panels;
       AFModalDialog*                                 m_activeModal = nullptr;
+      AFWidget*                                      m_pressedWidget = nullptr;  // implicit capture for drag
 };

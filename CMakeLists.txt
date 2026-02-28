@@ -49,10 +49,12 @@ set(AFUI_SOURCES
     src/AFLabel.cpp
     src/AFLayoutHelpers.cpp
     src/AFModalDialog.cpp
+    src/AFProgressBar.cpp
     src/AFRadioButton.cpp
     src/AFRadioButtonGroup.cpp
     src/AFScreen.cpp
     src/AFScreenList.cpp
+    src/AFSlider.cpp
     src/AFWidget.cpp
     src/AFWorld.cpp
 )
@@ -72,11 +74,14 @@ set(AFUI_HEADERS
     include/AFLabel.h
     include/AFLayoutHelpers.h
     include/AFModalDialog.h
+    include/AFProgressBar.h
     include/AFRadioButton.h
     include/AFRadioButtonGroup.h
     include/AFResult.h
     include/AFScreen.h
     include/AFScreenList.h
+    include/AFSlider.h
+    include/AFValueWidget.h
     include/AFTheme.h
     include/AFTouchInterface.h
     include/AFWidget.h

@@ -16,6 +16,7 @@
 #include <cmath>
 #include <cstring>
 
+#include "AFBase.h"
 #include "AFDisplayBase.h"
 
 
@@ -209,6 +210,39 @@ public:
 
     virtual void fillScreen(uint16_t color) {
         fillRect(0, 0, width(), height(), color);
+    }
+
+
+    // Draw text within a bounding box with horizontal justification and vertical centering.
+    // textSize and textColor must be set by the caller before calling this on a real implementation.
+    // (the default only supports a single size)
+    void drawTextJustified(const char* text,
+                           int16_t x, int16_t y, int16_t w, int16_t h,
+                           AFJustification justification) {
+        if (!text || text[0] == '\0') return;
+
+        int16_t  x1, y1;
+        uint16_t tw, th;
+        getTextBounds(text, 0, 0, &x1, &y1, &tw, &th);
+
+        int16_t tx;
+        switch (justification) {
+            case AFJustificationCenter:
+                tx = x + (w - tw) / 2;
+                break;
+            case AFJustificationRight:
+                tx = x + w - tw;
+                break;
+            case AFJustificationLeft:
+            default:
+                tx = x;
+                break;
+        }
+
+        int16_t ty = y + (h - th) / 2;
+
+        setCursor(tx, ty);
+        print(text);
     }
 
 

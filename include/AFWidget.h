@@ -32,6 +32,11 @@ public:
     }
 
 
+    virtual void onMove(const AFEvent& e) {
+          unused(e);
+    }
+
+
     virtual void onRelease(const AFEvent& e) {
           unused(e);
     }

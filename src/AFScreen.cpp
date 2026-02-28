@@ -145,10 +145,27 @@ void AFScreen::handleEvent(const AFEvent& e) {
             return;
       }
 
-      // --- Touch events: route by hit-test ---
+      // --- Touch events: route with implicit capture ---
       if (e.type == AFEventType::kTouchDown ||
           e.type == AFEventType::kTouchUp   ||
           e.type == AFEventType::kTouchMove) {
+
+            // Move/Up go to captured widget (no hit-test)
+            if (e.type == AFEventType::kTouchMove && m_pressedWidget) {
+                  m_pressedWidget->onMove(e);
+                  return;
+            }
+            if (e.type == AFEventType::kTouchUp && m_pressedWidget) {
+                  AFWidget* w = m_pressedWidget;
+                  m_pressedWidget = nullptr;
+                  w->onRelease(e);
+                  if (w->hitTest(e.x, e.y)) {
+                        w->onClick(e);
+                  }
+                  return;
+            }
+
+            // kTouchDown: hit-test to find and capture a widget
 
             // First route to panels (topmost last)
             for (int i = static_cast<int>(m_panels.size()) - 1; i >= 0; --i) {
@@ -166,20 +183,8 @@ void AFScreen::handleEvent(const AFEvent& e) {
                   if (!(w->m_eventMask & eventMaskForType(e.type))) continue;
 
                   if (w->isVisible() && w->hitTest(e.x, e.y)) {
-                        switch (e.type) {
-                              case AFEventType::kTouchDown:
-                                    w->onPress(e);
-                                    break;
-                              case AFEventType::kTouchUp:
-                                    w->onRelease(e);
-                                    w->onClick(e);
-                                    break;
-                              case AFEventType::kTouchMove:
-                                    // Optional: add hover/drag later
-                                    break;
-                              default:
-                                    break;
-                        }
+                        m_pressedWidget = w;
+                        w->onPress(e);
                         return;
                   }
             }

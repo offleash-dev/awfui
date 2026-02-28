@@ -82,11 +82,48 @@ Abstract base class for all visible UI elements. Every widget has position, size
 virtual void draw(AFDisplayInterface& gfx) = 0;
 virtual bool hitTest(int16_t px, int16_t py) const;
 virtual void onPress(const AFEvent& e);
+virtual void onMove(const AFEvent& e);
 virtual void onRelease(const AFEvent& e);
 virtual void onClick(const AFEvent& e);
 ```
 
 **State:** `setVisible()`, `setEnabled()`, and `markDirty()` all trigger a redraw on the next pass. Disabled widgets still draw (using theme disabled colors) but do not respond to input.
+
+
+### Widget Customization
+
+Widgets can be customized in two ways:
+
+**C++ style — inherit and override.** Subclass any widget and override its interaction virtuals (`onPress`, `onMove`, `onRelease`, `onClick`) to add or change behavior. This gives full access to widget state and the event data.
+
+```cpp
+class MyButton : public AFButton {
+public:
+    using AFButton::AFButton;
+    void onClick(const AFEvent& e) override {
+        // custom click behavior with access to e.x, e.y, widget state, etc.
+    }
+};
+```
+
+**C style — set a callback.** All interactive widgets provide a `setOnXxxCallback()` method that accepts a plain C function pointer. The callback fires at the widget's natural "action complete" moment and passes the result value appropriate to that widget type.
+
+| Widget | Setter | Signature | Fires when |
+|--------|--------|-----------|------------|
+| AFButton | `setOnClickCallback` | `void (*)()` | Released inside bounds |
+| AFImageButton | (inherited from AFButton) | `void (*)()` | Released inside bounds |
+| AFCheckbox | `setOnChangeCallback` | `void (*)(bool)` | Toggled |
+| AFRadioButtonGroup | `setOnChangeCallback` | `void (*)(uint32_t)` | Selection changed |
+| AFSlider | `setOnReleaseCallback` | `void (*)(int)` | Released after drag |
+
+The two approaches are complementary. Callbacks are the simplest path for wiring up actions; subclassing is for when you need richer control over the interaction lifecycle.
+
+
+### Touch Dispatch
+
+The framework provides implicit touch capture during drag interactions. When a widget receives `onPress` (touch down), all subsequent `onMove` (touch move) and `onRelease` (touch up) events are routed to that same widget without re-hit-testing. This is analogous to mouse capture on desktop platforms — widgets like sliders get correct drag tracking automatically.
+
+`onClick` only fires if the touch-up occurs inside the widget's bounds. Dragging off and releasing does not trigger a click.
 
 
 
@@ -222,6 +259,61 @@ enum AFImageFormat { kAFImageFormatRGB565 = 0, kAFImageFormat1bit = 1 };
 ```
 
 AFImages are drawn from memory.  No additional memory is used.
+
+
+### AFValueWidget
+
+Abstract base class for widgets that display a value within a range. Provides shared state (`m_minimum`, `m_maximum`, `m_value`) and common API. Not instantiated directly.
+
+Inherits from AFWidget.
+
+**Key API:**
+
+```cpp
+void setRange(int minimumValue, int maximumValue);
+void setValue(int v);
+int value() const;
+int minimum() const;
+int maximum() const;
+```
+
+Subclasses implement `draw()` and provide their own visual representation of the value (bar, arc, dial, etc.).
+
+
+### AFProgressBar
+
+A horizontal progress bar that fills proportionally to its value. Supports an optional percentage text overlay.
+
+Inherits from AFValueWidget.
+
+```cpp
+AFProgressBar bar(20, 80, 200, 20);
+bar.setRange(0, 100);
+bar.setValue(45);
+bar.showText(true);
+screen.addWidget(&bar);
+```
+
+Colors default to the theme but can be overridden with `setColors(border, bg, fill)`.
+
+
+### AFSlider
+
+A horizontal slider with a track and draggable thumb. Touch down or drag sets the value by mapping the touch position to the range.
+
+Inherits from AFWidget.
+
+```cpp
+AFSlider slider(20, 40, 200, 30);
+slider.setRange(0, 255);
+slider.setValue(128);
+slider.setOnReleaseCallback(onSliderChanged);  // void (*)(int value)
+screen.addWidget(&slider);
+```
+
+The slider uses the framework's implicit touch capture — pressing the thumb and dragging works correctly without any additional setup. `onMove` updates the value in real time; the release callback fires with the final value.
+
+Colors can be customized with `setColors(track, fill, thumb)`.
 
 
 

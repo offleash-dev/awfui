@@ -58,4 +58,5 @@ protected:
 
       bool m_opaque = true;
       int  m_zOrder = 0; // unused as yet
+      AFWidget* m_pressedWidget = nullptr;  // implicit capture for drag
 };

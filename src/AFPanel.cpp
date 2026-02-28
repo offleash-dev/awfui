@@ -112,29 +112,31 @@ void AFPanel::handleEvent(const AFEvent& e) {
                   return;
       }
 
-      // Hit-test child widgets in reverse order (topmost first)
+      // Move/Up go to captured widget (no hit-test)
+      if (e.type == AFEventType::kTouchMove && m_pressedWidget) {
+            m_pressedWidget->onMove(e);
+            return;
+      }
+      if (e.type == AFEventType::kTouchUp && m_pressedWidget) {
+            AFWidget* w = m_pressedWidget;
+            m_pressedWidget = nullptr;
+            w->onRelease(e);
+            if (w->hitTest(e.x, e.y)) {
+                  w->onClick(e);
+            }
+            return;
+      }
+
+      // kTouchDown: hit-test child widgets in reverse order (topmost first)
       for (int i = static_cast<int>(m_widgets.size()) - 1; i >= 0; --i) {
             AFWidget* w = m_widgets[i];
 
             if (!(w->m_eventMask & eventMaskForType(e.type))) continue;
 
             if (w->isVisible() && w->hitTest(e.x, e.y)) {
-                  // Dispatch based on event type
-                  switch (e.type) {
-                        case AFEventType::kTouchDown:
-                              w->onPress(e);
-                              break;
-                        case AFEventType::kTouchUp:
-                              w->onRelease(e);
-                              w->onClick(e); // click = release inside bounds
-                              break;
-                        case AFEventType::kTouchMove:
-                              // Optional: add hover/drag behavior later
-                              break;
-                        default:
-                              break;
-                  }
-                  return; // Stop after first hit
+                  m_pressedWidget = w;
+                  w->onPress(e);
+                  return;
             }
       }
 }

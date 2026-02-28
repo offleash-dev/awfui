@@ -47,7 +47,9 @@ Widgets are individual elements of a visual user interface. The can be for displ
 
 ​	AFWidget: base class for all UI elements
 
-​		Widget implementations (e.g. AFPushButton, AFImageWidget)
+​		Widget implementations (e.g. AFPushButton, AFCheckbox, AFLabel, AFImageWidget)
+
+Widgets can be fully customized by inheriting and overriding their interaction events using C++.  For C programming, all interactive widgets have setCallback(callbackFunctionPtr) style means of being notified of the final result.
 
 #### Separation of Responsibilities
 

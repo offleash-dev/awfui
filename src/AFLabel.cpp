@@ -70,31 +70,7 @@ void AFLabel::draw(AFDisplayInterface& displayInterface) {
             m_lastDrawH = h;
       } else {
             // this is a bordered text label that supports justification
-            int16_t  x1, y1;
-            uint16_t w, h;
-            displayInterface.getTextBounds(m_text, 0, 0, &x1, &y1, &w, &h);
-
-            int16_t tx, ty;
-
-            // Horizontal justification
-            switch (m_justification) {
-                  case AFJustificationCenter:
-                        tx = m_x + (m_width - w) / 2;
-                        break;
-                  case AFJustificationRight:
-                        tx = m_x + m_width - w;
-                        break;
-                  case AFJustificationLeft:
-                  default:
-                        tx = m_x;
-                        break;
-            }
-
-            // Vertical centering
-            ty = m_y + (m_height - h) / 2;
-
-            displayInterface.setCursor(tx, ty);
-            displayInterface.print(m_text);
+            displayInterface.drawTextJustified(m_text, m_x, m_y, m_width, m_height, m_justification);
 
             // Save drawn bounds for next erase
             m_lastDrawX = m_x;
