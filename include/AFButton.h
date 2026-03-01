@@ -63,6 +63,10 @@ public:
       }
 
       
+protected:
+      bool    m_pressed  = false;
+
+      
 private:
       const char* m_label;
 
@@ -75,7 +79,6 @@ private:
       uint16_t m_borderColorPressed;
 
       uint8_t m_textSize = 1;
-      bool    m_pressed  = false;
 
       AFButtonCallback m_onClickCallback = nullptr;
 };

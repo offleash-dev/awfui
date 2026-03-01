@@ -39,8 +39,12 @@ struct AFSize {
       int16_t h;
 };
 
-struct AFRect {
+class AFRect {
+public:
+    AFRect(int16_t x1, int16_t y1, int16_t w1, int16_t h1) : x(x1), y(y1), w(w1), h(h1) {} 
     int16_t x, y, w, h;
+
+    void inset(int16_t count = 1) { x+=count; y+=count; w-=count*2; h-=count*2; }
 };
 
 

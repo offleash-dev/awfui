@@ -19,9 +19,25 @@ class AFImageButton : public AFButton {
 public:
     AFImageButton(int16_t x, int16_t y, const AFImage* img, uint32_t id = 0);
 
+    void setSelectable(bool selectable) { m_selected = selectable; }
+    bool selected() const { return m_selected; }
+    
+    void setPressedImage(const AFImage* img) { m_imagePressed = img; }
+    void setDisabledImage(const AFImage* img) { m_imageDisabled = img; }
+    void setSelectedImage(const AFImage* img) { m_imageSelected = img; }
+
     void draw(AFDisplayInterface& displayInterface) override;
 
 
+protected:
+    bool m_selected = false;
+    bool m_selectable = false;
+    
+    void onClick(const AFEvent& e) override;
+
 private:
-    const AFImage* m_img;
+    const AFImage* m_image;
+    const AFImage* m_imagePressed = nullptr;
+    const AFImage* m_imageDisabled = nullptr;
+    const AFImage* m_imageSelected = nullptr;
 };
