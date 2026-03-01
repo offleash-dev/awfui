@@ -32,10 +32,21 @@ public:
     void setSelected(bool sel);
     bool isSelected() const { return m_selected; }
 
-    void setTextSize(uint8_t size) { m_textSize = size; }
+
+    void setTextSize(uint8_t size) { 
+        m_textSize = size;
+        markDirty(); 
+    }
+    
     uint8_t getTextSize() const { return m_textSize; }
 
-    void setOnSelectCallback(AFRadioCallback cb) { m_onSelectCallback = cb; }
+
+    void setColors(uint16_t circleColor, uint16_t dotColor, uint16_t labelColor);
+
+
+    void setOnSelectCallback(AFRadioCallback cb) { 
+        m_onSelectCallback = cb; 
+    }
 
     void draw(AFDisplayInterface& displayInterface) override;
     void onClick(const AFEvent& e) override;

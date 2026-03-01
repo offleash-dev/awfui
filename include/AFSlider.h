@@ -16,7 +16,7 @@
 
 
 #include "AFDisplayInterface.h"
-#include "AFWidget.h"
+#include "AFValueWidget.h"
 #include "AFEvent.h"
 
 
@@ -26,14 +26,9 @@ using AFSliderCallback = void (*)(int value);
 
 
 
-class AFSlider : public AFWidget {
+class AFSlider : public AFValueWidget {
 public:
     AFSlider(int16_t x, int16_t y, int16_t w, int16_t h);
-
-    void setRange(int minVal, int maxVal);
-
-    void setValue(int v);
-    int value() const { return m_value; }
 
     void setColors(uint16_t track, uint16_t fill, uint16_t thumb);
 
@@ -51,9 +46,6 @@ protected:
 
 
 private:
-    int m_min, m_max;
-    int m_value;
-
     uint16_t m_trackColor;
     uint16_t m_fillColor;
     uint16_t m_thumbColor;
@@ -61,8 +53,7 @@ private:
     static constexpr int kThumbW = 12;
     static constexpr int kThumbH = 16;
 
-    void clampValue();
-
+    void updateValueFromTouch(const AFEvent& e);
     int mapValueToPixels(int v) const;
     int mapPixelsToValue(int px) const;
 

@@ -47,12 +47,16 @@ public:
 
       void setTextSize(uint8_t size) {
             m_textSize = size;
+            markDirty();
       }
 
 
       uint8_t getTextSize() const {
             return m_textSize;
       }
+
+
+      void setColors(uint16_t boxColor, uint16_t checkColor, uint16_t borderColor, uint16_t labelColor);
 
 
       void setOnChangeCallback(AFCheckboxCallback cb) {

@@ -34,6 +34,7 @@ public:
 
       void setTextSize(uint8_t size) {
             m_textSize = size;
+            markDirty();
       }
 
 
@@ -77,6 +78,4 @@ private:
       bool    m_pressed  = false;
 
       AFButtonCallback m_onClickCallback = nullptr;
-      AFButtonCallback m_onPressCallback = nullptr;
-      AFButtonCallback m_onReleaseCallback = nullptr;
 };

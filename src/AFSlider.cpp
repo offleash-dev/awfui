@@ -8,32 +8,16 @@
 
 #include <stdlib.h>
 #include "AFSlider.h"
-
+#include "AFWorld.h"
 
 
 AFSlider::AFSlider(int16_t x, int16_t y, int16_t w, int16_t h)
-    : AFWidget(x, y, w, h),
-      m_min(0), m_max(100), m_value(0),
-      m_trackColor(0x7BEF),   // light gray
-      m_fillColor(0x001F),    // blue
-      m_thumbColor(0xFFFF)    // white
-{}
-
-
-
-void AFSlider::setRange(int minVal, int maxVal) {
-    m_min = minVal;
-    m_max = maxVal;
-    clampValue();
-    markDirty();
-}
-
-
-
-void AFSlider::setValue(int v) {
-    m_value = v;
-    clampValue();
-    markDirty();
+    : AFValueWidget(x, y, w, h)
+{
+    const AFTheme& theme = AFWorld::instance()->getTheme();
+    m_trackColor = theme.widgetBorderColor;
+    m_fillColor  = theme.widgetFgColor;
+    m_thumbColor = theme.widgetAccentColor;
 }
 
 
@@ -48,34 +32,56 @@ void AFSlider::setColors(uint16_t track, uint16_t fill, uint16_t thumb) {
 
 
 void AFSlider::draw(AFDisplayInterface& d) {
-    d.fillRect(m_x, m_y + m_height/2 - 2, m_width, 4, m_trackColor);
+      if (!m_visible)
+            return;
 
-    // Filled portion
-    int filled = mapValueToPixels(m_value);
-    d.fillRect(m_x, m_y + m_height/2 - 2, filled, 4, m_fillColor);
+      uint16_t trackColor = m_trackColor;
+      uint16_t fillColor  = m_fillColor;
+      uint16_t thumbColor = m_thumbColor;
+      if (!m_enabled) {
+            const AFTheme& theme = AFWorld::instance()->getTheme();
+            trackColor = theme.widgetDisabledFgColor;
+            fillColor  = theme.widgetDisabledFgColor;
+            thumbColor = theme.widgetDisabledFgColor;
+      }
 
-    // Thumb
-    int thumbX = m_x + filled - kThumbW/2;
-    int thumbY = m_y + m_height/2 - kThumbH/2;
-    d.fillRect(thumbX, thumbY, kThumbW, kThumbH, m_thumbColor);
+      d.fillRect(m_x, m_y + m_height/2 - 2, m_width, 4, trackColor);
+
+      // Filled portion
+      int filled = mapValueToPixels(m_value);
+      d.fillRect(m_x, m_y + m_height/2 - 2, filled, 4, fillColor);
+
+      // Thumb
+      int thumbX = m_x + filled - kThumbW/2;
+      int thumbY = m_y + m_height/2 - kThumbH/2;
+      d.fillRect(thumbX, thumbY, kThumbW, kThumbH, thumbColor);
 }
 
 
 
 void AFSlider::onPress(const AFEvent& e) {
-    int localX = e.x - m_x;
-    int newVal = mapPixelsToValue(localX);
-
-    if (newVal != m_value) {
-        m_value = newVal;
-        clampValue();
-        markDirty();
-    }
+    updateValueFromTouch(e);
 }
 
 
 
 void AFSlider::onMove(const AFEvent& e) {
+    updateValueFromTouch(e);
+}
+
+
+
+void AFSlider::onRelease(const AFEvent& e) {
+      unused(e);
+
+      if (m_onReleaseCallback) {
+          m_onReleaseCallback(m_value);
+    }
+}
+
+
+
+void AFSlider::updateValueFromTouch(const AFEvent& e) {
     int localX = e.x - m_x;
     int newVal = mapPixelsToValue(localX);
 
@@ -88,38 +94,29 @@ void AFSlider::onMove(const AFEvent& e) {
 
 
 
-void AFSlider::onRelease(const AFEvent& e) {
-    if (m_onReleaseCallback) {
-        m_onReleaseCallback(m_value);
-    }
-}
-
-
-
-void AFSlider::clampValue() {
-    if (m_value < m_min) m_value = m_min;
-    if (m_value > m_max) m_value = m_max;
-}
-
-
-
 int AFSlider::mapValueToPixels(int v) const {
-    int range = m_max - m_min;
-    if (range == 0) return 0;
-    return (int32_t)(v - m_min) * (m_width - kThumbW) / range + kThumbW/2;
+      if (range() == 0) 
+            return 0;
+
+      return (int32_t)(v - m_minimum) * (m_width - kThumbW) / range() + kThumbW/2;
 }
 
 
 
 int AFSlider::mapPixelsToValue(int px) const {
-    if (px < 0) px = 0;
-    if (px > m_width) px = m_width;
+      if (px < 0) 
+            px = 0;
+      if (px > m_width) 
+            px = m_width;
 
-    int range = m_max - m_min;
-    if (range == 0) return m_min;
+      if (range() == 0) 
+            return m_minimum;
 
-    int v = (int32_t)(px - kThumbW/2) * range / (m_width - kThumbW) + m_min;
-    if (v < m_min) v = m_min;
-    if (v > m_max) v = m_max;
+    int v = (int32_t)(px - kThumbW/2) * range() / (m_width - kThumbW) + m_minimum;
+    if (v < m_minimum) 
+            v = m_minimum;
+    if (v > m_maximum) 
+            v = m_maximum;
+            
     return v;
 }

@@ -26,15 +26,15 @@ AFCheckbox::AFCheckbox(int16_t x,
       m_boxSize(static_cast<uint8_t>(boxSize)) {
 
       const AFTheme& theme = AFWorld::instance()->getTheme();
+      m_boxColor    = theme.widgetBgColor;
+      m_checkColor  = theme.widgetAccentColor;
+      m_borderColor = theme.widgetBorderColor;
+      m_labelColor  = theme.widgetFgColor;
 
       if (boxSize == 0) {
             m_boxSize = 16; // Default box size if not specified
       }
       
-      m_boxColor    = theme.widgetBgColor;
-      m_checkColor  = theme.widgetAccentColor;
-      m_borderColor = theme.widgetBorderColor;
-      m_labelColor  = theme.widgetFgColor;
       m_textSize    = theme.widgetTextSize;
 }
 
@@ -66,6 +66,17 @@ void AFCheckbox::setChecked(bool checked) {
 
 
 
+void AFCheckbox::setColors(uint16_t boxColor, uint16_t checkColor, uint16_t borderColor, uint16_t labelColor) {
+      m_boxColor = boxColor;
+      m_checkColor = checkColor;
+      m_borderColor = borderColor;
+      m_labelColor = labelColor;
+
+      markDirty();
+}
+
+
+
 // Draw the checkbox
 //
 void AFCheckbox::draw(AFDisplayInterface& displayInterface) {
@@ -74,11 +85,11 @@ void AFCheckbox::draw(AFDisplayInterface& displayInterface) {
       }
 
       const AFTheme& theme = AFWorld::instance()->getTheme();
+      uint16_t boxColor    = m_boxColor;
+      uint16_t checkColor  = m_checkColor;
+      uint16_t borderColor = m_borderColor;
+      uint16_t labelColor  = m_labelColor;
       uint8_t radius       = theme.widgetCornerRadius;
-      uint16_t boxColor    = theme.widgetBgColor;
-      uint16_t checkColor  = theme.widgetAccentColor;
-      uint16_t borderColor = theme.widgetBorderColor;
-      uint16_t labelColor  = theme.widgetFgColor;
 
       // set colors to theme colors if disabled
       if (!m_enabled) {

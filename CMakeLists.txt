@@ -39,6 +39,7 @@ endif()
 # Library sources
 # -----------------------------------------------------------------------------
 set(AFUI_SOURCES
+    src/AFDisplayInterface.cpp
     src/AFButton.cpp
     src/AFCheckbox.cpp
     src/AFPanel.cpp
@@ -89,39 +90,7 @@ set(AFUI_HEADERS
 )
 
 # -----------------------------------------------------------------------------
-# Adafruit backend sources (display + touch for Adafruit_GFX-based drivers)
-# -----------------------------------------------------------------------------
-if(AFUI_USE_ADAFRUIT)
-    set(AFUI_ADAFRUIT_SOURCES
-        backends/adafruit/AFDisplayAdafruitGFX.cpp
-    )
-    set(AFUI_ADAFRUIT_HEADERS
-        backends/adafruit/AFAdafruitCompat.h
-        backends/adafruit/AFDisplayAdafruitGFX.h
-        backends/adafruit/AFFt6206Touch.h
-    )
-    list(APPEND AFUI_SOURCES ${AFUI_ADAFRUIT_SOURCES})
-    list(APPEND AFUI_HEADERS ${AFUI_ADAFRUIT_HEADERS})
-endif()
-
-# -----------------------------------------------------------------------------
-# SDL backend sources (optional)
-# -----------------------------------------------------------------------------
-if(AFUI_USE_SDL)
-    set(AFUI_SDL_SOURCES
-        backends/sdl/AFDisplaySDL.cpp
-        backends/sdl/AFTouchSDL.cpp
-    )
-    set(AFUI_SDL_HEADERS
-        backends/sdl/AFDisplaySDL.h
-        backends/sdl/AFTouchSDL.h
-    )
-    list(APPEND AFUI_SOURCES ${AFUI_SDL_SOURCES})
-    list(APPEND AFUI_HEADERS ${AFUI_SDL_HEADERS})
-endif()
-
-# -----------------------------------------------------------------------------
-# AFUI library target
+# AFUI core library target (framework only, no backend)
 # -----------------------------------------------------------------------------
 add_library(afui STATIC ${AFUI_SOURCES} ${AFUI_HEADERS})
 
@@ -131,16 +100,36 @@ target_include_directories(afui
         $<INSTALL_INTERFACE:include>
 )
 
+# -----------------------------------------------------------------------------
+# Adafruit backend target (display + touch for Adafruit_GFX-based drivers)
+# -----------------------------------------------------------------------------
 if(AFUI_USE_ADAFRUIT)
-    target_include_directories(afui
+    add_library(afui_adafruit STATIC
+        backends/adafruit/AFDisplayAdafruitGFX.cpp
+        backends/adafruit/AFAdafruitCompat.h
+        backends/adafruit/AFDisplayAdafruitGFX.h
+        backends/adafruit/AFFt6206Touch.h
+    )
+    target_include_directories(afui_adafruit
         PUBLIC $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/backends/adafruit>
     )
+    target_link_libraries(afui_adafruit PUBLIC afui)
 endif()
 
+# -----------------------------------------------------------------------------
+# SDL backend target (optional)
+# -----------------------------------------------------------------------------
 if(AFUI_USE_SDL)
-    target_include_directories(afui
+    add_library(afui_sdl STATIC
+        backends/sdl/AFDisplaySDL.cpp
+        backends/sdl/AFTouchSDL.cpp
+        backends/sdl/AFDisplaySDL.h
+        backends/sdl/AFTouchSDL.h
+    )
+    target_include_directories(afui_sdl
         PUBLIC $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/backends/sdl>
     )
+    target_link_libraries(afui_sdl PUBLIC afui)
 endif()
 
 # -----------------------------------------------------------------------------
@@ -157,14 +146,14 @@ endif()
 if(AFUI_USE_ADAFRUIT)
     # Check if adafruit_gfx target exists (provided by parent project)
     if(TARGET adafruit_gfx)
-        target_link_libraries(afui PUBLIC adafruit_gfx)
+        target_link_libraries(afui_adafruit PUBLIC adafruit_gfx)
     elseif(DEFINED ADAFRUIT_GFX_INCLUDE_DIR)
-        target_include_directories(afui
+        target_include_directories(afui_adafruit
             PUBLIC $<BUILD_INTERFACE:${ADAFRUIT_GFX_INCLUDE_DIR}>
         )
     elseif(EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/../Drivers/Adafruit/Adafruit-GFX)
         # Default: assume Adafruit_GFX is in Drivers/Adafruit/Adafruit-GFX
-        target_include_directories(afui
+        target_include_directories(afui_adafruit
             PUBLIC $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/../Drivers/Adafruit/Adafruit-GFX>
         )
     else()
@@ -187,11 +176,11 @@ endif()
 if(AFUI_USE_ADAFRUIT)
     # Arduino compatibility layer for non-Arduino builds (e.g., STM32)
     if(DEFINED ARDUINO_COMPAT_INCLUDE_DIR)
-        target_include_directories(afui
+        target_include_directories(afui_adafruit
             PUBLIC $<BUILD_INTERFACE:${ARDUINO_COMPAT_INCLUDE_DIR}>
         )
     elseif(EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/../Drivers/Adafruit/ArduinoCompat)
-        target_include_directories(afui
+        target_include_directories(afui_adafruit
             PUBLIC $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/../Drivers/Adafruit/ArduinoCompat>
         )
     else()
@@ -215,49 +204,67 @@ if(AFUI_USE_SDL)
         add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/../SDL2 ${CMAKE_BINARY_DIR}/SDL2)
         # Link static SDL2 - we use SDL_MAIN_HANDLED so no SDL2main needed
         if(TARGET SDL2::SDL2-static)
-            target_link_libraries(afui PUBLIC SDL2::SDL2-static)
+            target_link_libraries(afui_sdl PUBLIC SDL2::SDL2-static)
         elseif(TARGET SDL2::SDL2)
-            target_link_libraries(afui PUBLIC SDL2::SDL2)
+            target_link_libraries(afui_sdl PUBLIC SDL2::SDL2)
         elseif(TARGET SDL3::SDL3-static)
-            target_link_libraries(afui PUBLIC SDL3::SDL3-static)
+            target_link_libraries(afui_sdl PUBLIC SDL3::SDL3-static)
         elseif(TARGET SDL3::SDL3)
-            target_link_libraries(afui PUBLIC SDL3::SDL3)
+            target_link_libraries(afui_sdl PUBLIC SDL3::SDL3)
         else()
             message(FATAL_ERROR "SDL was added from ../SDL2 but no known SDL2/SDL3 CMake targets were found.")
         endif()
     else()
         # Fall back to system-installed SDL2
         find_package(SDL2 REQUIRED)
-        target_link_libraries(afui PUBLIC SDL2::SDL2)
+        target_link_libraries(afui_sdl PUBLIC SDL2::SDL2)
     endif()
-    target_compile_definitions(afui PUBLIC AFUI_USE_SDL=1)
+    target_compile_definitions(afui_sdl PUBLIC AFUI_USE_SDL=1)
 endif()
 
 # Suppress MSVC secure CRT warnings (strcpy, sprintf, etc.)
 # These functions are standard C and fine for embedded targets
+set(AFUI_ALL_TARGETS afui)
+if(AFUI_USE_SDL)
+    list(APPEND AFUI_ALL_TARGETS afui_sdl)
+endif()
+if(AFUI_USE_ADAFRUIT)
+    list(APPEND AFUI_ALL_TARGETS afui_adafruit)
+endif()
+
 if(MSVC OR (CMAKE_CXX_COMPILER_ID STREQUAL "Clang" AND WIN32))
-    target_compile_definitions(afui PRIVATE _CRT_SECURE_NO_WARNINGS)
+    foreach(tgt ${AFUI_ALL_TARGETS})
+        target_compile_definitions(${tgt} PRIVATE _CRT_SECURE_NO_WARNINGS)
+    endforeach()
 endif()
 
 # MSVC doesn't have GCC's __builtin_bswap* - force-include compatibility header
 if(MSVC)
-    target_compile_options(afui PRIVATE 
-        /FI"${CMAKE_CURRENT_SOURCE_DIR}/include/AFCompilerCompat.h"
-    )
+    foreach(tgt ${AFUI_ALL_TARGETS})
+        target_compile_options(${tgt} PRIVATE 
+            /FI"${CMAKE_CURRENT_SOURCE_DIR}/include/AFCompilerCompat.h"
+        )
+    endforeach()
 endif()
 
 # Embedded build settings
 if(CMAKE_SYSTEM_NAME STREQUAL "Generic")
-    target_compile_options(afui PRIVATE 
-        -mcpu=cortex-m4 -mthumb -mfloat-abi=hard -mfpu=fpv4-sp-d16
-        -fno-exceptions -fno-rtti
-    )
+    foreach(tgt ${AFUI_ALL_TARGETS})
+        target_compile_options(${tgt} PRIVATE 
+            -mcpu=cortex-m4 -mthumb -mfloat-abi=hard -mfpu=fpv4-sp-d16
+            -fno-exceptions -fno-rtti
+        )
+    endforeach()
 elseif(MSVC)
     # MSVC desktop builds - disable exceptions/RTTI for consistency with embedded
-    target_compile_options(afui PRIVATE /EHs-c- /GR-)
+    foreach(tgt ${AFUI_ALL_TARGETS})
+        target_compile_options(${tgt} PRIVATE /EHs-c- /GR-)
+    endforeach()
 elseif(CMAKE_CXX_COMPILER_ID STREQUAL "GNU" OR CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
     # GCC/Clang desktop builds
-    target_compile_options(afui PRIVATE -fno-exceptions -fno-rtti)
+    foreach(tgt ${AFUI_ALL_TARGETS})
+        target_compile_options(${tgt} PRIVATE -fno-exceptions -fno-rtti)
+    endforeach()
 endif()
 
 # -----------------------------------------------------------------------------
@@ -277,16 +284,16 @@ if(AFUI_BUILD_EXAMPLES)
     add_executable(afui_keypad examples/keypad/main.cpp)
     
     if(AFUI_USE_SDL)
-        # SDL desktop build - only needs afui (which brings in SDL)
-        target_link_libraries(afui_demo PRIVATE afui)
-        target_link_libraries(afui_test PRIVATE afui)
-        target_link_libraries(afui_justsdl PRIVATE afui)
-        target_link_libraries(afui_keypad PRIVATE afui)
+        # SDL desktop build - link backend (which brings in afui core + SDL)
+        target_link_libraries(afui_demo PRIVATE afui_sdl)
+        target_link_libraries(afui_test PRIVATE afui_sdl)
+        target_link_libraries(afui_justsdl PRIVATE afui_sdl)
+        target_link_libraries(afui_keypad PRIVATE afui_sdl)
     else()
         # Embedded build - needs STM32 platform and ILI9341 driver
         include(cmake/stm32_platform.cmake)
-        target_link_libraries(afui_demo PRIVATE afui adafruit_ili9341 adafruit_gfx stm32_platform)
-        target_link_libraries(afui_test PRIVATE afui adafruit_ili9341 adafruit_gfx stm32_platform)
+        target_link_libraries(afui_demo PRIVATE afui_adafruit adafruit_ili9341 adafruit_gfx stm32_platform)
+        target_link_libraries(afui_test PRIVATE afui_adafruit adafruit_ili9341 adafruit_gfx stm32_platform)
     endif()
     
     # Suppress MSVC secure CRT warnings for demos

@@ -1,5 +1,5 @@
 //// AFRadioButton.cpp
-//// Implementation of the AWFUI dialog widget.
+//// Implementation of the AWFUI radio button widget.
 ////
 //// Copyright (c) 2026 Matt Foster
 //// Licensed under the MIT License. See LICENSE file for details.
@@ -31,8 +31,9 @@ AFRadioButton::AFRadioButton(int16_t x,
 
     const AFTheme& theme = AFWorld::instance()->getTheme();
     m_circleColor = theme.widgetBorderColor;
-    m_dotColor    = theme.widgetAccentColor;
-    m_labelColor  = theme.widgetFgColor;
+    m_dotColor = theme.widgetAccentColor;
+    m_labelColor = theme.widgetFgColor;
+
     m_textSize    = theme.widgetTextSize;
 }
 
@@ -58,18 +59,29 @@ void AFRadioButton::setSelected(bool sel) {
 
 
 
+void AFRadioButton::setColors(uint16_t circleColor, uint16_t dotColor, uint16_t labelColor) {
+      m_circleColor = circleColor;
+      m_dotColor = dotColor;
+      m_labelColor = labelColor;
+
+      markDirty();
+}
+
+
+
 void AFRadioButton::draw(AFDisplayInterface& displayInterface) {
     if (!m_visible)
         return;
 
-    uint16_t circleColor = AFWorld::instance()->getTheme().widgetBorderColor;
-    uint16_t dotColor    = AFWorld::instance()->getTheme().widgetAccentColor;
-    uint16_t labelColor  = AFWorld::instance()->getTheme().widgetFgColor;
+    uint16_t circleColor = m_circleColor;
+    uint16_t dotColor    = m_dotColor;
+    uint16_t labelColor  = m_labelColor;
 
     if (!m_enabled) {
-        circleColor = AFWorld::instance()->getTheme().widgetDisabledFgColor;
-        dotColor    = AFWorld::instance()->getTheme().widgetDisabledFgColor;
-        labelColor  = AFWorld::instance()->getTheme().widgetDisabledFgColor;
+        AFTheme theTheme = AFWorld::instance()->getTheme();
+        circleColor = theTheme.widgetDisabledFgColor;
+        dotColor    = theTheme.widgetDisabledFgColor;
+        labelColor  = theTheme.widgetDisabledFgColor;
     }
 
     // Clear interior so deselected dot is erased

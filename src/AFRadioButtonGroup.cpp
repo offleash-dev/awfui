@@ -1,5 +1,5 @@
 //// AFRadioButtonGroup.cpp
-//// Implementation of the AWFUI dialog widget.
+//// Implementation of the AWFUI radio button group.
 ////
 //// Copyright (c) 2026 Matt Foster
 //// Licensed under the MIT License. See LICENSE file for details.
