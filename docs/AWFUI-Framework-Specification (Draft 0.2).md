@@ -1,10 +1,10 @@
-# AFUI Framework Specification (Draft 0.2)
+# AWFUI Framework Specification (Draft 0.2)
 
 
 
 ## 1. Purpose
 
-AFUI (AwFui, awww fooey) is a lightweight, embedded‑friendly UI framework built on top of **Adafruit_GFX**. It provides a consistent widget model, a screen/state system, dialogs and modal overlays, a unified event model, and optional double‑buffering via a full‑screen canvas for a screen.  
+AWFUI (AwFui, awww fooey) is a lightweight, embedded‑friendly UI framework built on top of **Adafruit_GFX**. It provides a consistent widget model, a screen/state system, dialogs and modal overlays, a unified event model, and optional double‑buffering via a full‑screen canvas for a screen.  
 
 Version 1 is for click and react widgets and intentionally lacks concepts like layered UI and widget focus.  Maybe version 2 adds those.
 

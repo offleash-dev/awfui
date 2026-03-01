@@ -12,7 +12,7 @@ For now, enjoy.
 
 **The Name**
 
-AWFUI could stand for 'a widget-set for user interfaces', but that is forcing an acronym on some letters.  Because of the Adafruit connection it started as AFUI, but with the hardware abstraction layer, AWFUI is more appropriate.  Really, though, there is  just some humor in pronouncing it aw...fooey. 
+AWFUI could stand for 'a widget-set for user interfaces', but that is forcing an acronym on some letters.  Because of the Adafruit connection it started as AWFUI, but with the hardware abstraction layer, AWFUI is more appropriate.  Really, though, there is  just some humor in pronouncing it aw...fooey. 
 
 
 
@@ -102,7 +102,7 @@ void setup() {
       dialog = new AFModalDialog(20, 40, 200, 140, makeID("HDlg"));
 
       // Add a label for the "hello"
-      AFLabel* lbl = new AFLabel(30, 60, "Hello from AFUI!", makeID("Helo"));
+      AFLabel* lbl = new AFLabel(30, 60, "Hello from AWFUI!", makeID("Helo"));
       dialog->addWidget(lbl, true);
 
       // Add the button to dismiss the dialog
@@ -146,7 +146,7 @@ modules
 This must be SDL version 2.x, not the latest version 3.  In the CMAKE file, set 
 
 ```
-option(AFUI_USE_SDL "Build with SDL backend for desktop simulation" ON)
+option(AWFUI_USE_SDL "Build with SDL backend for desktop simulation" ON)
 ```
 
 

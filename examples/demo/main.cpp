@@ -1,12 +1,12 @@
 // main.cpp
 
 // Tell SDL we handle our own main() entry point
-#ifdef AFUI_USE_SDL
+#ifdef AWFUI_USE_SDL
 #define SDL_MAIN_HANDLED
 #endif
 
 
-#ifdef AFUI_USE_SDL
+#ifdef AWFUI_USE_SDL
 #include "AFDisplaySDL.h"
 #include "AFTouchSDL.h"
 #else
@@ -54,7 +54,7 @@ private:
 
 
 
-#ifdef AFUI_USE_SDL
+#ifdef AWFUI_USE_SDL
 // SDL desktop simulation - 320x240 display at 2x scale
 AFDisplaySDL      display(240, 320);
 AFTouchSDL   touch(2);
@@ -76,7 +76,7 @@ AFModalDialog* dialog;
 
 
 void setup() {
-#ifdef AFUI_USE_SDL
+#ifdef AWFUI_USE_SDL
       SDL_SetMainReady();
 #endif
       display.begin();
@@ -84,7 +84,7 @@ void setup() {
       display.setRotation(1);
 
       touch.begin();
-#ifdef AFUI_USE_SDL
+#ifdef AWFUI_USE_SDL
       AFWorld::init(display, &touch, &eventQueue);
 #else
       touch.setRotation(1);
@@ -116,7 +116,7 @@ void setup() {
       // ------------------------------------------------------------
       dialog = new AFModalDialog(20, 40, 200, 140, makeID("HDlg"));
 
-      AFLabel* lbl = new AFLabel(30, 60, "Hello from AFUI!", makeID("Helo"));
+      AFLabel* lbl = new AFLabel(30, 60, "Hello from AWFUI!", makeID("Helo"));
       dialog->addWidget(lbl);
 
       AFButton* okBtn = new AFButton(50, 100, 100, 40, makeID("OKBt"), "OK");
@@ -131,7 +131,7 @@ const int kButtonIntervalFrames   = 5 * kFps;       // fire every 5 seconds
 int       eventCountdown          = kButtonIntervalFrames;
 
 void loop() {
-#ifdef AFUI_USE_SDL
+#ifdef AWFUI_USE_SDL
       // Process SDL events and feed touch input
       SDL_Event e;
       while (SDL_PollEvent(&e)) {
@@ -153,7 +153,7 @@ void loop() {
 
       world->loop();
 
-#ifdef AFUI_USE_SDL
+#ifdef AWFUI_USE_SDL
       // Update the SDL window
       display.present();
       SDL_Delay(16);  // ~60 FPS
@@ -164,7 +164,7 @@ void loop() {
  
  // Entry point for Windows/Linux builds
  // On actual STM32, the Arduino framework or your startup code calls setup()/loop()
-#if defined(AFUI_USE_SDL)
+#if defined(AWFUI_USE_SDL)
 int main() {
       setup();
       while (true) {

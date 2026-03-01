@@ -5,12 +5,12 @@
 // Screen 3: Panel test — top panel with buttons, bottom panel with image buttons, dialog
 
 // Tell SDL we handle our own main() entry point
-#ifdef AFUI_USE_SDL
+#ifdef AWFUI_USE_SDL
 #define SDL_MAIN_HANDLED
 #endif
 
 
-#ifdef AFUI_USE_SDL
+#ifdef AWFUI_USE_SDL
 #include "AFDisplaySDL.h"
 #include "AFTouchSDL.h"
 
@@ -48,7 +48,7 @@
 // Hardware setup
 // ============================================================
 
-#ifdef AFUI_USE_SDL
+#ifdef AWFUI_USE_SDL
 AFDisplaySDL    display(240, 320);
 AFTouchSDL   touch(2);
 #else
@@ -298,7 +298,7 @@ static void setupScreen3() {
 // ============================================================
 
 void setup() {
-#ifdef AFUI_USE_SDL
+#ifdef AWFUI_USE_SDL
       SDL_SetMainReady();
       display.begin();
       display.setRotation(1);
@@ -307,7 +307,7 @@ void setup() {
       tft.setRotation(1);
 #endif
 
-#ifdef AFUI_USE_SDL
+#ifdef AWFUI_USE_SDL
       AFWorld::init(display, &touch);
 #else
       AFWorld::init(display);
@@ -324,7 +324,7 @@ void setup() {
 
 
 void loop() {
-#ifdef AFUI_USE_SDL
+#ifdef AWFUI_USE_SDL
       SDL_Event e;
       while (SDL_PollEvent(&e)) {
             if (e.type == SDL_QUIT) {
@@ -336,7 +336,7 @@ void loop() {
 
       world->loop();
 
-#ifdef AFUI_USE_SDL
+#ifdef AWFUI_USE_SDL
       display.present();
       SDL_Delay(16);  // ~60 FPS
 #endif
@@ -345,7 +345,7 @@ void loop() {
 
 
 // Entry point
-#if defined(AFUI_USE_SDL)
+#if defined(AWFUI_USE_SDL)
 int main() {
       setup();
       while (true) {

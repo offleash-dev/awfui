@@ -24,9 +24,9 @@
                 "strategy": "set"
             },
             "cacheVariables": {
-                "AFUI_USE_SDL": "ON",
-                "AFUI_BUILD_EXAMPLES": "ON",
-                "AFUI_USE_ADAFRUIT": "OFF"
+                "AWFUI_USE_SDL": "ON",
+                "AWFUI_BUILD_EXAMPLES": "ON",
+                "AWFUI_USE_ADAFRUIT": "OFF"
             }
         },
         {
@@ -36,9 +36,9 @@
             "inherits": "default",
             "generator": "Ninja",
             "cacheVariables": {
-                "AFUI_USE_SDL": "ON",
-                "AFUI_BUILD_EXAMPLES": "ON",
-                "AFUI_USE_ADAFRUIT": "OFF"
+                "AWFUI_USE_SDL": "ON",
+                "AWFUI_BUILD_EXAMPLES": "ON",
+                "AWFUI_USE_ADAFRUIT": "OFF"
             }
         },
         {
@@ -47,8 +47,8 @@
             "description": "Build for embedded STM32 target",
             "inherits": "default",
             "cacheVariables": {
-                "AFUI_USE_SDL": "OFF",
-                "AFUI_BUILD_EXAMPLES": "OFF"
+                "AWFUI_USE_SDL": "OFF",
+                "AWFUI_BUILD_EXAMPLES": "OFF"
             }
         }
     ],

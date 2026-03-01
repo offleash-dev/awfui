@@ -35,7 +35,7 @@ The keypad use some pseudo-AF objects. and a list construct, and there is an imp
 Thoughts?
 
 
- keep AFUI lean, keep the core pure, and let a helper script generate the boilerplate when someone wants it.  
+ keep AWFUI lean, keep the core pure, and let a helper script generate the boilerplate when someone wants it.  
 
 A compile‑time helper script that generates C++
 This is the cleanest, safest, most embedded‑friendly option.

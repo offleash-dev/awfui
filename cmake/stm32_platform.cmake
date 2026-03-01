@@ -1,5 +1,5 @@
 # =============================================================================
-# STM32 Platform Configuration for AFUI
+# STM32 Platform Configuration for AWFUI
 # 
 # This file sets up all STM32-related include directories and definitions
 # needed to build the demo application on STM32L475E-IOT01 board.
@@ -10,8 +10,8 @@
 # =============================================================================
 
 # Determine the modules directory (parent of awfui)
-get_filename_component(AFUI_MODULES_DIR "${CMAKE_CURRENT_SOURCE_DIR}/.." ABSOLUTE)
-get_filename_component(AFUI_ROOT_DIR "${CMAKE_CURRENT_SOURCE_DIR}/../.." ABSOLUTE)
+get_filename_component(AWFUI_MODULES_DIR "${CMAKE_CURRENT_SOURCE_DIR}/.." ABSOLUTE)
+get_filename_component(AWFUI_ROOT_DIR "${CMAKE_CURRENT_SOURCE_DIR}/../.." ABSOLUTE)
 
 # Create an interface library to hold all STM32 platform settings
 add_library(stm32_platform INTERFACE)
@@ -21,22 +21,22 @@ add_library(stm32_platform INTERFACE)
 # -----------------------------------------------------------------------------
 target_include_directories(stm32_platform INTERFACE
     # Adafruit drivers
-    ${AFUI_MODULES_DIR}/Drivers/Adafruit/Adafruit_ILI9341
+    ${AWFUI_MODULES_DIR}/Drivers/Adafruit/Adafruit_ILI9341
     
     # STM32 BSP (Board Support Package)
-    ${AFUI_MODULES_DIR}/Drivers/BSP/B-L475E-IOT01
+    ${AWFUI_MODULES_DIR}/Drivers/BSP/B-L475E-IOT01
     
     # STM32 HAL (Hardware Abstraction Layer)
-    ${AFUI_MODULES_DIR}/Drivers/STM32L4xx_HAL_Driver/Inc
+    ${AWFUI_MODULES_DIR}/Drivers/STM32L4xx_HAL_Driver/Inc
     
     # Board configuration (project-specific)
-    ${AFUI_ROOT_DIR}/Configuration
+    ${AWFUI_ROOT_DIR}/Configuration
     
     # CMSIS Device headers (STM32L4xx specific)
-    ${AFUI_MODULES_DIR}/Drivers/CMSIS/Device/ST/STM32L4xx/Include
+    ${AWFUI_MODULES_DIR}/Drivers/CMSIS/Device/ST/STM32L4xx/Include
     
     # CMSIS Core headers (ARM Cortex-M)
-    ${AFUI_MODULES_DIR}/Drivers/CMSIS/Include
+    ${AWFUI_MODULES_DIR}/Drivers/CMSIS/Include
 )
 
 # -----------------------------------------------------------------------------
@@ -67,12 +67,12 @@ endif()
 # Adafruit Libraries (source files needed for linking)
 # -----------------------------------------------------------------------------
 add_library(adafruit_gfx STATIC
-    ${AFUI_MODULES_DIR}/Drivers/Adafruit/Adafruit-GFX/Adafruit_GFX.cpp
-    ${AFUI_MODULES_DIR}/Drivers/Adafruit/Adafruit-GFX/glcdfont.c
+    ${AWFUI_MODULES_DIR}/Drivers/Adafruit/Adafruit-GFX/Adafruit_GFX.cpp
+    ${AWFUI_MODULES_DIR}/Drivers/Adafruit/Adafruit-GFX/glcdfont.c
 )
 target_include_directories(adafruit_gfx PUBLIC
-    ${AFUI_MODULES_DIR}/Drivers/Adafruit/Adafruit-GFX
-    ${AFUI_MODULES_DIR}/Drivers/Adafruit/ArduinoCompat
+    ${AWFUI_MODULES_DIR}/Drivers/Adafruit/Adafruit-GFX
+    ${AWFUI_MODULES_DIR}/Drivers/Adafruit/ArduinoCompat
 )
 target_compile_definitions(adafruit_gfx PUBLIC ARDUINO=150)
 target_link_libraries(adafruit_gfx PUBLIC stm32_platform)
@@ -89,10 +89,10 @@ if(WIN32)
 endif()
 
 add_library(adafruit_ili9341 STATIC
-    ${AFUI_MODULES_DIR}/Drivers/Adafruit/Adafruit_ILI9341/Adafruit_ILI9341.cpp
+    ${AWFUI_MODULES_DIR}/Drivers/Adafruit/Adafruit_ILI9341/Adafruit_ILI9341.cpp
 )
 target_include_directories(adafruit_ili9341 PUBLIC
-    ${AFUI_MODULES_DIR}/Drivers/Adafruit/Adafruit_ILI9341
+    ${AWFUI_MODULES_DIR}/Drivers/Adafruit/Adafruit_ILI9341
 )
 target_link_libraries(adafruit_ili9341 PUBLIC adafruit_gfx stm32_platform)
 
@@ -108,5 +108,5 @@ endif()
 # Optional: Print configuration for debugging
 # -----------------------------------------------------------------------------
 message(STATUS "STM32 Platform configured:")
-message(STATUS "  Modules dir: ${AFUI_MODULES_DIR}")
-message(STATUS "  Root dir: ${AFUI_ROOT_DIR}")
+message(STATUS "  Modules dir: ${AWFUI_MODULES_DIR}")
+message(STATUS "  Root dir: ${AWFUI_ROOT_DIR}")

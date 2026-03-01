@@ -93,7 +93,7 @@ void setup() {
       // ------------------------------------------------------------
       dialog = new AFModalDialog(20, 40, 200, 140, makeID("HDlg"));
 
-      AFLabel* lbl = new AFLabel(30, 60, "Hello from AFUI!", makeID("Helo"));
+      AFLabel* lbl = new AFLabel(30, 60, "Hello from AWFUI!", makeID("Helo"));
       dialog->addWidget(lbl);
 
       AFButton* okBtn = new AFButton(50, 100, 100, 40, makeID("OKBt"), "OK");

@@ -12,7 +12,7 @@
 
 
 
-// The event types kTouchUp, kTouchMove, kButton, kKey, and kTimer are reserved for future use by AFUI.  
+// The event types kTouchUp, kTouchMove, kButton, kKey, and kTimer are reserved for future use by AWFUI.  
 // For other new types (including variants of the reserved ones) use kCustom with customType/customData relevant to the event.
 
 enum class AFEventType { kNone, kTouchDown, kTouchUp, kTouchMove, kButton, kKey, kTimer, kCustom };
