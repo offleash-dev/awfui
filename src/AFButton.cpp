@@ -84,7 +84,9 @@ void AFButton::draw(AFDisplayInterface& displayInterface) {
       displayInterface.fillRoundRect(m_x, m_y, m_width, m_height, radius, bg);
 
       // Draw border
-      displayInterface.drawRoundRect(m_x, m_y, m_width, m_height, radius, border);
+      if (m_showBorder) {
+            displayInterface.drawRoundRect(m_x, m_y, m_width, m_height, radius, border);
+      }
 
       // Draw label with justification
       if (m_label && strlen(m_label) > 0) {

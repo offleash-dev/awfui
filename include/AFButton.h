@@ -47,6 +47,19 @@ public:
             return m_pressed;
       }
 
+
+      // for a label style button, hide the border
+      void setShowBorder(bool show) {
+            m_showBorder = show;
+            markDirty();
+      }
+
+      
+      bool getShowBorder() const {
+            return m_showBorder;
+      }
+
+
       // Drawing
       void draw(AFDisplayInterface& displayInterface) override;
 
@@ -65,6 +78,7 @@ public:
       
 protected:
       bool    m_pressed  = false;
+      bool    m_showBorder = true;
 
       
 private:
