@@ -222,6 +222,16 @@ if(AWFUI_USE_SDL)
     target_compile_definitions(awfui_sdl PUBLIC AWFUI_USE_SDL=1)
 endif()
 
+# Add Adafruit_GFX version information
+if(AWFUI_USE_ADAFRUIT)
+    target_compile_definitions(awfui_adafruit PUBLIC 
+        ADAFRUIT_GFX_VERSION_MAJOR=${ADAFRUIT_GFX_MAJOR}
+        ADAFRUIT_GFX_VERSION_MINOR=${ADAFRUIT_GFX_MINOR}
+        ADAFRUIT_GFX_VERSION_PATCH=${ADAFRUIT_GFX_PATCH}
+        ADAFRUIT_GFX_VERSION=${ADAFRUIT_GFX_VERSION_NUM}
+    )
+endif()
+
 # Suppress MSVC secure CRT warnings (strcpy, sprintf, etc.)
 # These functions are standard C and fine for embedded targets
 set(AWFUI_ALL_TARGETS awfui)
@@ -268,41 +278,10 @@ elseif(CMAKE_CXX_COMPILER_ID STREQUAL "GNU" OR CMAKE_CXX_COMPILER_ID STREQUAL "C
 endif()
 
 # -----------------------------------------------------------------------------
-# Example applications (optional)
+# Examples (optional)
 # -----------------------------------------------------------------------------
 if(AWFUI_BUILD_EXAMPLES)
-    # Main demo
-    add_executable(awfui_demo examples/demo/main.cpp)
-    
-    # Coordinate/rotation test demo
-    add_executable(awfui_test examples/test/main.cpp)
-
-    # Pure-SDL demo (no Adafruit_GFX dependency from app code)
-    add_executable(awfui_justsdl examples/demo-justSdl/main.cpp)
-
-    # Keypad demo
-    add_executable(awfui_keypad examples/keypad/main.cpp)
-    
-    if(AWFUI_USE_SDL)
-        # SDL desktop build - link backend (which brings in awfui core + SDL)
-        target_link_libraries(awfui_demo PRIVATE awfui_sdl)
-        target_link_libraries(awfui_test PRIVATE awfui_sdl)
-        target_link_libraries(awfui_justsdl PRIVATE awfui_sdl)
-        target_link_libraries(awfui_keypad PRIVATE awfui_sdl)
-    else()
-        # Embedded build - needs STM32 platform and ILI9341 driver
-        include(cmake/stm32_platform.cmake)
-        target_link_libraries(awfui_demo PRIVATE awfui_adafruit adafruit_ili9341 adafruit_gfx stm32_platform)
-        target_link_libraries(awfui_test PRIVATE awfui_adafruit adafruit_ili9341 adafruit_gfx stm32_platform)
-    endif()
-    
-    # Suppress MSVC secure CRT warnings for demos
-    if(MSVC OR (CMAKE_CXX_COMPILER_ID STREQUAL "Clang" AND WIN32))
-        target_compile_definitions(awfui_demo PRIVATE _CRT_SECURE_NO_WARNINGS)
-        target_compile_definitions(awfui_test PRIVATE _CRT_SECURE_NO_WARNINGS)
-        target_compile_definitions(awfui_justsdl PRIVATE _CRT_SECURE_NO_WARNINGS)
-        target_compile_definitions(awfui_keypad PRIVATE _CRT_SECURE_NO_WARNINGS)
-    endif()
+    add_subdirectory(examples)
 endif()
 
 # -----------------------------------------------------------------------------
