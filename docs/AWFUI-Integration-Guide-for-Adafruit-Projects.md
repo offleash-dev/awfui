@@ -15,11 +15,15 @@ Integrating awfui into an STM32 project with existing Adafruit libraries require
 
 ### **Main CMakeLists.txt - Required Flags**
 
-```
+```cmake
 # AWFUI Configuration (add before project() call)
 set(AWFUI_USE_SDL OFF)        # Disable SDL for embedded builds
 set(AWFUI_USE_ADAFRUIT ON)    # Enable Adafruit backend for STM32
- 
+
+# IMPORTANT: Point to awfui's own ArduinoCompat headers
+# No need to copy any files - awfui ships with its own compatibility layer
+set(ARDUINO_COMPAT_INCLUDE_DIR "${CMAKE_SOURCE_DIR}/Drivers/awfui/backends/adafruit")
+
 # Automatic version detection (required)
 file(READ "${CMAKE_SOURCE_DIR}/Drivers/Adafruit/Adafruit-GFX/library.properties" ADAFRUIT_GFX_PROPERTIES)
 string(REGEX MATCH "version=([0-9]+)\\.([0-9]+)\\.([0-9]+)" ADAFRUIT_GFX_VERSION_MATCH "${ADAFRUIT_GFX_PROPERTIES}")
@@ -27,7 +31,7 @@ set(ADAFRUIT_GFX_MAJOR "${CMAKE_MATCH_1}")
 set(ADAFRUIT_GFX_MINOR "${CMAKE_MATCH_2}")
 set(ADAFRUIT_GFX_PATCH "${CMAKE_MATCH_3}")
 math(EXPR ADAFRUIT_GFX_VERSION_NUM "${ADAFRUIT_GFX_MAJOR} * 10000 + ${ADAFRUIT_GFX_MINOR} * 100 + ${ADAFRUIT_GFX_PATCH}")
- 
+
 # ETL dependency path
 set(ETL_INCLUDE_DIR "${CMAKE_SOURCE_DIR}/Drivers/ETL/include")
 ```
@@ -54,12 +58,16 @@ target_link_libraries(${TARGET} PRIVATE
 
 ### **1. ArduinoCompat Headers Missing**
 
-**Error**: `ArduinoCompat headers were not found` **Solution**: Create compatibility directory:
+**Error**: `ArduinoCompat headers were not found`
 
+**Solution**: Set the correct path to awfui's own headers (don't copy files):
+
+```cmake
+# In main CMakeLists.txt
+set(ARDUINO_COMPAT_INCLUDE_DIR "${CMAKE_SOURCE_DIR}/Drivers/awfui/backends/adafruit")
 ```
-mkdir -p drivers/Drivers/Adafruit/ArduinoCompat
-cp drivers/awfui/backends/adafruit/AFAdafruitCompat.h drivers/Drivers/Adafruit/ArduinoCompat/
-```
+
+**Important**: AWFUI ships with its own ArduinoCompat headers in `backends/adafruit/AFAdafruitCompat.h`. No file copying is required.
 
 
 
@@ -150,8 +158,7 @@ AFDisplayAdafruitGFX.h based on your specific Adafruit_GFX version.
 
 - Clone awfui into `drivers/awfui`
 - Clone ETL into `drivers/ETL`
-- Add CMake configuration flags
-- Create ArduinoCompat directory structure
+- Add CMake configuration flags (including ARDUINO_COMPAT_INCLUDE_DIR)
 - Fix target conflicts in stm32_platform.cmake
 - Update version thresholds based on your Adafruit_GFX version
 - Verify main application builds successfully
