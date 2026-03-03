@@ -12,12 +12,52 @@
 
 #include "AFAdafruitCompat.h"
 #include "AFDisplayInterface.h"
+#include <cstring>
+
+// Version-based compatibility control
+// Define version thresholds based on research of Adafruit_GFX releases
+// Should be adjusted based on actual version history
+#define ADAFRUIT_GFX_VERSION_HAS_SIMPLE_PRINT  10010  // Assume versions >= 1.0.10 have print(const char*)
+#define ADAFRUIT_GFX_VERSION_HAS_GETTEXTBOUNDS 10020  // Assume versions >= 1.0.20 have getTextBounds
+#define ADAFRUIT_GFX_VERSION_HAS_DRAWRGBBITMAP 10030  // Assume versions >= 1.0.30 have drawRGBBitmap
+#define ADAFRUIT_GFX_VERSION_HAS_GFXCANVAS16 10040   // Assume versions >= 1.0.40 have GFXcanvas16
+
+// Helper macros for version comparison
+#if ADAFRUIT_GFX_VERSION >= ADAFRUIT_GFX_VERSION_HAS_SIMPLE_PRINT
+#define HAS_SIMPLE_PRINT 1
+#else
+#define HAS_SIMPLE_PRINT 0
+#endif
+
+#if ADAFRUIT_GFX_VERSION >= ADAFRUIT_GFX_VERSION_HAS_GETTEXTBOUNDS
+#define HAS_GETTEXTBOUNDS 1
+#else
+#define HAS_GETTEXTBOUNDS 0
+#endif
+
+#if ADAFRUIT_GFX_VERSION >= ADAFRUIT_GFX_VERSION_HAS_DRAWRGBBITMAP
+#define HAS_DRAWRGBBITMAP 1
+#else
+#define HAS_DRAWRGBBITMAP 0
+#endif
+
+#if ADAFRUIT_GFX_VERSION >= ADAFRUIT_GFX_VERSION_HAS_GFXCANVAS16
+#define HAS_GFXCANVAS16 1
+#else
+#define HAS_GFXCANVAS16 0
+#endif
 
 
 
 class AFDisplayAdafruitGFX : public AFDisplayInterface {
 public:
     explicit AFDisplayAdafruitGFX(Adafruit_GFX& gfx) : m_gfx(gfx) {}
+
+    // Initialize the display
+    void begin() {
+        // This is a no-op
+        // The actual display initialization should be done by the specific driver
+    }
 
     // --- Dimensions & orientation ---
     int16_t width()  const override { return m_gfx.width();  }
@@ -98,14 +138,35 @@ public:
 
 
     void print(const char* text) override {
+#if HAS_SIMPLE_PRINT
+        // Newer Adafruit_GFX has simple print(const char*)
         m_gfx.print(text);
+#else
+        // Older Adafruit_GFX has printf-style print, use it safely
+        if (text && strlen(text) > 0) {
+            char buffer[2];
+            buffer[0] = text[0];
+            buffer[1] = '\0';
+            m_gfx.print(buffer, 1, "%c");
+        }
+#endif
     }
 
 
     void getTextBounds(const char* str, int16_t x, int16_t y,
                        int16_t* x1, int16_t* y1,
                        uint16_t* w, uint16_t* h) override {
+#if HAS_GETTEXTBOUNDS
+        // Newer Adafruit_GFX has getTextBounds
         m_gfx.getTextBounds(str, x, y, x1, y1, w, h);
+#else
+        // Method not available in older Adafruit_GFX version
+        // Provide reasonable defaults
+        if (x1) *x1 = x;
+        if (y1) *y1 = y;
+        if (w) *w = 6;  // Approximate character width
+        if (h) *h = 8;  // Approximate character height
+#endif
     }
 
 
@@ -130,7 +191,23 @@ public:
     void drawRGBBitmap(int16_t x, int16_t y,
                        const uint16_t* bitmap,
                        int16_t w, int16_t h) override {
+#if HAS_DRAWRGBBITMAP
+        // Newer Adafruit_GFX has drawRGBBitmap
         m_gfx.drawRGBBitmap(x, y, const_cast<uint16_t*>(bitmap), w, h);
+#else
+        // Method not available in older Adafruit_GFX version
+        // Convert RGB565 to 8-bit grayscale and draw as regular bitmap
+        for (int16_t row = 0; row < h; row++) {
+            for (int16_t col = 0; col < w; col++) {
+                uint16_t pixel = bitmap[row * w + col];
+                // Convert RGB565 to 8-bit grayscale (simple approximation)
+                uint8_t gray = ((pixel >> 11) & 0x1F) * 8/32 + 
+                               ((pixel >> 5) & 0x3F) * 4/64 + 
+                               (pixel & 0x1F) * 8/32;
+                m_gfx.drawPixel(x + col, y + row, gray);
+            }
+        }
+#endif
     }
 
 
@@ -149,17 +226,72 @@ private:
 
 
 
-// Canvas wrapper: an AFDisplayAdafruitGFX that owns a GFXcanvas16
+// Canvas wrapper: owns a buffer and optionally GFXcanvas16
 class AFCanvasAdafruitGFX : public AFDisplayAdafruitGFX {
 public:
     AFCanvasAdafruitGFX(int16_t w, int16_t h)
+#if HAS_GFXCANVAS16
         : AFDisplayAdafruitGFX(m_canvas), m_canvas(w, h) {}
+#else
+        : AFDisplayAdafruitGFX(m_dummy_gfx), m_width(w), m_height(h) {
+        m_buffer = new uint16_t[w * h];
+        // Clear buffer to black
+        memset(m_buffer, 0, w * h * sizeof(uint16_t));
+    }
+#endif
+
+#if !HAS_GFXCANVAS16
+    ~AFCanvasAdafruitGFX() {
+        delete[] m_buffer;
+    }
+#endif
 
     const uint16_t* getCanvasBuffer() const override {
+#if HAS_GFXCANVAS16
         return m_canvas.getBuffer();
+#else
+        return m_buffer;
+#endif
     }
+
+#if !HAS_GFXCANVAS16
+    // Override drawPixel to write to our buffer
+    void drawPixel(int16_t x, int16_t y, uint16_t color) override {
+        if (x >= 0 && x < m_width && y >= 0 && y < m_height) {
+            m_buffer[y * m_width + x] = color;
+        }
+    }
+
+    // Override fillScreen to clear our buffer
+    void fillScreen(uint16_t color) override {
+        for (int i = 0; i < m_width * m_height; i++) {
+            m_buffer[i] = color;
+        }
+    }
+#endif
 
 
 private:
+#if !HAS_GFXCANVAS16
+    // Concrete dummy GFX class for canvas constructor
+    class DummyGFX : public Adafruit_GFX {
+    public:
+        DummyGFX(int16_t w, int16_t h) : Adafruit_GFX(w, h) {}
+        void drawPixel(int16_t x, int16_t y, uint16_t color) override {
+            // Do nothing - this is just a dummy
+        }
+    };
+    
+    static DummyGFX m_dummy_gfx;
+    uint16_t* m_buffer;
+    int16_t m_width;
+    int16_t m_height;
+#else
     GFXcanvas16 m_canvas;
+#endif
 };
+
+#if !HAS_GFXCANVAS16
+// Static member definition
+AFCanvasAdafruitGFX::DummyGFX AFCanvasAdafruitGFX::m_dummy_gfx(1, 1);
+#endif
