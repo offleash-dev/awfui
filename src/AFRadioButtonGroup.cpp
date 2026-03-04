@@ -44,5 +44,5 @@ void AFRadioButtonGroup::select(AFRadioButton* btn) {
     m_selected = btn;
 
     if (m_onChangeCallback)
-        m_onChangeCallback(btn->getId());
+        m_onChangeCallback(*this, btn->getId());
 }
