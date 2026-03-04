@@ -60,7 +60,7 @@ void AFCheckbox::setChecked(bool checked) {
       markDirty();
 
       if (m_onChangeCallback) {
-            m_onChangeCallback(m_checked);
+            m_onChangeCallback(*this, m_checked);
       }
 }
 

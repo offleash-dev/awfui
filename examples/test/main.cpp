@@ -151,7 +151,7 @@ static void setupScreen1() {
       // Checkbox — enables/disables corner buttons
       auto* enableCb = new AFCheckbox(20, 110, 16, makeID("S1Cb"), "Corner buttons enabled");
       enableCb->setChecked(true);
-      enableCb->setOnChangeCallback([](bool checked) {
+      enableCb->setOnChangeCallback([](AFCheckbox& sender, bool checked) {
             s1_btnTL->setEnabled(checked);
             s1_btnTR->setEnabled(checked);
             s1_btnBL->setEnabled(checked);
@@ -202,7 +202,7 @@ static void setupScreen2() {
       // Checkbox 1 — enables/disables radio 2
       s2_cb1 = new AFCheckbox(40, H - 110, 16, makeID("S2C1"), "Radio 2 enabled");
       s2_cb1->setChecked(true);
-      s2_cb1->setOnChangeCallback([](bool checked) {
+      s2_cb1->setOnChangeCallback([](AFCheckbox& sender, bool checked) {
             s2_radio2->setEnabled(checked);
       });
       screen2->addWidget(s2_cb1, true);
@@ -210,7 +210,7 @@ static void setupScreen2() {
       // Checkbox 2 — enables/disables checkbox 1
       auto* cb2 = new AFCheckbox(40, H - 130, 16, makeID("S2C2"), "Checkbox 1 enabled");
       cb2->setChecked(true);
-      cb2->setOnChangeCallback([](bool checked) {
+      cb2->setOnChangeCallback([](AFCheckbox& sender, bool checked) {
             s2_cb1->setEnabled(checked);
       });
       screen2->addWidget(cb2, true);
