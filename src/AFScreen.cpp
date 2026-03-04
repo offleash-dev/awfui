@@ -112,7 +112,16 @@ void AFScreen::removePanel(AFPanel* p) {
 // Show a modal dialog
 //
 void AFScreen::showModal(AFModalDialog* d) {
+      // Clear dirty flags on all widgets to prevent drawing over modal
+      for (auto* w : m_widgets) {
+            w->clearDirty();
+      }
+      for (auto* p : m_panels) {
+            p->clearDirty();
+      }
+
       m_activeModal = d;
+      m_needsScreenRedraw = true;
 }
 
 

@@ -40,6 +40,7 @@ bool AFPanel::addWidget(AFWidget* w, bool owned) {
             m_widgets.push_back(w);
             w->m_parent = this;
             w->m_owned  = owned;
+            w->markDirty();  // Mark as dirty so it gets drawn
             success     = true;
       }
 

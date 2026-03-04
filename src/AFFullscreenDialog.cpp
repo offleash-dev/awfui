@@ -18,7 +18,8 @@ AFFullscreenDialog::AFFullscreenDialog(uint32_t id)
     : AFModalDialog(0, 0, 0, 0, id) 
 {
       // Fullscreen dialogs are visible by default
-      m_visible = true;
+      m_visible = true; 
+      m_opaque = true;
 }
 
 
