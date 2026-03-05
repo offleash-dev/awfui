@@ -30,6 +30,15 @@ AWFUI uses C++ minimally. Features that add binary expansionare avoided:
 - **Asserts** — for programmer errors only.
 - **No RTTI** — disabled to save space.
 
+**Important**: Because of that last one, when building embedded applications with AWFUI, always add this to your CMakeLists.txt:
+
+```cmake
+# Critical for embedded builds - disables RTTI for C++ only
+target_compile_options(your_target PRIVATE $<$<COMPILE_LANGUAGE:CXX>:-fno-rtti>)
+```
+
+This prevents typeinfo symbols from being generated while keeping virtual functions working properly. Failure to disable RTTI can lead to "undefined reference to typeinfo" linking errors and wasted flash memory.
+
 
 
 ### Error Handling

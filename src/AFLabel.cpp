@@ -12,7 +12,7 @@
 
 // Constructor
 //
-AFLabel::AFLabel(int16_t x_, int16_t y_, const char* text_, uint32_t id) : AFWidget(x_, y_, 0, 0, id), m_text(text_) {
+AFLabel::AFLabel(int16_t x, int16_t y, const char* text, uint32_t id) : AFWidget(x, y, 0, 0, id), m_text((char*)(text)) {
       // width/height are not usable for hit-testing
       m_width  = 0;
       m_height = 0;
@@ -22,7 +22,7 @@ AFLabel::AFLabel(int16_t x_, int16_t y_, const char* text_, uint32_t id) : AFWid
 
 
 
-AFLabel::AFLabel(int16_t x, int16_t y, int16_t w, int16_t h, const char* text, uint32_t id) : AFWidget(x, y, w, h, id), m_text(text) {
+AFLabel::AFLabel(int16_t x, int16_t y, int16_t w, int16_t h, const char* text, uint32_t id) : AFWidget(x, y, w, h, id), m_text((char*)text) {
       // width/height are usable for hit-testing
       m_width  = w;
       m_height = h;

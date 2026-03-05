@@ -75,7 +75,7 @@ void AFSlider::onRelease(const AFEvent& e) {
       unused(e);
 
       if (m_onReleaseCallback) {
-          m_onReleaseCallback(m_value);
+          m_onReleaseCallback(*this, m_value);
     }
 }
 

@@ -13,8 +13,8 @@
 
 
 
-// Callback type for checkbox state changes (no STL, just a function pointer)
-using AFCheckboxCallback = void (*)(bool checked);
+// Callback type for checkbox state changes (passes sender and checked state)
+using AFCheckboxCallback = void (*)(AFCheckbox& sender, bool checked);
 
 
 

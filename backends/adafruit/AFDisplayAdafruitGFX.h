@@ -82,11 +82,18 @@ public:
 
     // --- Higher-level drawing (overrides AFDisplayInterface fallbacks) ---
     void fillScreen(uint16_t color) override {
-        m_gfx.fillScreen(color);
+        fillScreenOptimized(color);
     }
 
 
     void fillRect(int16_t x, int16_t y, int16_t w, int16_t h, uint16_t color) override {
+        // Check if this is a full screen fill - optimize it!
+        if (x == 0 && y == 0 && w == m_gfx.width() && h == m_gfx.height()) {
+            fillScreenOptimized(color);
+            return;
+        }
+        
+        // Use default implementation for other rectangles
         m_gfx.fillRect(x, y, w, h, color);
     }
 
@@ -95,11 +102,12 @@ public:
         m_gfx.drawRect(x, y, w, h, color);
     }
 
+    // Optimized fillScreen for full screen - internal use
+    void fillScreenOptimized(uint16_t color);
 
     void fillRoundRect(int16_t x, int16_t y, int16_t w, int16_t h, int16_t radius, uint16_t color) override {
         m_gfx.fillRoundRect(x, y, w, h, radius, color);
     }
-
 
     void drawRoundRect(int16_t x, int16_t y, int16_t w, int16_t h, int16_t radius, uint16_t color) override {
         m_gfx.drawRoundRect(x, y, w, h, radius, color);
@@ -142,12 +150,15 @@ public:
         // Newer Adafruit_GFX has simple print(const char*)
         m_gfx.print(text);
 #else
-        // Older Adafruit_GFX has printf-style print, use it safely
-        if (text && strlen(text) > 0) {
-            char buffer[2];
-            buffer[0] = text[0];
-            buffer[1] = '\0';
-            m_gfx.print(buffer, 1, "%c");
+        // Older Adafruit_GFX has printf-style print, print each character
+        if (text) {
+            while (*text) {
+                char buffer[2];
+                buffer[0] = *text;
+                buffer[1] = '\0';
+                m_gfx.print(buffer, 1, "%c");
+                text++;
+            }
         }
 #endif
     }
@@ -233,16 +244,23 @@ public:
 #if HAS_GFXCANVAS16
         : AFDisplayAdafruitGFX(m_canvas), m_canvas(w, h) {}
 #else
-        : AFDisplayAdafruitGFX(m_dummy_gfx), m_width(w), m_height(h) {
-        m_buffer = new uint16_t[w * h];
+        : AFDisplayAdafruitGFX(m_dummy_gfx), m_width(w/2), m_height(h/2) {
+        // Use static buffer at half resolution
+        m_buffer = s_canvasBuffer;
         // Clear buffer to black
-        memset(m_buffer, 0, w * h * sizeof(uint16_t));
+        memset(m_buffer, 0, (w/2) * (h/2) * sizeof(uint16_t));
     }
 #endif
 
 #if !HAS_GFXCANVAS16
+    // Override width/height to return correct values instead of dummy's
+    int16_t width() const override { return m_width; }
+    int16_t height() const override { return m_height; }
+#endif
+
+#if !HAS_GFXCANVAS16
     ~AFCanvasAdafruitGFX() {
-        delete[] m_buffer;
+        // Don't delete static buffer - it's allocated at compile time
     }
 #endif
 
@@ -268,21 +286,41 @@ public:
             m_buffer[i] = color;
         }
     }
+
+    // Render scaled canvas to full display (2x scaling)
+    void renderScaled() {
+        Adafruit_GFX& gfx = getGFX();
+        for (int y = 0; y < m_height; y++) {
+            for (int x = 0; x < m_width; x++) {
+                uint16_t color = m_buffer[y * m_width + x];
+                // Draw 2x2 pixel block for each canvas pixel
+                gfx.drawPixel(x*2, y*2, color);
+                gfx.drawPixel(x*2+1, y*2, color);
+                gfx.drawPixel(x*2, y*2+1, color);
+                gfx.drawPixel(x*2+1, y*2+1, color);
+            }
+        }
+    }
 #endif
 
 
 private:
 #if !HAS_GFXCANVAS16
-    // Concrete dummy GFX class for canvas constructor
+    // Instance-specific dummy GFX class for canvas constructor
     class DummyGFX : public Adafruit_GFX {
     public:
+        DummyGFX() : Adafruit_GFX(1, 1) {}  // Default constructor
         DummyGFX(int16_t w, int16_t h) : Adafruit_GFX(w, h) {}
+        virtual ~DummyGFX() = default;
         void drawPixel(int16_t x, int16_t y, uint16_t color) override {
             // Do nothing - this is just a dummy
         }
     };
     
-    static DummyGFX m_dummy_gfx;
+    // Static buffer allocation for embedded systems with limited heap
+    static uint16_t s_canvasBuffer[120 * 160]; // 37.5KB static buffer (smaller canvas)
+    
+    DummyGFX m_dummy_gfx;
     uint16_t* m_buffer;
     int16_t m_width;
     int16_t m_height;
@@ -290,8 +328,3 @@ private:
     GFXcanvas16 m_canvas;
 #endif
 };
-
-#if !HAS_GFXCANVAS16
-// Static member definition
-AFCanvasAdafruitGFX::DummyGFX AFCanvasAdafruitGFX::m_dummy_gfx(1, 1);
-#endif

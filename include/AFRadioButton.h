@@ -15,7 +15,7 @@
 
 class AFRadioButtonGroup;   // forward declaration
 
-using AFRadioCallback = void (*)(uint32_t id);
+using AFRadioCallback = void (*)(AFRadioButton& sender, uint32_t id);
 
 
 class AFRadioButton : public AFWidget {

@@ -73,8 +73,12 @@ public:
     }
 
 
-    void markDirty() {
+    virtual void markDirty() {
         m_dirty = true;
+        // If we have a parent, mark it dirty too so it knows to redraw us
+        if (m_parent) {
+            m_parent->markDirty();
+        }
     }
 
 

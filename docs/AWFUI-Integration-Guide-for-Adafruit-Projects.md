@@ -48,11 +48,118 @@ add_subdirectory(./awfui)
 ```
 target_link_libraries(${TARGET} PRIVATE
     # ... your existing dependencies ...
-    awfui  # Add this
+    awfui          # Core library
+    awfui_adafruit # Adafruit backend
+    # Optional: Use --whole-archive if needed for vtable issues
+    # -Wl,--whole-archive awfui_adafruit awfui -Wl,--no-whole-archive
 )
 ```
 
+### **CMake Options for Integration**
 
+Control AWFUI build behavior with these options (set before `add_subdirectory`):
+
+```cmake
+# Disable examples when integrating (recommended)
+set(AWFUI_BUILD_EXAMPLES OFF)
+
+# Backend selection
+set(AWFUI_USE_SDL OFF)        # Disable SDL for embedded builds
+set(AWFUI_USE_ADAFRUIT ON)    # Enable Adafruit backend for STM32
+```
+
+**Usage Examples:**
+```bash
+# Command line:
+cmake -DAWFUI_BUILD_EXAMPLES=OFF -DAWFUI_USE_SDL=OFF path/to/project
+
+# Or in CMakeLists.txt:
+set(AWFUI_BUILD_EXAMPLES OFF)
+set(AWFUI_USE_SDL OFF)
+add_subdirectory(./awfui)
+```
+
+
+
+## **Modular Structure (New)**
+
+AWFUI now has a modular build structure that separates the core library from examples:
+
+```
+drivers/awfui/
+├── CMakeLists.txt          # Main library configuration
+├── examples/               # Example applications (optional)
+│   ├── CMakeLists.txt      # Examples build configuration  
+│   ├── demo/               # Main demo
+│   ├── test/               # Test/demo
+│   ├── demo-justsdl/       # SDL-only demo
+│   └── keypad/             # Keypad demo (great starting point)
+├── include/                # Public headers
+├── src/                    # Library source files
+├── backends/               # Backend implementations
+│   ├── adafruit/           # Adafruit_GFX backend
+│   └── sdl/                # SDL backend
+└── cmake/                  # Platform support files
+```
+
+**Benefits:**
+- **Library-only builds** - Build just the AWFUI library without examples
+- **Selective examples** - Build only specific examples you need
+- **Better organization** - Clear separation of library code and demos
+- **Easier maintenance** - Examples don't interfere with library builds
+
+## **RTOS Task Integration**
+
+AWFUI works well with RTOS environments. Here's a typical integration pattern:
+
+```cpp
+// tasks/task_gui.cpp
+#include "AFScreen.h"
+#include "AFButton.h"
+#include "AFWorld.h"
+
+#if USE_SDL
+#include "AFDisplaySDL.h"
+#include "AFTouchSDL.h"
+#else
+#include "AFDisplayAdafruitGFX.h"
+#include "AFFt6206Touch.h"
+#endif
+
+// Global objects (initialized in task)
+AFDisplayAdafruitGFX* display = nullptr;
+AFFt6206Touch*       touch = nullptr;
+AFWorld*             world = nullptr;
+
+void GuiTask(void* pdata) {
+    // Initialize display and touch
+    Adafruit_ILI9341 tft;
+    touch = new AFFt6206Touch();
+    display = new AFDisplayAdafruitGFX(tft);
+    
+    // Setup AWFUI
+    display->begin();
+    touch->begin();
+    AFWorld::init(*display, touch, &eventQueue);
+    world = AFWorld::instance();
+    
+    // Create your UI screens here
+    setupMyScreens();
+    
+    // Main GUI loop
+    while (true) {
+        world->loop();
+        display->present();
+        OSTimeDly(16); // ~60 FPS
+    }
+}
+```
+
+**Key Points:**
+- Use pointers for global objects to avoid initialization order issues
+- Initialize AWFUI after your hardware is ready
+- Use RTOS delays for frame rate control
+- Protect SPI/shared resources with locks if needed
 
 ## **Possible Issues & Solutions**
 
@@ -117,6 +224,47 @@ Or clone SDL2 for desktop development:
 cd drivers
 git clone https://github.com/libsdl-org/SDL.git SDL2
 set(AWFUI_USE_SDL ON)
+```
+
+
+
+### **5. Vtable/Typeinfo Linking Issues**
+
+**Error**: `undefined reference to 'typeinfo for AFScreen'`
+
+**Solution**: Use `--whole-archive` to force inclusion of all vtable symbols:
+
+```cmake
+target_link_libraries(${TARGET} PRIVATE
+    # ... other dependencies ...
+    -Wl,--whole-archive
+    awfui_adafruit
+    awfui
+    -Wl,--no-whole-archive
+)
+```
+
+**Alternative**: Add a dummy reference to force vtable emission:
+
+```cpp
+// In one of your source files
+extern "C" void force_awfui_vtables() {
+    AFScreen* dummy = nullptr;
+    dummy->~AFScreen(); // Forces vtable inclusion
+}
+```
+
+### **6. RTTI and Embedded Optimization (Important)**
+
+**Issue**: `undefined reference to 'typeinfo for AFScreen'` even when not using RTTI features
+
+**Root Cause**: RTTI is enabled by default in C++, but embedded systems should disable it to save space and avoid typeinfo metadata.
+
+**Solution**: Always disable RTTI for embedded builds:
+
+```cmake
+# In App/CMakeLists.txt - C++ only
+target_compile_options(${TARGET} PRIVATE $<$<COMPILE_LANGUAGE:CXX>:-fno-rtti>)
 ```
 
 

@@ -202,6 +202,15 @@ While the ownership rules are intentionally simple, if you prefer to implement a
 
 Because AWFUI uses ETL and not STL, there is a preallocated ETL list for each container.  Bt default this is 32 widget pointers × 4 bytes = 128 bytes per screen/panel, regardless of how many widgets are actually used.  If you are running in tight memory system, change the defaults in AFBase.h
 
+### **RTTI Optimization for Embedded Systems**
+
+For embedded builds, AWFUI disables RTTI to save flash memory and avoid typeinfo linking issues:
+
+```cmake
+# Add to your embedded target's CMakeLists.txt
+target_compile_options(${TARGET} PRIVATE $<$<COMPILE_LANGUAGE:CXX>:-fno-rtti>)
+```
+
 ### Strings in AWFUI 
 
 Widgets like AFButton and AFLabel store `const char*` pointers — they do not copy the string. The caller must keep the string valid for the widget's lifetime.

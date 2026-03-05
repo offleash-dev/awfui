@@ -14,7 +14,9 @@ get_filename_component(AWFUI_MODULES_DIR "${CMAKE_CURRENT_SOURCE_DIR}/.." ABSOLU
 get_filename_component(AWFUI_ROOT_DIR "${CMAKE_CURRENT_SOURCE_DIR}/../.." ABSOLUTE)
 
 # Create an interface library to hold all STM32 platform settings
+if(NOT TARGET stm32_platform)
 add_library(stm32_platform INTERFACE)
+endif()
 
 # -----------------------------------------------------------------------------
 # STM32 Include Directories
@@ -66,38 +68,46 @@ endif()
 # -----------------------------------------------------------------------------
 # Adafruit Libraries (source files needed for linking)
 # -----------------------------------------------------------------------------
-add_library(adafruit_gfx STATIC
-    ${AWFUI_MODULES_DIR}/Drivers/Adafruit/Adafruit-GFX/Adafruit_GFX.cpp
-    ${AWFUI_MODULES_DIR}/Drivers/Adafruit/Adafruit-GFX/glcdfont.c
-)
-target_include_directories(adafruit_gfx PUBLIC
-    ${AWFUI_MODULES_DIR}/Drivers/Adafruit/Adafruit-GFX
-    ${AWFUI_MODULES_DIR}/Drivers/Adafruit/ArduinoCompat
-)
-target_compile_definitions(adafruit_gfx PUBLIC ARDUINO=150)
-target_link_libraries(adafruit_gfx PUBLIC stm32_platform)
+if(NOT TARGET adafruit_gfx)
+    add_library(adafruit_gfx STATIC
+        ${AWFUI_MODULES_DIR}/Drivers/Adafruit/Adafruit-GFX/Adafruit_GFX.cpp
+        ${AWFUI_MODULES_DIR}/Drivers/Adafruit/Adafruit-GFX/glcdfont.c
+    )
+    target_include_directories(adafruit_gfx PUBLIC
+        ${AWFUI_MODULES_DIR}/Drivers/Adafruit/Adafruit-GFX
+        ${AWFUI_MODULES_DIR}/Drivers/Adafruit/ArduinoCompat
+    )
+    target_compile_definitions(adafruit_gfx PUBLIC ARDUINO=150)
+    target_link_libraries(adafruit_gfx PUBLIC stm32_platform)
 
-# Suppress warnings in Adafruit code we don't control
-if(CMAKE_CXX_COMPILER_ID STREQUAL "Clang" OR CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
-    target_compile_options(adafruit_gfx PRIVATE -Wno-unused-parameter)
+    # Suppress warnings in Adafruit code we don't control
+    if(CMAKE_CXX_COMPILER_ID STREQUAL "Clang" OR CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
+        target_compile_options(adafruit_gfx PRIVATE -Wno-unused-parameter)
+    endif()
+
+    # Suppress MSVC secure CRT warnings in Adafruit code
+    if(WIN32)
+        target_compile_definitions(adafruit_gfx PRIVATE _CRT_SECURE_NO_WARNINGS)
+    endif()
 endif()
 
-# Suppress MSVC secure CRT warnings in Adafruit code
-if(WIN32)
-    target_compile_definitions(adafruit_gfx PRIVATE _CRT_SECURE_NO_WARNINGS)
-    target_compile_definitions(adafruit_ili9341 PRIVATE _CRT_SECURE_NO_WARNINGS)
-endif()
+if(NOT TARGET adafruit_ili9341)
+    add_library(adafruit_ili9341 STATIC
+        ${AWFUI_MODULES_DIR}/Drivers/Adafruit/Adafruit_ILI9341/Adafruit_ILI9341.cpp
+    )
+    target_include_directories(adafruit_ili9341 PUBLIC
+        ${AWFUI_MODULES_DIR}/Drivers/Adafruit/Adafruit_ILI9341
+    )
+    target_link_libraries(adafruit_ili9341 PUBLIC adafruit_gfx stm32_platform)
 
-add_library(adafruit_ili9341 STATIC
-    ${AWFUI_MODULES_DIR}/Drivers/Adafruit/Adafruit_ILI9341/Adafruit_ILI9341.cpp
-)
-target_include_directories(adafruit_ili9341 PUBLIC
-    ${AWFUI_MODULES_DIR}/Drivers/Adafruit/Adafruit_ILI9341
-)
-target_link_libraries(adafruit_ili9341 PUBLIC adafruit_gfx stm32_platform)
+    # Suppress MSVC secure CRT warnings in Adafruit code
+    if(WIN32)
+        target_compile_definitions(adafruit_ili9341 PRIVATE _CRT_SECURE_NO_WARNINGS)
+    endif()
+endif()
 
 # HAL/BSP stubs for Windows build testing (real implementations are on STM32)
-if(WIN32)
+if(WIN32 AND NOT TARGET hal_stubs)
     add_library(hal_stubs STATIC
         ${CMAKE_CURRENT_LIST_DIR}/hal_stubs.cpp
     )

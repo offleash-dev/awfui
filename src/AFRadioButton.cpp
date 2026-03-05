@@ -54,7 +54,7 @@ void AFRadioButton::setSelected(bool sel) {
     markDirty();
 
     if (sel && m_onSelectCallback)
-        m_onSelectCallback(m_id);
+        m_onSelectCallback(*this, m_id);
 }
 
 

@@ -1,10 +1,10 @@
 # AWFUI
-AWFUI — A lightweight embedded UI framework for C++.
+AWFUI — 'A' lightweight 'W'idget-set 'F'or embedded 'UI' framework for C++.
 MIT licensed. Designed for clarity, portability, and small systems.
 
 AWFUI (think “awww… fooey”) is a lightweight, embedded‑friendly UI framework. Using intentionally minimal C++, it provides a consistent widget model, a screen/state system, dialogs and modal overlays, and a unified event model.
 
-While based on AWFUI uses drawing and event abstraction layer to allow support for hardware backends.  It includes an SDL-based backend to simplify desktop development and rapid prototyping.
+AWFUI uses drawing and event abstraction layer to allow support for hardware backends.  It includes an SDL-based backend to simplify desktop development and rapid prototyping.
 
 Documentation is in /docs.
 

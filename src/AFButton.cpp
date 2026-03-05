@@ -124,6 +124,6 @@ void AFButton::onRelease(const AFEvent& e) {
 void AFButton::onClick(const AFEvent& e) {
       unused(e);
       if (m_onClickCallback) {
-            m_onClickCallback();
+            m_onClickCallback(*this);
       }
 }

@@ -23,7 +23,7 @@ public:
 
 
       void setText(const char* t) {
-            m_text = t;
+            m_text = (char*)t;
             markDirty();
       }
 
@@ -60,7 +60,7 @@ public:
 
       
 private:
-      const char*          m_text;
+      char*                m_text;
       int32_t              m_color         = -1;    // -1 = use theme textColor
       uint8_t              m_textSize      = 1;
       int16_t              m_lastDrawX     = 0;     // last drawn text origin (for erase)
