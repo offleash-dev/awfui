@@ -47,12 +47,17 @@ void AFFullscreenDialog::draw(AFDisplayInterface& displayInterface) {
             return;
 
       // Fill entire screen area
-      displayInterface.fillRect(m_x, m_y, m_width, m_height, AFWorld::instance()->getTheme().screenBgColor);
+      if (m_dirty) {
+            displayInterface.fillRect(m_x, m_y, m_width, m_height, AFWorld::instance()->getTheme().screenBgColor);
+      }
 
       // Draw child widgets
       for (auto* w : m_widgets) {
-            if (w->isVisible()) {
+            if (w->isVisible() && w->isDirty()) {
                   w->draw(displayInterface);
+                  w->clearDirty();
             }
       }
+
+      clearDirty();
 }

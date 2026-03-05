@@ -107,8 +107,6 @@ void AFScreen::removePanel(AFPanel* p) {
 
 
 
-
-
 // Show a modal dialog
 //
 void AFScreen::showModal(AFModalDialog* d) {
@@ -121,6 +119,9 @@ void AFScreen::showModal(AFModalDialog* d) {
       }
 
       m_activeModal = d;
+      // Call show() to set m_owner so dismiss() works
+      d->show(*this);
+
       m_needsScreenRedraw = true;
 }
 
@@ -244,21 +245,25 @@ void AFScreen::clear(uint16_t color) {
 // Check if any widget needs redraw
 //
 bool AFScreen::needsRedraw() const {
-    if (m_needsScreenRedraw)
-        return true;
-    for (auto* w : m_widgets) {
-        if (w->isVisible() && w->isDirty()) {
+      if (m_needsScreenRedraw)
             return true;
-        }
-    }
-    for (auto* p : m_panels) {
-        if (p->isVisible() && p->isDirty()) {
+
+      for (auto* w : m_widgets) {
+            if (w->isVisible() && w->isDirty()) {
+                  return true;
+            }
+     }
+
+      for (auto* p : m_panels) {
+            if (p->isVisible() && p->isDirty()) {
+                  return true;
+            }
+      }
+
+      if (m_activeModal && m_activeModal->isVisible() && m_activeModal->isDirty()) {
             return true;
-        }
-    }
-    if (m_activeModal && m_activeModal->isVisible() && m_activeModal->isDirty()) {
-        return true;
-    }
+      }
+
     return false;
 }
 

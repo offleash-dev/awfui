@@ -11,7 +11,8 @@
 #include "AFTheme.h"
 #include "AFWidget.h"
 
-
+// Forward declaration
+class AFCheckbox;
 
 // Callback type for checkbox state changes (passes sender and checked state)
 using AFCheckboxCallback = void (*)(AFCheckbox& sender, bool checked);
