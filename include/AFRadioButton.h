@@ -11,9 +11,9 @@
 #include "AFWidget.h"
 #include "AFTheme.h"
 
-
-
-class AFRadioButtonGroup;   // forward declaration
+// Forward declarations
+class AFRadioButton;
+class AFRadioButtonGroup;
 
 using AFRadioCallback = void (*)(AFRadioButton& sender, uint32_t id);
 

@@ -14,6 +14,7 @@
 
 
 class AFRadioButton;
+class AFRadioButtonGroup;
 
 using AFRadioGroupCallback = void (*)(AFRadioButtonGroup& sender, uint32_t id);
 

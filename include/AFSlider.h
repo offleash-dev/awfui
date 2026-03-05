@@ -19,7 +19,8 @@
 #include "AFValueWidget.h"
 #include "AFEvent.h"
 
-
+// Forward declaration
+class AFSlider;
 
 // Callback type for slider release (passes sender and final value)
 using AFSliderCallback = void (*)(AFSlider& sender, int value);

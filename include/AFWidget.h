@@ -75,14 +75,11 @@ public:
 
     virtual void markDirty() {
         m_dirty = true;
-        // If we have a parent, mark it dirty too so it knows to redraw us
-        if (m_parent) {
-            m_parent->markDirty();
-        }
+        // Note: We don't cascade to parent because needsRedraw() already checks all children
     }
 
 
-    bool isDirty() const {
+    virtual bool isDirty() const {
         return m_dirty;
     }
 

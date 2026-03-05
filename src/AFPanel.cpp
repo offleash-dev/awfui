@@ -92,10 +92,28 @@ void AFPanel::draw(AFDisplayInterface& displayInterface) {
 
       // Draw child widgets
       for (auto* w : m_widgets) {
-            if (w->isVisible()) {
+            if (w->isVisible() && isDirty()) {
                   w->draw(displayInterface);
+                  w->clearDirty();
             }
       }
+      
+      // Clear our own dirty flag after drawing children
+      clearDirty();
+}
+
+
+
+bool AFPanel::isDirty() const {
+      if (m_dirty)
+            return true;
+
+      for (auto* w : m_widgets) {
+            if (w->isVisible() && w->isDirty()) {
+                  return true;
+            }
+      }
+      return false;
 }
 
 
