@@ -49,12 +49,12 @@ void AFSlider::draw(AFDisplayInterface& d) {
 
       // Filled portion
       int filled = mapValueToPixels(m_value);
-      d.fillRect(m_x, m_y + m_height/2 - 2, filled, 4, fillColor);
+      d.fillRect(m_x, static_cast<int16_t>(m_y + m_height/2 - 2), static_cast<int16_t>(filled), 4, fillColor);
 
       // Thumb
       int thumbX = m_x + filled - kThumbW/2;
       int thumbY = m_y + m_height/2 - kThumbH/2;
-      d.fillRect(thumbX, thumbY, kThumbW, kThumbH, thumbColor);
+      d.fillRect(static_cast<int16_t>(thumbX), static_cast<int16_t>(thumbY), kThumbW, kThumbH, thumbColor);
 }
 
 

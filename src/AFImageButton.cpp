@@ -23,10 +23,14 @@ AFImageButton::AFImageButton(int16_t x, int16_t y, const AFImage* img, uint32_t 
 
 
 void AFImageButton::onClick(const AFEvent& e) {
+    (void)e; // Suppress unused parameter warning
     if (m_selectable) {
         m_selected = !m_selected;
         markDirty();
     }
+    
+    // Call the base class method to handle the callback
+    AFButton::onClick(e);
 }
 
 

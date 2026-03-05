@@ -19,7 +19,8 @@ class AFImageButton : public AFButton {
 public:
     AFImageButton(int16_t x, int16_t y, const AFImage* img, uint32_t id = 0);
 
-    void setSelectable(bool selectable) { m_selected = selectable; }
+    void setSelectable(bool selectable) { m_selectable = selectable; }
+    void setSelected(bool selected) { m_selected = selected; }
     bool selected() const { return m_selected; }
     
     void setPressedImage(const AFImage* img) { m_imagePressed = img; }

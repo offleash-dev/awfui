@@ -53,7 +53,7 @@ void AFProgressBar::showText(bool enable) {
         // Filled portion
         int filled = mapValueToPixels(m_value);
         if (filled > 0) {
-            d.fillRect(x0 + 1, y0 + 1, filled, m_height - 2, m_fillColor);
+            d.fillRect(x0 + 1, y0 + 1, static_cast<int16_t>(filled), m_height - 2, m_fillColor);
         }
 
         // Optional text overlay
