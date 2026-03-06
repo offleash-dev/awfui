@@ -17,6 +17,7 @@
 
 
 #include <cstddef>
+#include <stdint.h>
 
 #include "AFResult.h"
 #include "AFVersion.h"

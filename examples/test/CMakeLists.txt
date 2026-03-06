@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.14)
 
 # Coordinate/rotation test demo
-add_executable(awfui_test main.cpp)
+add_executable(awfui_test testUi.cpp main.cpp)
 
 if(AWFUI_USE_SDL)
     # SDL desktop build - link backend (which brings in awfui core + SDL)

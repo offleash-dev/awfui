@@ -36,8 +36,9 @@ public:
 
       void setNumberLabel(AFLabel* lbl) { m_numberLabel = lbl; }
 
-      void appendDigit(char ch) {
+      void appendDigit(AFWidget& sender) {
             int len = (int)strlen(m_numberBuf);
+            char ch      = sender.getId() & 0xFF; // low byte of button ID is the char
             if (len < kMaxDigits) {
                   m_numberBuf[len]     = ch;
                   m_numberBuf[len + 1] = '\0';
@@ -45,7 +46,7 @@ public:
             }
       }
 
-      void backspace() {
+      void backspace(AFWidget& sender) {
             int len = (int)strlen(m_numberBuf);
             if (len > 0) {
                   m_numberBuf[len - 1] = '\0';
@@ -53,7 +54,7 @@ public:
             }
       }
 
-      void dial() {
+      void dial(AFWidget& sender) {
             // Placeholder — just clear the display
             m_numberBuf[0] = '\0';
             m_numberLabel->setText(m_numberBuf);
@@ -66,6 +67,7 @@ private:
 
 
 
+
 // Pure-SDL display — 240x320 portrait (rotation 0)
 AFDisplaySDL   display(240, 320, 2);
 AFTouchSDL     touch(2);
@@ -73,6 +75,21 @@ AFTouchSDL     touch(2);
 AFWorld*        world;
 KeypadScreen*   keypadScreen;
 AFEventQueue    eventQueue;
+
+
+void dialCallback(AFWidget& sender) {
+      // Placeholder — just clear the display
+      keypadScreen->dial(sender);
+}
+
+void backspaceCallback(AFWidget& sender) {
+      keypadScreen->backspace(sender);
+}
+
+void appendDigitCallback(AFWidget& sender) {
+      keypadScreen->appendDigit(sender);
+}
+
 
 
 
@@ -132,21 +149,6 @@ void setup() {
             { {"*",makeID("KeyS")}, {"0",makeID("Key0")}, {"#",makeID("KeyH")} },
       };
 
-      // Callback table — one non-capturing callback per digit
-      static void (*digitCb[12])() = {
-            []() { keypadScreen->appendDigit('1'); },
-            []() { keypadScreen->appendDigit('2'); },
-            []() { keypadScreen->appendDigit('3'); },
-            []() { keypadScreen->appendDigit('4'); },
-            []() { keypadScreen->appendDigit('5'); },
-            []() { keypadScreen->appendDigit('6'); },
-            []() { keypadScreen->appendDigit('7'); },
-            []() { keypadScreen->appendDigit('8'); },
-            []() { keypadScreen->appendDigit('9'); },
-            []() { keypadScreen->appendDigit('*'); },
-            []() { keypadScreen->appendDigit('0'); },
-            []() { keypadScreen->appendDigit('#'); },
-      };
 
       for (int row = 0; row < 4; row++) {
             for (int col = 0; col < 3; col++) {
@@ -155,7 +157,7 @@ void setup() {
                   const KeyDef& k = keys[row][col];
                   AFButton* btn = new AFButton(r.x, r.y, r.w, r.h,
                                                k.id, k.label);
-                  btn->setOnClickCallback(digitCb[row * 3 + col]);
+                  btn->setOnClickCallback(appendDigitCallback);
                   keypadScreen->addWidget(btn);
             }
       }
@@ -169,13 +171,13 @@ void setup() {
       int16_t bottomY = (int16_t)(lastCell.y + lastCell.h + kGapY);
 
       AFButton* callBtn = new AFButton(30, bottomY, 100, kBottomRowH, makeID("Call"), "Call");
-      callBtn->setOnClickCallback([]() { keypadScreen->dial(); });
+      callBtn->setOnClickCallback(dialCallback);
       keypadScreen->addWidget(callBtn);
 
       AFButton* bkspBtn = new AFButton(
             AFLayoutHelpers::rightOf(*callBtn, kGapX), bottomY,
             30, kBottomRowH, makeID("BkSp"), "<");
-      bkspBtn->setOnClickCallback([]() { keypadScreen->backspace(); });
+      bkspBtn->setOnClickCallback(backspaceCallback);
       keypadScreen->addWidget(bkspBtn);
 }
 

@@ -38,7 +38,9 @@
             "cacheVariables": {
                 "AWFUI_USE_SDL": "ON",
                 "AWFUI_BUILD_EXAMPLES": "ON",
-                "AWFUI_USE_ADAFRUIT": "OFF"
+                "AWFUI_USE_ADAFRUIT": "OFF",
+                "CMAKE_BUILD_TYPE": "Debug",
+                "CMAKE_CXX_FLAGS_DEBUG": "-g -O0"
             }
         },
         {

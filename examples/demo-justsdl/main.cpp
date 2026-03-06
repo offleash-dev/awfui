@@ -57,6 +57,15 @@ AFEventQueue   eventQueue;
 AFModalDialog* dialog;
 
 
+void showMainScreenDialog(AFWidget& sender) {
+      dialog->show(*mainScreen);
+}
+
+
+void dismissMainScreenDialog(AFWidget& sender) {
+      dialog->show(*mainScreen);
+}
+
 
 void setup() {
       SDL_SetMainReady();
@@ -85,7 +94,7 @@ void setup() {
       // Main screen button
       // ------------------------------------------------------------
       AFButton* openBtn = new AFButton(120, 40, 160, 50, makeID("Open"), "Open Dialog");
-      openBtn->setOnClickCallback([]() { dialog->show(*mainScreen); });
+      openBtn->setOnClickCallback(showMainScreenDialog);
       mainScreen->addWidget(openBtn);
 
       // ------------------------------------------------------------
@@ -97,7 +106,7 @@ void setup() {
       dialog->addWidget(lbl);
 
       AFButton* okBtn = new AFButton(50, 100, 100, 40, makeID("OKBt"), "OK");
-      okBtn->setOnClickCallback([]() { dialog->dismiss(); });
+      okBtn->setOnClickCallback(dismissMainScreenDialog);
       dialog->addWidget(okBtn);
 }
 
