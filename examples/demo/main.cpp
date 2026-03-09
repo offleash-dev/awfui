@@ -73,6 +73,15 @@ DemoScreen*    mainScreen;
 AFEventQueue   eventQueue;
 AFModalDialog* dialog;
 
+void handleShowButtonClick(AFWidget& sender) {
+      dialog->show(*mainScreen);
+}
+
+void handleDialogOkClick(AFWidget& sender) {
+      dialog->dismiss();
+}
+
+
 
 
 void setup() {
@@ -108,7 +117,7 @@ void setup() {
       // Main screen button
       // ------------------------------------------------------------
       AFButton* openBtn = new AFButton(120, 40, 160, 50, makeID("Open"), "Open Dialog");
-      openBtn->setOnClickCallback([]() { dialog->show(*mainScreen); });
+      openBtn->setOnClickCallback(handleShowButtonClick);
       mainScreen->addWidget(openBtn);
 
       // ------------------------------------------------------------
@@ -120,7 +129,7 @@ void setup() {
       dialog->addWidget(lbl);
 
       AFButton* okBtn = new AFButton(50, 100, 100, 40, makeID("OKBt"), "OK");
-      okBtn->setOnClickCallback([]() { dialog->dismiss(); });
+      okBtn->setOnClickCallback(handleDialogOkClick);
       dialog->addWidget(okBtn);
 }
 

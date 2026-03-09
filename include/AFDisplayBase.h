@@ -80,4 +80,26 @@ public:
 
     // Return the raw RGB565 pixel buffer of a canvas, or nullptr if N/A.
     virtual const uint16_t* getCanvasBuffer() const { return nullptr; }
+
+    // --- DMA-accelerated primitives (optional) ---
+    
+    // Query if DMA acceleration is available on this backend
+    virtual bool isDMAAvailable() const { return false; }
+
+    // DMA-accelerated solid fill for large rectangles (screen clears, dialog backgrounds, etc.)
+    // Backends with DMA support should override this for significant performance gains.
+    // Default fallback uses standard fillRect.
+    virtual void fastFillRectDMA(int16_t x, int16_t y, int16_t w, int16_t h, uint16_t color) {
+        fillRect(x, y, w, h, color);
+    }
+
+    // DMA-accelerated pixel buffer push for canvas/bitmap operations
+    // Pushes 'count' RGB565 pixels from 'data' to the current drawing window.
+    // Caller must set the drawing window (via setAddrWindow or equivalent) before calling.
+    // No default fallback - backends must implement if they support this.
+    virtual void pushPixelsDMA(const uint16_t* data, size_t count) {
+        // No generic fallback - backend-specific
+        (void)data;
+        (void)count;
+    }
 };

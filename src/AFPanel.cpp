@@ -86,7 +86,14 @@ void AFPanel::draw(AFDisplayInterface& displayInterface) {
 
       if (m_opaque) {
             const AFTheme& theme = AFWorld::instance()->getTheme();
-            displayInterface.fillRect(m_x, m_y, m_width, m_height, theme.widgetBgColor);
+            
+            // Use DMA-accelerated fill for large panel backgrounds (dialogs, etc.)
+            if (displayInterface.isDMAAvailable()) {
+                  displayInterface.fastFillRectDMA(m_x, m_y, m_width, m_height, theme.widgetBgColor);
+            } else {
+                  displayInterface.fillRect(m_x, m_y, m_width, m_height, theme.widgetBgColor);
+            }
+            
             displayInterface.drawRect(m_x, m_y, m_width, m_height, theme.widgetBorderColor);
       }
 

@@ -1,11 +1,1 @@
-{
-  "editor.formatOnSave": true,
-  "C_Cpp.clang_format_style": "file",
-  "C_Cpp.clang_format_fallbackStyle": "LLVM",
-  "[cpp]": {
-    "editor.defaultFormatter": "xaver.clang-format"
-  },
-  "[c]": {
-    "editor.defaultFormatter": "xaver.clang-format"
-  }
-}
+{"cmake.configureOnOpen": false, "cmake.buildDirectory": "${workspaceFolder}/build", "cmake.generator": "Ninja", "cmake.buildType": "Debug", "cmake.configureArgs": ["-DCMAKE_BUILD_TYPE=Debug", "-DAWFUI_USE_SDL=ON"], "files.associations": {"*.h": "cpp", "*.cpp": "cpp", "*.c": "cpp"}, "C_Cpp.default.configurationProvider": "ms-vscode.cmake-tools"}
