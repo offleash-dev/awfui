@@ -116,13 +116,21 @@ void AFScreen::showModal(AFModalDialog* d) {
       }
       for (auto* p : m_panels) {
             p->clearDirty();
-      }
+      }           
 
       m_activeModal = d;
-      // Call show() to set m_owner so dismiss() works
-      d->show(*this);
-
-      m_needsScreenRedraw = true;
+      // Set owner directly so dismiss() works (don't call show() - we're already showing)
+      d->m_owner = this;
+      
+      // Only clear the dialog area, not the entire screen
+      AFDisplayInterface* displayInterface = m_canvas ? m_canvas : &m_display;
+      if (displayInterface->isDMAAvailable()) {
+            displayInterface->fastFillRectDMA(d->getX(), d->getY(), d->getWidth(), d->getHeight(), 
+                                              AFWorld::instance()->getTheme().screenBgColor);
+      } else {
+            displayInterface->fillRect(d->getX(), d->getY(), d->getWidth(), d->getHeight(), 
+                                       AFWorld::instance()->getTheme().screenBgColor);
+      }
 }
 
 
@@ -132,15 +140,28 @@ void AFScreen::showModal(AFModalDialog* d) {
 void AFScreen::dismissModal(AFModalDialog* d) {
       if (m_activeModal == d) {
             m_activeModal = nullptr;
-            // Mark all widgets dirty so they redraw and cover the dismissed modal
+            
+            // Only clear the dialog area, not the entire screen
+            AFDisplayInterface* displayInterface = m_canvas ? m_canvas : &m_display;
+            if (displayInterface->isDMAAvailable()) {
+                  displayInterface->fastFillRectDMA(d->getX(), d->getY(), d->getWidth(), d->getHeight(), 
+                                                  AFWorld::instance()->getTheme().screenBgColor);
+            } else {
+                  displayInterface->fillRect(d->getX(), d->getY(), d->getWidth(), d->getHeight(), 
+                                           AFWorld::instance()->getTheme().screenBgColor);
+            }
+            
+            // Only mark widgets that were under the dialog as dirty
             for (auto* w : m_widgets) {
-                  w->markDirty();
+                  if (w->isVisible() && w->intersects(d->getX(), d->getY(), d->getWidth(), d->getHeight())) {
+                        w->markDirty();
+                  }
             }
             for (auto* p : m_panels) {
-                  p->markDirty();
+                  if (p->isVisible() && p->intersects(d->getX(), d->getY(), d->getWidth(), d->getHeight())) {
+                        p->markDirty();
+                  }
             }
-
-            m_needsScreenRedraw = true;
       }
 }
 
@@ -229,9 +250,15 @@ void AFScreen::setNeedsFullRedraw() {
 //
 void AFScreen::clear(uint16_t color) {
       AFDisplayInterface* displayInterface = m_canvas ? m_canvas : &m_display;
-      displayInterface->fillScreen(color);
+      
+      // Use DMA-accelerated fill if available for full screen clears
+      if (displayInterface->isDMAAvailable()) {
+            displayInterface->fastFillRectDMA(0, 0, displayInterface->width(), displayInterface->height(), color);
+      } else {
+            displayInterface->fillScreen(color);
+      }
 
-      // If using canvas, push to display
+      // If using canvas, push to display   
       if (m_canvas) {
             const uint16_t* buf = m_canvas->getCanvasBuffer();
             if (buf) {
@@ -281,7 +308,7 @@ void AFScreen::draw() {
         clear(AFWorld::instance()->getTheme().screenBgColor);
         m_needsScreenRedraw = false;
     }
-
+  
     AFDisplayInterface* displayInterface = m_canvas ? m_canvas : &m_display;
 
     // Let subclass paint a custom background (game, camera, map, etc.)

@@ -82,7 +82,11 @@ public:
 
     // --- Higher-level drawing (overrides AFDisplayInterface fallbacks) ---
     void fillScreen(uint16_t color) override {
+#if 1
+        m_gfx.fillScreen(color);
+#else
         fillScreenOptimized(color);
+#endif
     }
 
 

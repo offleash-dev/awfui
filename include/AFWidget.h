@@ -109,6 +109,13 @@ public:
     }
 
 
+    // Check if this widget intersects with a rectangle
+    bool intersects(int16_t rx, int16_t ry, int16_t rw, int16_t rh) const {
+        return !(m_x >= rx + rw || m_x + m_width <= rx ||
+                 m_y >= ry + rh || m_y + m_height <= ry);
+    }
+
+
     uint32_t getId() const {
         return m_id;
     }
