@@ -20,6 +20,7 @@ public:
         : AFWidget(x, y, w, h, id),
           m_minimum(0), m_maximum(100), m_value(0) {}
 
+          
     void setRange(int minimumValue, int maximumValue) {
         m_minimum = minimumValue;
         m_maximum = maximumValue;

@@ -66,6 +66,7 @@ public:
     // Main UI loop.  Call from main while loop or UI task
     void loop();
 
+    
     // Optional: set a volatile flag that an ISR sets when the touch controller
     // has data ready.  When set, pollHardware() skips I2C reads while idle.
     // Pass nullptr (default) to poll every tick.

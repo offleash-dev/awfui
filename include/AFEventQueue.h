@@ -3,6 +3,9 @@
 //// AFEventQueue.h
 //// Part of the AWFUI library
 ////
+//// Copyright (c) 2026 Matt Foster
+//// Licensed under the MIT License. See LICENSE file for details.
+////
 //// A fixed-size event queue that external sources (GPIO ISRs, RTOS tasks,
 //// gamepads, encoders, etc.) can post AFEvents into.  AFWorld drains the
 //// queue each loop iteration.
@@ -21,9 +24,6 @@
 ////     AFWorld::init(display, &touch, &eventQueue);
 ////
 //// For RTOS, wrap postEvent/nextEvent with a mutex in a subclass.
-////
-//// Copyright (c) 2026 Matt Foster
-//// Licensed under the MIT License. See LICENSE file for details.
 
 #include <etl/queue.h>
 

@@ -25,10 +25,12 @@ public:
       AFScreen(AFDisplayInterface& display, uint32_t id = 0, bool useCanvas = false);
       virtual ~AFScreen();
 
+      // if owned, the screen or panel will delete the widget when deleted. 
+      // if not owned, caller is responsible for deleting the widget.
       bool addWidget(AFWidget* w, bool owned = false);  // returns false if max widgets reached
       bool addPanel(AFPanel* p, bool owned = false);    // returns false if max panels reached
 
-      // detaches only. removes ownership by the panel and th e caller takes responsibility for deleting
+      // detaches only. removes ownership by the panel and the caller takes responsibility for deleting
       void removeWidget(AFWidget* w);
       void removePanel(AFPanel* p);
 
@@ -38,7 +40,7 @@ public:
       void handleEvent(const AFEvent& e);
       void draw();
 
-      // Check if any widget needs redraw
+      // Check if any child object needs redraw
       bool needsRedraw() const;
 
       // Clear the screen to the specified color (default from theme)
@@ -86,7 +88,7 @@ private:
       uint32_t      m_id;
 
       etl::vector<AFWidget*, MAX_WIDGETS_PER_SCREEN> m_widgets;
-      etl::vector<AFPanel*, MAX_DIALOGS_PER_SCREEN> m_panels;
+      etl::vector<AFPanel*, MAX_DIALOGS_PER_SCREEN>  m_panels;
       AFModalDialog*                                 m_activeModal = nullptr;
       AFWidget*                                      m_pressedWidget = nullptr;  // implicit capture for drag
 };

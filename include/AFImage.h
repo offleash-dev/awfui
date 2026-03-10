@@ -7,45 +7,38 @@
 ////
 //// Copyright (c) 2026 Matt Foster
 //// Licensed under the MIT License. See LICENSE file for details.
+////
+//// Read image from memory.  Format is header + data.
+//// Header is AFImageHeader.
+//// Data is raw pixel data in the format specified in the header.
+//// Note that the header and data are little-endian.
+////
+//// Useful conversion tools:
+//// - Adafruit’s image2cpp tool
+//// - LVGL’s image converter
+////
+//// An example image:
+////
+//// 'equalsIcon', 15x18px, 1 bit
+//// const unsigned char epd_bitmap_basicVariableIcon[] PROGMEM = {
+////     0x0F, 0x00,   // width  = 15
+////     0x12, 0x00,   // height = 18
+////     0x01,         // format = 1-bit
+////     0x00,         // reserved
+////
+////     // pixel data follows...
+////     0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+////     0x1f, 0xf0, 0x1f, 0xf0, 0x1f, 0xf0,
+////     0x00, 0x00, 0x0f, 0xe0, 0x1f, 0xf0, 0x1f, 0xf0, 0x0f, 0xe0,
+////     0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+////     0x00, 0x00, 0x00, 0x00
+//// };
+
+
 
 
 #include <stdint.h>
 
-
-
-//// AImage
-//// Part of the AWFUI library
-////
-//// Lightweight image class for image based widgets.
-////
-//// Copyright (c) 2026 Matt Foster
-//// Licensed under the MIT License. See LICENSE file for details.
-
-// Read image from memory.  Format is header + data.
-// Header is AFImageHeader.
-// Data is raw pixel data in the format specified in the header.
-// Note that the header and data are little-endian.
-// 
-// Useful conversion tools:
-// - Adafruit’s image2cpp tool
-// - LVGL’s image converter
-
-// An example image:
-//
-// 'equalsIcon', 15x18px, 1 bit
-// const unsigned char epd_bitmap_basicVariableIcon[] PROGMEM = {
-//     0x0F, 0x00,   // width  = 15
-//     0x12, 0x00,   // height = 18
-//     0x01,         // format = 1-bit
-//     0x00,         // reserved
-//
-//     // pixel data follows...
-//     0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
-//     0x1f, 0xf0, 0x1f, 0xf0, 0x1f, 0xf0,
-//     0x00, 0x00, 0x0f, 0xe0, 0x1f, 0xf0, 0x1f, 0xf0, 0x0f, 0xe0,
-//     0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
-//     0x00, 0x00, 0x00, 0x00
-// };
 
 
 
