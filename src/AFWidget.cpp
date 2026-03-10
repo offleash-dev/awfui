@@ -46,3 +46,11 @@ void AFWidget::erase(AFDisplayInterface& displayInterface) {
             erase(displayInterface, m_x, m_y, m_width, m_height);
       }
 }
+
+
+void AFWidget::update() {
+        if (m_dirty) {
+              draw(AFWorld::instance()->getDisplay());
+              clearDirty();
+        }
+}

@@ -84,7 +84,7 @@ void AFPanel::draw(AFDisplayInterface& displayInterface) {
       if (!m_visible)
             return;
 
-      if (m_opaque) {
+      if (m_opaque && m_dirty) {
             const AFTheme& theme = AFWorld::instance()->getTheme();
             
             // Use DMA-accelerated fill for large panel backgrounds (dialogs, etc.)
