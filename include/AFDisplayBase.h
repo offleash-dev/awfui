@@ -81,7 +81,11 @@ public:
     // Return the raw RGB565 pixel buffer of a canvas, or nullptr if N/A.
     virtual const uint16_t* getCanvasBuffer() const { return nullptr; }
 
+
+
     // --- DMA-accelerated primitives (optional) ---
+    // This is exploratory and as much a thought process.
+    // It maybe expanded or revised as needed for to find a standard for multiple platforms.
     
     // Query if DMA acceleration is available on this backend
     virtual bool isDMAAvailable() const { return false; }

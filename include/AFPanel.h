@@ -35,6 +35,7 @@ public:
       virtual void handleEvent(const AFEvent& e);
       virtual bool isDirty() const override;
       
+      
       int16_t toScreenX(int16_t localX) const {
             return m_x + localX;
       }

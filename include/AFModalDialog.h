@@ -26,6 +26,7 @@ public:
       void show();  // Convenience - shows on active screen
       void dismiss();
 
+      
       bool isModal() const {
             return true;
       }

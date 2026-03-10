@@ -38,8 +38,8 @@ public:
         markDirty(); 
     }
     
-    uint8_t getTextSize() const { return m_textSize; }
 
+    uint8_t getTextSize() const { return m_textSize; }
 
     void setColors(uint16_t circleColor, uint16_t dotColor, uint16_t labelColor);
 
@@ -48,6 +48,7 @@ public:
         m_onSelectCallback = cb; 
     }
 
+    
     void draw(AFDisplayInterface& displayInterface) override;
     void onClick(const AFEvent& e) override;
 
@@ -62,7 +63,7 @@ private:
     uint16_t    m_dotColor;
     uint16_t    m_labelColor;
 
-    uint16_t     m_radius;
+    uint16_t    m_radius;
     uint8_t     m_textSize = 1;
 
     AFRadioButtonGroup* m_group = nullptr;
