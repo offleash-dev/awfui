@@ -97,7 +97,6 @@ public:
         return m_x;
     }
 
-
     int16_t getY() const {
         return m_y;
     }
