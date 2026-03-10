@@ -6,6 +6,8 @@
 
 
 #include <stdint.h>
+#include <stdio.h>
+#include <string.h>
 
 #include "testui.h"
 
@@ -19,9 +21,11 @@
 #include "AFLabel.h"
 #include "AFModalDialog.h"
 #include "AFPanel.h"
+#include "AFProgressBar.h"
 #include "AFRadioButton.h"
 #include "AFRadioButtonGroup.h"
 #include "AFScreen.h"
+#include "AFSlider.h"
 #include "AFWorld.h"
 
 
@@ -31,6 +35,12 @@ AFWorld* setupWorld = nullptr;
 AFScreen* screen1;
 AFScreen* screen2;
 AFScreen* screen3;
+
+// Letter picker dialog components
+AFModalDialog* letterPickerDialog = nullptr;
+AFLabel* letterDisplayLabel = nullptr;
+AFButton* letterSelectButton = nullptr;
+AFSlider* letterSlider = nullptr;
 
 
 
@@ -212,10 +222,104 @@ static void setupScreen2(int16_t width, int16_t height) {
 static AFModalDialog* s3_dialog;
 static AFLabel*       s3_dialogLabel;
 
+static AFModalDialog* s3_progressDialog;
+static AFLabel*       s3_progressLabel;
+static AFProgressBar* s3_progressBar;
+
+
 static void showScreen3Dialog(const char* text) {
       s3_dialogLabel->setText(text);
       s3_dialog->show(*screen3);
 }
+
+
+
+static void showProgressDialog(const char* text) {
+      s3_progressBar->setValue(0);
+      s3_progressLabel->setText(text);
+      s3_progressDialog->show(*screen3);
+}
+
+
+int progressValue = 0;
+
+static void makeProgress(AFWidget& sender) {
+      progressValue += 10;
+      s3_progressBar->setValue(progressValue);
+      s3_progressBar->update();
+}
+
+
+char buttonText[2];
+void setLetterFromSlider(AFSlider& sender, int value) {
+      // Update button text based on slider value
+      buttonText[0] = 'A' + value;
+      buttonText[1] = '\0';
+      letterSelectButton->setLabel(buttonText);
+}
+
+
+
+char enteredText[32];
+void handleCharacterEntered(AFWidget& sender)  {
+      // Add current letter to the label
+      const char* current = letterDisplayLabel->getText();
+      const char* letter = letterSelectButton->getLabel();
+      if (strlen(current) == 0) {
+            snprintf(enteredText, sizeof(enteredText), "%c", letter[0]);
+      } else {
+            snprintf(enteredText, sizeof(enteredText), "%s%c", current, letter[0]);
+      }
+      letterDisplayLabel->setText(enteredText);
+}
+
+
+
+static void showLetterPickerDialog() {
+      int16_t W = setupWorld->getDisplay().width();
+      int16_t H = setupWorld->getDisplay().height();
+      
+      if (!letterPickerDialog) {
+            // Create the letter picker dialog (positioned at bottom of screen)
+            int16_t dialogHeight = 120;
+            int16_t dialogY = H - dialogHeight - 10;  // 10px margin from bottom
+            letterPickerDialog = new AFModalDialog(10, dialogY, W - 20, dialogHeight, makeID("Lpdg"));
+            
+            // Letter display label (top of dialog)
+            letterDisplayLabel = new AFLabel(20, dialogY + 15, W - 80, 25, "", makeID("LPLb"));
+            letterDisplayLabel->setJustification(AFJustificationCenter);
+            letterPickerDialog->addWidget(letterDisplayLabel, true);
+            
+            // Close button (X) in top-right corner
+            auto* closeBtn = new AFButton(W - 40, dialogY + 10, 30, 30, makeID("LPCs"), "X");
+            closeBtn->setOnClickCallback([](AFWidget& sender) { letterPickerDialog->dismiss(); });
+            letterPickerDialog->addWidget(closeBtn, true);
+            
+            // Letter select button (centered, half-screen width)
+            int16_t btnWidth = (W - 60) / 2;
+            int16_t btnX = (W - btnWidth) / 2;
+            letterSelectButton = new AFButton(btnX, dialogY + 50, btnWidth, 30, makeID("LPBt"), "A");
+            letterSelectButton->setOnClickCallback(handleCharacterEntered);
+            letterPickerDialog->addWidget(letterSelectButton, true);
+            
+            // Slider at bottom (full width minus margins)
+            letterSlider = new AFSlider(20, dialogY + 90, W - 40, 20);
+            letterSlider->setRange(0, 25);  // A-Z (26 letters)
+            letterSlider->setValue(0);      // Start with 'A'
+            letterSlider->setOnReleaseCallback(setLetterFromSlider);
+            letterSlider->setOnMoveCallback(setLetterFromSlider);
+            letterPickerDialog->addWidget(letterSlider, true);
+      }
+      
+      // Reset the dialog state
+      letterDisplayLabel->setText("");
+      letterSlider->setValue(0);
+      letterSelectButton->setLabel("A");
+      
+      letterPickerDialog->show(*screen3);
+}
+
+
 
 static void setupScreen3(int16_t width, int16_t height) {
       int16_t W = width;
@@ -224,46 +328,51 @@ static void setupScreen3(int16_t width, int16_t height) {
       screen3 = setupWorld->createScreen(true);
 
       // ---- Top panel: 3 buttons ----
-      auto* topPanel = new AFPanel(0, 0, W, 40, makeID("S3TP"));
+      AFPanel* topPanel = new AFPanel(0, 0, W, 40, makeID("S3TP"));
       int16_t btnW = (W - 20) / 3;  // 3 buttons with small gaps
-      auto* tp1 = new AFButton(5, 5, btnW - 5, 30, makeID("TP01"), "Panel 1");
+      AFButton* tp1 = new AFButton(5, 5, btnW - 5, 30, makeID("TP01"), "Panel 1");
       tp1->setOnClickCallback([](AFWidget& sender) { showScreen3Dialog("Top panel, button 1"); });
       topPanel->addWidget(tp1, true);
 
-      auto* tp2 = new AFButton(btnW + 5, 5, btnW - 5, 30, makeID("TP02"), "Panel 2");
+      AFButton* tp2 = new AFButton(btnW + 5, 5, btnW - 5, 30, makeID("TP02"), "Panel 2");
       tp2->setOnClickCallback([](AFWidget& sender) { showScreen3Dialog("Top panel, button 2"); });
       topPanel->addWidget(tp2, true);
 
-      auto* tp3 = new AFButton(btnW * 2 + 5, 5, btnW - 5, 30, makeID("TP03"), "Panel 3");
+      AFButton* tp3 = new AFButton(btnW * 2 + 5, 5, btnW - 5, 30, makeID("TP03"), "Panel 3");
       tp3->setOnClickCallback([](AFWidget& sender) { showScreen3Dialog("Top panel, button 3"); });
       topPanel->addWidget(tp3, true);
 
       screen3->addPanel(topPanel, true);
 
       // ---- Bottom panel: 2 image buttons ----
-      auto* botPanel = new AFPanel(0, H - 40, W, 40, makeID("S3BP"));
-      auto* ib1 = new AFImageButton(10, H - 35, &imageA, makeID("IB01"));
+      AFPanel* botPanel = new AFPanel(0, H - 40, W, 40, makeID("S3BP"));
+      AFImageButton* ib1 = new AFImageButton(10, H - 35, &imageA, makeID("IB01"));
       ib1->setOnClickCallback([](AFWidget& sender) { showScreen3Dialog("Bottom panel, image A"); });
       botPanel->addWidget(ib1, true);
 
-      auto* ib2 = new AFImageButton(40, H - 35, &imageB, makeID("IB02"));
+      AFImageButton* ib2 = new AFImageButton(40, H - 35, &imageB, makeID("IB02"));
       ib2->setOnClickCallback([](AFWidget& sender) { showScreen3Dialog("Bottom panel, image B"); });
       botPanel->addWidget(ib2, true);
 
       screen3->addPanel(botPanel, true);
 
       // ---- Button to open dialog ----
-      auto* dlgBtn = new AFButton(20, 60, W - 40, 30, makeID("S3DB"), "Open Dialog");
-      dlgBtn->setOnClickCallback([](AFWidget& sender) { showScreen3Dialog("Dialog from button"); });
+      AFButton* dlgBtn = new AFButton(20, 50, W - 40, 30, makeID("S3DB"), "Progress Dialog");
+      dlgBtn->setOnClickCallback([](AFWidget& sender) { showProgressDialog("Progress Dialog"); });
       screen3->addWidget(dlgBtn, true);
 
+      // ---- Button to open letter picker dialog ----
+      AFButton* letterPickerBtn = new AFButton(20, 90, W - 40, 30, makeID("S3LP"), "Letter Picker");
+      letterPickerBtn->setOnClickCallback([](AFWidget& sender) { showLetterPickerDialog(); });
+      screen3->addWidget(letterPickerBtn, true);
+
       // ---- Label above bottom panel ----
-      auto* lbl = new AFLabel(60, H - 80, W - 120, 20, "Final Tests", makeID("S3Lb"));
+      AFLabel* lbl = new AFLabel(60, H - 70, W - 120, 20, "Final Tests", makeID("S3Lb"));
       lbl->setJustification(AFJustificationCenter);
       screen3->addWidget(lbl, true);
 
       // ---- Restart button above label ----
-      auto* restartBtn = new AFButton(20, H - 120, W - 40, 30, makeID("S3Rs"), "Restart");
+      AFButton* restartBtn = new AFButton(20, H - 110, W - 40, 30, makeID("S3Rs"), "Restart");
       restartBtn->setOnClickCallback([](AFWidget& sender) { setupWorld->setActiveScreen(screen1); });
       screen3->addWidget(restartBtn, true);
 
@@ -273,9 +382,28 @@ static void setupScreen3(int16_t width, int16_t height) {
       s3_dialogLabel = new AFLabel(30, 60, "placeholder", makeID("S3DL"));
       s3_dialog->addWidget(s3_dialogLabel, true);
 
-      auto* okBtn = new AFButton(50, 120, 100, 40, makeID("S3OK"), "OK");
+      AFButton* okBtn = new AFButton(50, 120, 100, 40, makeID("S3OK"), "OK");
       okBtn->setOnClickCallback([](AFWidget& sender) { s3_dialog->dismiss(); });
       s3_dialog->addWidget(okBtn, true);
+
+
+      // ---- Progress dialog for screen 3 ----
+      s3_progressDialog = new AFModalDialog(20, 40, W - 40, 140, makeID("S3PD"));
+
+      s3_progressLabel = new AFLabel(30, 60, "placeholder", makeID("S3DL"));
+      s3_progressDialog->addWidget(s3_progressLabel, true);
+
+      s3_progressBar = new AFProgressBar(30, 90, W-70, 20, makeID("S3PL"));
+      s3_progressDialog->addWidget(s3_progressBar, true);
+
+      AFButton* progressOkBtn = new AFButton(50, 120, 100, 30, makeID("SPOK"), "OK");
+      progressOkBtn->setOnClickCallback([](AFWidget& sender) { s3_progressDialog->dismiss(); });
+      s3_progressDialog ->addWidget(progressOkBtn, true);
+
+      AFButton* makeProgressBtn = new AFButton(180, 120, 30, 30, makeID("SPMP"), "+");
+      makeProgressBtn->setOnClickCallback( makeProgress );
+      s3_progressDialog ->addWidget(makeProgressBtn, true);
+      
 }
 
 

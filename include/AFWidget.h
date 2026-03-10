@@ -89,6 +89,10 @@ public:
     }
 
 
+    // Force immediate redraw - useful for progress bars, sliders, etc.
+    void update();
+
+
     int16_t getX() const {
         return m_x;
     }

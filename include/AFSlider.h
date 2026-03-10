@@ -33,8 +33,14 @@ public:
 
     void setColors(uint16_t track, uint16_t fill, uint16_t thumb);
 
+
     void setOnReleaseCallback(AFSliderCallback cb) {
         m_onReleaseCallback = cb;
+    }
+
+
+    void setOnMoveCallback(AFSliderCallback cb) {
+        m_onMoveCallback = cb;
     }
 
 
@@ -54,9 +60,14 @@ private:
     static constexpr int kThumbW = 12;
     static constexpr int kThumbH = 16;
 
+    // Previous thumb position for erasure
+    int16_t m_lastThumbX = -1;
+    int16_t m_lastThumbY = -1;
+
     void updateValueFromTouch(const AFEvent& e);
     int mapValueToPixels(int v) const;
     int mapPixelsToValue(int px) const;
 
     AFSliderCallback m_onReleaseCallback = nullptr;
+    AFSliderCallback m_onMoveCallback = nullptr;
 };

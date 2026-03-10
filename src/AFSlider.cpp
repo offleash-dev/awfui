@@ -45,7 +45,6 @@ void AFSlider::draw(AFDisplayInterface& d) {
             thumbColor = theme.widgetDisabledFgColor;
       }
 
-      d.fillRect(m_x, m_y + m_height/2 - 2, m_width, 4, trackColor);
 
       // Filled portion
       int filled = mapValueToPixels(m_value);
@@ -54,7 +53,32 @@ void AFSlider::draw(AFDisplayInterface& d) {
       // Thumb
       int thumbX = m_x + filled - kThumbW/2;
       int thumbY = m_y + m_height/2 - kThumbH/2;
+      
+      // Erase previous thumb position if it exists and is different
+      if (m_lastThumbX != -1 && (m_lastThumbX != thumbX || m_lastThumbY != thumbY)) {
+            // Erase old thumb by redrawing the track at that position
+            int oldFilled = thumbX - m_x + kThumbW/2;
+            if (oldFilled <= 0) {
+                  // Old thumb was at start, erase with track color
+                  erase(d, m_lastThumbX, m_lastThumbY, kThumbW, kThumbH);
+            } else if (oldFilled >= filled) {
+                  // Old thumb was beyond current fill, erase with track color
+                  erase(d, m_lastThumbX, m_lastThumbY, kThumbW, kThumbH);
+            } else {
+                  // Old thumb was over filled area, erase with fill color
+                  d.fillRect(m_lastThumbX, m_lastThumbY, kThumbW, kThumbH, fillColor);
+            }
+      }
+
+	  // draw track      
+      d.fillRect(m_x, m_y + m_height/2 - 2, m_width, 4, trackColor);
+
+      // Draw new thumb
       d.fillRect(static_cast<int16_t>(thumbX), static_cast<int16_t>(thumbY), kThumbW, kThumbH, thumbColor);
+      
+      // Update last position
+      m_lastThumbX = static_cast<int16_t>(thumbX);
+      m_lastThumbY = static_cast<int16_t>(thumbY);
 }
 
 
@@ -67,6 +91,12 @@ void AFSlider::onPress(const AFEvent& e) {
 
 void AFSlider::onMove(const AFEvent& e) {
     updateValueFromTouch(e);
+
+    if (m_onMoveCallback) {
+        m_onMoveCallback(*this, m_value);
+
+        markDirty();
+    } 
 }
 
 
@@ -77,6 +107,8 @@ void AFSlider::onRelease(const AFEvent& e) {
       if (m_onReleaseCallback) {
           m_onReleaseCallback(*this, m_value);
     }
+
+    markDirty();
 }
 
 
