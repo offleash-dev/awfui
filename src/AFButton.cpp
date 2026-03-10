@@ -126,4 +126,6 @@ void AFButton::onClick(const AFEvent& e) {
       if (m_onClickCallback) {
             m_onClickCallback(*this);
       }
+
+      markDirty();
 }
