@@ -26,6 +26,7 @@
 #include "AFRadioButtonGroup.h"
 #include "AFScreen.h"
 #include "AFSlider.h"
+#include "AFSliderKeyboard.h"
 #include "AFWorld.h"
 
 
@@ -36,11 +37,10 @@ AFScreen* screen1;
 AFScreen* screen2;
 AFScreen* screen3;
 
-// Letter picker dialog components
-AFModalDialog* letterPickerDialog = nullptr;
-AFLabel* letterDisplayLabel = nullptr;
-AFButton* letterSelectButton = nullptr;
-AFSlider* letterSlider = nullptr;
+// Slider keyboard components
+AFModalDialog* sliderKeyboardDialog = nullptr;
+AFLabel* textDisplayLabel = nullptr;
+AFSliderKeyboard* sliderKeyboard = nullptr;
 
 
 
@@ -232,6 +232,31 @@ static void showScreen3Dialog(const char* text) {
       s3_dialog->show(*screen3);
 }
 
+// Static callback functions for slider keyboard
+static void onCharacterEntered(AFSliderKeyboard& sender, char character) {
+      // Add character to text display
+      const char* current = textDisplayLabel->getText();
+      char newText[128];
+      if (strlen(current) == 0) {
+            snprintf(newText, sizeof(newText), "%c", character);
+      } else {
+            snprintf(newText, sizeof(newText), "%s%c", current, character);
+      }
+      textDisplayLabel->setText(newText);
+}
+
+static void onBackspacePressed(AFSliderKeyboard& sender, char backspace) {
+      // Remove last character from text display
+      const char* current = textDisplayLabel->getText();
+      size_t len = strlen(current);
+      if (len > 0) {
+            char newText[128];
+            strncpy(newText, current, len - 1);
+            newText[len - 1] = '\0';
+            textDisplayLabel->setText(newText);
+      }
+}
+
 
 
 static void showProgressDialog(const char* text) {
@@ -250,73 +275,42 @@ static void makeProgress(AFWidget& sender) {
 }
 
 
-char buttonText[2];
-void setLetterFromSlider(AFSlider& sender, int value) {
-      // Update button text based on slider value
-      buttonText[0] = 'A' + value;
-      buttonText[1] = '\0';
-      letterSelectButton->setLabel(buttonText);
-}
 
 
 
-char enteredText[32];
-void handleCharacterEntered(AFWidget& sender)  {
-      // Add current letter to the label
-      const char* current = letterDisplayLabel->getText();
-      const char* letter = letterSelectButton->getLabel();
-      if (strlen(current) == 0) {
-            snprintf(enteredText, sizeof(enteredText), "%c", letter[0]);
-      } else {
-            snprintf(enteredText, sizeof(enteredText), "%s%c", current, letter[0]);
-      }
-      letterDisplayLabel->setText(enteredText);
-}
-
-
-
-static void showLetterPickerDialog() {
+static void showSliderKeyboardDialog() {
       int16_t W = setupWorld->getDisplay().width();
       int16_t H = setupWorld->getDisplay().height();
       
-      if (!letterPickerDialog) {
-            // Create the letter picker dialog (positioned at bottom of screen)
-            int16_t dialogHeight = 120;
+      if (!sliderKeyboardDialog) {
+            // Create the slider keyboard dialog (positioned at bottom of screen)
+            int16_t dialogHeight = 140;
             int16_t dialogY = H - dialogHeight - 10;  // 10px margin from bottom
-            letterPickerDialog = new AFModalDialog(10, dialogY, W - 20, dialogHeight, makeID("Lpdg"));
+            sliderKeyboardDialog = new AFModalDialog(10, dialogY, W - 20, dialogHeight, makeID("SKDL"));
             
-            // Letter display label (top of dialog)
-            letterDisplayLabel = new AFLabel(20, dialogY + 15, W - 80, 25, "", makeID("LPLb"));
-            letterDisplayLabel->setJustification(AFJustificationCenter);
-            letterPickerDialog->addWidget(letterDisplayLabel, true);
+            // Text display label (top of dialog)
+            textDisplayLabel = new AFLabel(20, dialogY + 15, W - 40, 25, "", makeID("SKTX"));
+            textDisplayLabel->setJustification(AFJustificationCenter);
+            sliderKeyboardDialog->addWidget(textDisplayLabel, true);
             
             // Close button (X) in top-right corner
-            auto* closeBtn = new AFButton(W - 40, dialogY + 10, 30, 30, makeID("LPCs"), "X");
-            closeBtn->setOnClickCallback([](AFWidget& sender) { letterPickerDialog->dismiss(); });
-            letterPickerDialog->addWidget(closeBtn, true);
+            auto* closeBtn = new AFButton(W - 40, dialogY + 10, 30, 30, makeID("SKCS"), "X");
+            closeBtn->setOnClickCallback([](AFWidget& sender) { 
+                  if (sliderKeyboardDialog) sliderKeyboardDialog->dismiss(); 
+            });
+            sliderKeyboardDialog->addWidget(closeBtn, true);
             
-            // Letter select button (centered, half-screen width)
-            int16_t btnWidth = (W - 60) / 2;
-            int16_t btnX = (W - btnWidth) / 2;
-            letterSelectButton = new AFButton(btnX, dialogY + 50, btnWidth, 30, makeID("LPBt"), "A");
-            letterSelectButton->setOnClickCallback(handleCharacterEntered);
-            letterPickerDialog->addWidget(letterSelectButton, true);
-            
-            // Slider at bottom (full width minus margins)
-            letterSlider = new AFSlider(20, dialogY + 90, W - 40, 20);
-            letterSlider->setRange(0, 25);  // A-Z (26 letters)
-            letterSlider->setValue(0);      // Start with 'A'
-            letterSlider->setOnReleaseCallback(setLetterFromSlider);
-            letterSlider->setOnMoveCallback(setLetterFromSlider);
-            letterPickerDialog->addWidget(letterSlider, true);
+            // Slider keyboard (positioned at bottom of dialog container)
+            sliderKeyboard = new AFSliderKeyboard(10, dialogHeight - 50, W - 40, 40, makeID("SKKB"));
+            sliderKeyboard->setOnCharacterCallback(onCharacterEntered);
+            sliderKeyboard->setOnBackspaceCallback(onBackspacePressed);
+            sliderKeyboardDialog->addWidget(sliderKeyboard, true);
       }
       
       // Reset the dialog state
-      letterDisplayLabel->setText("");
-      letterSlider->setValue(0);
-      letterSelectButton->setLabel("A");
+      textDisplayLabel->setText("");
       
-      letterPickerDialog->show(*screen3);
+      sliderKeyboardDialog->show(*screen3);
 }
 
 
@@ -361,10 +355,10 @@ static void setupScreen3(int16_t width, int16_t height) {
       dlgBtn->setOnClickCallback([](AFWidget& sender) { showProgressDialog("Progress Dialog"); });
       screen3->addWidget(dlgBtn, true);
 
-      // ---- Button to open letter picker dialog ----
-      AFButton* letterPickerBtn = new AFButton(20, 90, W - 40, 30, makeID("S3LP"), "Letter Picker");
-      letterPickerBtn->setOnClickCallback([](AFWidget& sender) { showLetterPickerDialog(); });
-      screen3->addWidget(letterPickerBtn, true);
+      // ---- Button to open slider keyboard dialog ----
+      AFButton* sliderKeyboardBtn = new AFButton(20, 90, W - 40, 30, makeID("S3SK"), "Slider Keyboard");
+      sliderKeyboardBtn->setOnClickCallback([](AFWidget& sender) { showSliderKeyboardDialog(); });
+      screen3->addWidget(sliderKeyboardBtn, true);
 
       // ---- Label above bottom panel ----
       AFLabel* lbl = new AFLabel(60, H - 70, W - 120, 20, "Final Tests", makeID("S3Lb"));

@@ -86,6 +86,13 @@ constexpr void getAsChars(int32_t id, char* out5) {
 }
 
 
+static char* tempIdBuffer5 = new char[5];
+static char* getAsChars(int32_t id) {
+      getAsChars(id, tempIdBuffer5);
+      return tempIdBuffer5;
+}
+
+
 
 // Macro to mark unused parameters and avoid compiler warnings
 #define unused(x) (void) (x)

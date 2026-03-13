@@ -56,6 +56,7 @@ set(AWFUI_SOURCES
     src/AFScreen.cpp
     src/AFScreenList.cpp
     src/AFSlider.cpp
+    src/AFSliderKeyboard.cpp
     src/AFWidget.cpp
     src/AFWorld.cpp
 )
@@ -82,6 +83,7 @@ set(AWFUI_HEADERS
     include/AFScreen.h
     include/AFScreenList.h
     include/AFSlider.h
+    include/AFSliderKeyboard.h
     include/AFValueWidget.h
     include/AFTheme.h
     include/AFTouchInterface.h

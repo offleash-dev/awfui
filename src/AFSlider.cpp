@@ -11,8 +11,8 @@
 #include "AFWorld.h"
 
 
-AFSlider::AFSlider(int16_t x, int16_t y, int16_t w, int16_t h)
-    : AFValueWidget(x, y, w, h)
+AFSlider::AFSlider(int16_t x, int16_t y, int16_t w, int16_t h, uint32_t id)
+    : AFValueWidget(x, y, w, h, id)
 {
     const AFTheme& theme = AFWorld::instance()->getTheme();
     m_trackColor = theme.widgetBorderColor;
