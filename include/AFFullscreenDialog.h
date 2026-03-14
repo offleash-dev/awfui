@@ -21,6 +21,9 @@ public:
       // Override show to resize to screen dimensions
       void show(AFScreen& screen) override;
 
+      // override to redraw the screen.
+      void dismiss();  
+
       // No border/chrome by default
       virtual void draw(AFDisplayInterface& displayInterface) override;
 };
