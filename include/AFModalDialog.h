@@ -32,6 +32,6 @@ public:
       }
 
       
-private:
+protected:
       AFScreen* m_owner = nullptr;
 };

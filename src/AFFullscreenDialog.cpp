@@ -61,3 +61,12 @@ void AFFullscreenDialog::draw(AFDisplayInterface& displayInterface) {
 
       clearDirty();
 }
+
+
+
+void AFFullscreenDialog::dismiss() {
+      AFModalDialog::dismiss();
+      if (m_owner) {
+            m_owner->setNeedsFullRedraw();
+      }
+}
