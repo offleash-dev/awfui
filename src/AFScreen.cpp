@@ -118,7 +118,7 @@ void AFScreen::showModal(AFModalDialog* d) {
             p->clearDirty();
       }           
 
-      m_activeModal = d;
+      m_modalStack.push_back(d);
       // Set owner directly so dismiss() works (don't call show() - we're already showing)
       d->m_owner = this;
       
@@ -138,8 +138,10 @@ void AFScreen::showModal(AFModalDialog* d) {
 // Dismiss a modal dialog
 //
 void AFScreen::dismissModal(AFModalDialog* d) {
-      if (m_activeModal == d) {
-            m_activeModal = nullptr;
+      // Find and remove this dialog from the stack
+      auto it = std::find(m_modalStack.begin(), m_modalStack.end(), d);
+      if (it != m_modalStack.end()) {
+            m_modalStack.erase(it);
             
             // Only clear the dialog area, not the entire screen
             AFDisplayInterface* displayInterface = m_canvas ? m_canvas : &m_display;
@@ -170,9 +172,9 @@ void AFScreen::dismissModal(AFModalDialog* d) {
 // Event routing
 //
 void AFScreen::handleEvent(const AFEvent& e) {
-      // Modal dialog gets exclusive input
-      if (m_activeModal) {
-            m_activeModal->handleEvent(e);
+      // Top modal dialog gets exclusive input
+      if (!m_modalStack.empty()) {
+            m_modalStack.back()->handleEvent(e);
             return;
       }
 
@@ -239,8 +241,8 @@ void AFScreen::setNeedsFullRedraw() {
       for (auto* p : m_panels) {
             p->markDirty();
       }
-      if (m_activeModal) {
-            m_activeModal->markDirty();
+      for (auto* modal : m_modalStack) {
+            modal->markDirty();
       }
 }
 
@@ -287,8 +289,10 @@ bool AFScreen::needsRedraw() const {
             }
       }
 
-      if (m_activeModal && m_activeModal->isVisible() && m_activeModal->isDirty()) {
-            return true;
+      for (auto* modal : m_modalStack) {
+            if (modal->isVisible() && modal->isDirty()) {
+                  return true;
+            }
       }
 
     return false;
@@ -330,10 +334,12 @@ void AFScreen::draw() {
         }
     }
 
-    // Draw modal dialog last (on top)
-    if (m_activeModal && m_activeModal->isVisible() && m_activeModal->isDirty()) {
-        m_activeModal->draw(*displayInterface);
-        m_activeModal->clearDirty();
+    // Draw modal dialogs last (on top)
+    for (auto* modal : m_modalStack) {
+        if (modal->isVisible() && modal->isDirty()) {
+            modal->draw(*displayInterface);
+            modal->clearDirty();
+        }
     }
 
     // If using canvas, push to display

@@ -87,8 +87,8 @@ private:
       bool          m_needsScreenRedraw = false;
       uint32_t      m_id;
 
-      etl::vector<AFWidget*, MAX_WIDGETS_PER_SCREEN> m_widgets;
-      etl::vector<AFPanel*, MAX_DIALOGS_PER_SCREEN>  m_panels;
-      AFModalDialog*                                 m_activeModal = nullptr;
-      AFWidget*                                      m_pressedWidget = nullptr;  // implicit capture for drag
+      etl::vector<AFWidget*, MAX_WIDGETS_PER_SCREEN>        m_widgets;
+      etl::vector<AFPanel*, MAX_PANELS_PER_SCREEN>          m_panels;
+      etl::vector<AFModalDialog*, MAX_DIALOGS_PER_SCREEN>   m_modalStack;  // Modal dialog stack
+      AFWidget*                                             m_pressedWidget = nullptr;  // implicit capture for drag
 };
