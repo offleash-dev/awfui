@@ -124,6 +124,11 @@ public:
     }
 
 
+    bool isContainer() const {
+        return m_isContainer;
+    }
+
+
     void setJustification(AFJustification j) {
             m_justification = j;
             markDirty();
@@ -151,6 +156,7 @@ protected:
     bool      m_visible = true;
     bool      m_dirty   = true;  // Start dirty so initial draw happens
     bool      m_owned   = false; // If true, container will delete this widget
+    bool      m_isContainer = false; // If true, widget can contain child widgets (e.g. panels)
     uint32_t   m_id;
     uint8_t   m_eventMask = kEventTouch;  // default touch only
     AFWidget* m_parent  = nullptr;
