@@ -30,6 +30,29 @@ AFButton::AFButton(int16_t x, int16_t y, int16_t w, int16_t h, uint32_t id, cons
 
 
 
+// Initialize method for stack objects
+//
+void AFButton::init(int16_t x, int16_t y, int16_t w, int16_t h, uint32_t id, const char* labelText) {
+      // Initialize the base AFWidget
+      m_x = x;
+      m_y = y;
+      m_width = w;
+      m_height = h;
+      m_id = id;
+      m_label = labelText;
+      
+      const AFTheme& theme = AFWorld::instance()->getTheme();
+      m_bgColor            = theme.widgetBgColor;
+      m_fgColor            = theme.widgetFgColor;
+      m_borderColor        = theme.widgetBorderColor;
+      m_bgColorPressed     = theme.widgetAccentColor;
+      m_fgColorPressed     = theme.widgetFgColor;
+      m_borderColorPressed = theme.widgetBorderColor;
+      m_textSize           = theme.widgetTextSize;
+}
+
+
+
 // Set the Label text
 //
 void AFButton::setLabel(const char* text) {

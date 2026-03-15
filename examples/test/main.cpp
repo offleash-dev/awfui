@@ -49,6 +49,8 @@ AFWorld*  world;
 // ============================================================
 // Setup and loop
 // ============================================================
+#define THE_BIG_TEST 1
+#define STACKED_MODAL_TEST 0
 
 void setup() {
 #ifdef AWFUI_USE_SDL
@@ -70,7 +72,12 @@ void setup() {
 
       int16_t w = display.width();
       int16_t h = display.height();
+#if THE_BIG_TEST
       setupUI(w, h);
+#endif
+#if STACKED_MODAL_TEST
+      setupStackedModalTestUI(w, h);
+#endif
 }
 
 

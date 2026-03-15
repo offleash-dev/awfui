@@ -22,6 +22,20 @@ AFSlider::AFSlider(int16_t x, int16_t y, int16_t w, int16_t h, uint32_t id)
 
 
 
+// Initialize method for stack objects
+//
+void AFSlider::init(int16_t x, int16_t y, int16_t w, int16_t h, uint32_t id) {
+      // Initialize the base AFValueWidget
+      AFValueWidget::init(x, y, w, h, id);
+      
+      const AFTheme& theme = AFWorld::instance()->getTheme();
+      m_trackColor = theme.widgetBorderColor;
+      m_fillColor  = theme.widgetFgColor;
+      m_thumbColor = theme.widgetAccentColor;
+}
+
+
+
 void AFSlider::setColors(uint16_t track, uint16_t fill, uint16_t thumb) {
     m_trackColor = track;
     m_fillColor = fill;

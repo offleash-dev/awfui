@@ -19,12 +19,18 @@
 
 class AFWidget {
 public:
+    AFWidget() = default;  // Default constructor for stack objects
     AFWidget(int16_t x, int16_t y, int16_t w, int16_t h, uint32_t id = 0);
     virtual ~AFWidget() = default;
 
     virtual void draw(AFDisplayInterface& displayInterface) = 0;
+    virtual void draw(AFDisplayInterface& displayInterface, int16_t screenOffsetX, int16_t screenOffsetY);
     virtual bool hitTest(int16_t px, int16_t py) const;
     virtual void erase(AFDisplayInterface& displayInterface);
+
+    virtual void handleEvent(const AFEvent& e) {
+          unused(e);
+    }
 
 
     virtual void onPress(const AFEvent& e) {

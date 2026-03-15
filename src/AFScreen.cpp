@@ -164,6 +164,11 @@ void AFScreen::dismissModal(AFModalDialog* d) {
                         p->markDirty();
                   }
             }
+            
+            // Mark the new top modal as dirty (if there is one)
+            if (!m_modalStack.empty()) {
+                  m_modalStack.back()->markDirty();
+            }
       }
 }
 

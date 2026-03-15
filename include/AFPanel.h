@@ -18,6 +18,7 @@
 
 class AFPanel : public AFWidget {
 public:
+      AFPanel() = default;  // Default constructor for stack objects
       AFPanel(int16_t x, int16_t y, int16_t w, int16_t h, uint32_t id = 0);
       virtual ~AFPanel();
 
@@ -32,7 +33,10 @@ public:
       AFWidget* widgetAt(int16_t px, int16_t py);
 
       virtual void draw(AFDisplayInterface& displayInterface) override;
-      virtual void handleEvent(const AFEvent& e);
+
+      // Event handling, panels/dialog widgets handled here
+      void handleEvent(const AFEvent& e) override;
+     
       virtual bool isDirty() const override;
       
       
@@ -46,12 +50,37 @@ public:
       }
 
 
+      int16_t toLocalX(int16_t screenX) const {
+            return screenX - m_x;
+      }
+
+      
+      int16_t toLocalY(int16_t screenY) const {
+            return screenY - m_y;
+      }
+
+
+      void localToScreen(int16_t& x, int16_t& y) const {
+            x += m_x;
+            y += m_y;
+      }
+
+
+      void screenToLocal(int16_t& x, int16_t& y) const {
+            x -= m_x;
+            y -= m_y;
+      }
+
+
       virtual void onShow() {
       }
 
 
       virtual void onHide() {
       }
+
+
+      virtual void markDirty() override;
 
 
 protected:
