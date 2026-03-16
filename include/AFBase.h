@@ -23,8 +23,9 @@
 #include "AFVersion.h"
 
 
-constexpr size_t MAX_WIDGETS_PER_PANEL  = 32;
-constexpr size_t MAX_WIDGETS_PER_SCREEN = 32;
+constexpr size_t MAX_WIDGETS_PER_PANEL  = 24;
+constexpr size_t MAX_WIDGETS_PER_SCREEN = 24;
+constexpr size_t MAX_PANELS_PER_SCREEN =  8;
 constexpr size_t MAX_DIALOGS_PER_SCREEN = 8;
 constexpr size_t MAX_SCREENS_PER_WORLD  = 8;
 
@@ -84,6 +85,10 @@ constexpr void getAsChars(int32_t id, char* out5) {
     out5[3] = (char)( id        & 0xFF);
     out5[4] = '\0';
 }
+
+
+
+extern char* getAsChars(int32_t id);
 
 
 

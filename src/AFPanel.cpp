@@ -9,6 +9,7 @@
 #include "AFWorld.h"
 #include "AFPanel.h"
 #include "AFWidget.h"
+#include "AFBase.h"
 
 
 
@@ -17,6 +18,7 @@
 AFPanel::AFPanel(int16_t x, int16_t y, int16_t w, int16_t h, uint32_t id) : AFWidget(x, y, w, h, id) {
       // Panels default to visible
       m_visible = true;
+      m_isContainer = true; // Panels can contain child widgets
 }
 
 
@@ -97,10 +99,10 @@ void AFPanel::draw(AFDisplayInterface& displayInterface) {
             displayInterface.drawRect(m_x, m_y, m_width, m_height, theme.widgetBorderColor);
       }
 
-      // Draw child widgets
+      // Draw child widgets with screen offset
       for (auto* w : m_widgets) {
             if (w->isVisible() && isDirty()) {
-                  w->draw(displayInterface);
+                  w->draw(displayInterface, m_x, m_y);  // Convert local to screen
                   w->clearDirty();
             }
       }
@@ -125,9 +127,20 @@ bool AFPanel::isDirty() const {
 
 
 
+void AFPanel::markDirty() {
+      AFWidget::markDirty();
+      for (auto* w : m_widgets) {
+            w->markDirty();
+      }
+}
+
+
+
 // Event routing
 //
 void AFPanel::handleEvent(const AFEvent& e) {
+//    printf("AFPanel::handleEvent type=%d, x=%d, y=%d, panelID=%s\n", (int)e.type, e.x, e.y, getAsChars(getId()));
+      
       // Only route touch events
       switch (e.type) {
             case AFEventType::kTouchDown:
@@ -146,8 +159,11 @@ void AFPanel::handleEvent(const AFEvent& e) {
       if (e.type == AFEventType::kTouchUp && m_pressedWidget) {
             AFWidget* w = m_pressedWidget;
             m_pressedWidget = nullptr;
+            
             w->onRelease(e);
-            if (w->hitTest(e.x, e.y)) {
+            int16_t localX = e.x - m_x;  // Convert screen to panel-local
+            int16_t localY = e.y - m_y;
+            if (w->hitTest(localX, localY)) {
                   w->onClick(e);
             }
             return;
@@ -156,12 +172,30 @@ void AFPanel::handleEvent(const AFEvent& e) {
       // kTouchDown: hit-test child widgets in reverse order (topmost first)
       for (int i = static_cast<int>(m_widgets.size()) - 1; i >= 0; --i) {
             AFWidget* w = m_widgets[i];
+            
+            // Convert screen coordinates to panel-local coordinates for hit testing
+            int16_t localX = e.x - m_x;
+            int16_t localY = e.y - m_y;
+            
 
             if (!(w->m_eventMask & eventMaskForType(e.type))) continue;
 
-            if (w->isVisible() && w->hitTest(e.x, e.y)) {
+            if (w->isVisible() && w->hitTest(localX, localY)) {
+//                  printf("  Widget %d hit! Capturing\n", i);
+//                  printf("Widget ID: %s\n", getAsChars(w->getId()));
+                  
+                  // If this is a panel, let it handle its own children
+                  if (w->isContainer()) {
+                        printf("  Delegating to child panel\n");
+                        // Convert screen coordinates to panel's local coordinates
+                        static_cast<AFPanel*>(w)->handleEvent(e);
+                        return;
+                  }
+                  
+                  // Otherwise, capture this widget
                   m_pressedWidget = w;
                   w->onPress(e);
+                  
                   return;
             }
       }

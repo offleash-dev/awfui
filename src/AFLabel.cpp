@@ -32,6 +32,24 @@ AFLabel::AFLabel(int16_t x, int16_t y, int16_t w, int16_t h, const char* text, u
 
 
 
+// Initialize method for stack objects
+//
+void AFLabel::init(int16_t x, int16_t y, int16_t w, int16_t h, const char* text, uint32_t id) {
+      // Initialize the base AFWidget
+      m_x = x;
+      m_y = y;
+      m_width = w;
+      m_height = h;
+      m_id = id;
+      m_text = (char*)text;
+      
+      // width/height are usable for hit-testing
+      m_justification = AFJustificationLeft;
+      m_textSize = AFWorld::instance()->getTheme().widgetTextSize;
+}
+
+
+
 // Draw the label
 //
 void AFLabel::draw(AFDisplayInterface& displayInterface) {

@@ -21,6 +21,23 @@ AFModalDialog::AFModalDialog(int16_t x, int16_t y, int16_t w, int16_t h, uint32_
 
 
 
+// Initialize method for stack objects
+//
+void AFModalDialog::init(int16_t x, int16_t y, int16_t w, int16_t h, uint32_t id) {
+      // Initialize the base AFPanel
+      m_x = x;
+      m_y = y;
+      m_width = w;
+      m_height = h;
+      m_id = id;
+      
+      // Modal dialogs are visible by default
+      m_visible = true;
+      m_opaque = true;
+}
+
+
+
 // Show the modal dialog on a screen
 //
 void AFModalDialog::show(AFScreen& screen) {

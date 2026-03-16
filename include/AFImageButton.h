@@ -17,7 +17,11 @@
 
 class AFImageButton : public AFButton {
 public:
+    AFImageButton() = default;  // Default constructor for stack objects
     AFImageButton(int16_t x, int16_t y, const AFImage* img, uint32_t id = 0);
+
+    // Initialize method for stack objects
+    void init(int16_t x, int16_t y, const AFImage* img, uint32_t id = 0);
 
     void setSelectable(bool selectable) { m_selectable = selectable; }
     void setSelected(bool selected) { m_selected = selected; }

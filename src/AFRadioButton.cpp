@@ -39,6 +39,35 @@ AFRadioButton::AFRadioButton(int16_t x,
 
 
 
+// Initialize method for stack objects
+//
+void AFRadioButton::init(int16_t x,
+                          int16_t y,
+                          int16_t radius,
+                          uint32_t id,
+                          const char* labelText) {
+      // Initialize the base AFWidget
+      m_x = x;
+      m_y = y;
+      m_width = radius * 2;
+      m_height = radius * 2;
+      m_id = id;
+      m_label = labelText;
+      m_radius = radius;
+      
+      if (radius == 0) {
+            m_radius = 8; // Default radius if not specified
+      }   
+      
+      const AFTheme& theme = AFWorld::instance()->getTheme();
+      m_circleColor = theme.widgetBorderColor;
+      m_dotColor = theme.widgetAccentColor;
+      m_labelColor = theme.widgetFgColor;
+      m_textSize = theme.widgetTextSize;
+}
+
+
+
 void AFRadioButton::setLabel(const char* text) {
     m_label = text;
     markDirty();

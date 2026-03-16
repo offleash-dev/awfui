@@ -21,11 +21,19 @@ using AFCheckboxCallback = void (*)(AFCheckbox& sender, bool checked);
 
 class AFCheckbox : public AFWidget {
 public:
+      AFCheckbox() = default;  // Default constructor for stack objects
       AFCheckbox(int16_t x,
                  int16_t y,
                  int16_t boxSize = 0,
                  uint32_t id = 0,
                  const char* label = nullptr);
+
+      // Initialize method for stack objects
+      void init(int16_t x,
+                int16_t y,
+                int16_t boxSize = 0,
+                uint32_t id = 0,
+                const char* label = nullptr);
 
       void setLabel(const char* text);
 

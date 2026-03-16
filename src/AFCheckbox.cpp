@@ -40,6 +40,36 @@ AFCheckbox::AFCheckbox(int16_t x,
 
 
 
+// Initialize method for stack objects
+//
+void AFCheckbox::init(int16_t x,
+                      int16_t y,
+                      int16_t boxSize,
+                      uint32_t id,
+                      const char* labelText) {
+      // Initialize the base AFWidget
+      m_x = x;
+      m_y = y;
+      m_width = boxSize;
+      m_height = boxSize;
+      m_id = id;
+      m_label = labelText;
+      m_boxSize = static_cast<uint8_t>(boxSize);
+
+      if (boxSize == 0) {
+            m_boxSize = 16; // Default box size if not specified
+      }
+      
+      const AFTheme& theme = AFWorld::instance()->getTheme();
+      m_boxColor    = theme.widgetBgColor;
+      m_checkColor  = theme.widgetAccentColor;
+      m_borderColor = theme.widgetBorderColor;
+      m_labelColor  = theme.widgetFgColor;
+      m_textSize    = theme.widgetTextSize;
+}
+
+
+
 // Set the label text
 //
 void AFCheckbox::setLabel(const char* text) {

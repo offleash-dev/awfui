@@ -25,22 +25,18 @@
 #include "AFRadioButton.h"
 #include "AFRadioButtonGroup.h"
 #include "AFScreen.h"
+#include "AFScreenList.h"
 #include "AFSlider.h"
+#include "AFWidget.h"
 #include "AFWorld.h"
 
 
-
-
+// Global variables
 AFWorld* setupWorld = nullptr;
 AFScreen* screen1;
 AFScreen* screen2;
-AFScreen* screen3;
+AFFullscreenDialog* screen3;
 
-// Letter picker dialog components
-AFModalDialog* letterPickerDialog = nullptr;
-AFLabel* letterDisplayLabel = nullptr;
-AFButton* letterSelectButton = nullptr;
-AFSlider* letterSlider = nullptr;
 
 
 
@@ -145,8 +141,19 @@ static void setupScreen1(int16_t width, int16_t height) {
       s1_statusLabel->setJustification(AFJustificationCenter);
       screen1->addWidget(s1_statusLabel, true);
 
+      // Slider to test touch capture
+      auto* testSlider = new AFSlider(20, 110, W - 40, 30, makeID("S1SL"));
+      testSlider->setRange(0, 100);
+      testSlider->setValue(50);
+      testSlider->setOnReleaseCallback([](AFSlider& sender, int value) {
+            char buf[32];
+            snprintf(buf, sizeof(buf), "Slider: %d", value);
+            s1_statusLabel->setText(buf);
+      });
+      screen1->addWidget(testSlider, true);
+
       // Checkbox — enables/disables corner buttons
-      auto* enableCb = new AFCheckbox(20, 110, 16, makeID("S1Cb"), "Corner buttons enabled");
+      auto* enableCb = new AFCheckbox(20, 150, 16, makeID("S1Cb"), "Corner buttons enabled");
       enableCb->setChecked(true);
       enableCb->setOnChangeCallback([](AFCheckbox& sender, bool checked) {
             s1_btnTL->setEnabled(checked);
@@ -180,7 +187,7 @@ static void setupScreen2(int16_t width, int16_t height) {
 
       // "Next Test Screen" button
       auto* nextBtn = new AFButton(20, H - 90, W - 40, 30, makeID("S2Nx"), "Next Test Screen");
-      nextBtn->setOnClickCallback([](AFWidget& sender) { setupWorld->setActiveScreen(screen3); });
+      nextBtn->setOnClickCallback([](AFWidget& sender) { screen3->show(*screen2); });
       screen2->addWidget(nextBtn, true);
 
       // Radio buttons
@@ -229,7 +236,7 @@ static AFProgressBar* s3_progressBar;
 
 static void showScreen3Dialog(const char* text) {
       s3_dialogLabel->setText(text);
-      s3_dialog->show(*screen3);
+      s3_dialog->show();  // Show on active screen (which should be screen3)
 }
 
 
@@ -237,8 +244,9 @@ static void showScreen3Dialog(const char* text) {
 static void showProgressDialog(const char* text) {
       s3_progressBar->setValue(0);
       s3_progressLabel->setText(text);
-      s3_progressDialog->show(*screen3);
+      s3_progressDialog->show();  // Show on active screen (which should be screen3)
 }
+
 
 
 int progressValue = 0;
@@ -250,122 +258,73 @@ static void makeProgress(AFWidget& sender) {
 }
 
 
-char buttonText[2];
-void setLetterFromSlider(AFSlider& sender, int value) {
-      // Update button text based on slider value
-      buttonText[0] = 'A' + value;
-      buttonText[1] = '\0';
-      letterSelectButton->setLabel(buttonText);
+
+void dismissProgressDialog(AFWidget& sender) {
+      s3_progressDialog->dismiss();
+      progressValue = 0;
 }
 
-
-
-char enteredText[32];
-void handleCharacterEntered(AFWidget& sender)  {
-      // Add current letter to the label
-      const char* current = letterDisplayLabel->getText();
-      const char* letter = letterSelectButton->getLabel();
-      if (strlen(current) == 0) {
-            snprintf(enteredText, sizeof(enteredText), "%c", letter[0]);
-      } else {
-            snprintf(enteredText, sizeof(enteredText), "%s%c", current, letter[0]);
-      }
-      letterDisplayLabel->setText(enteredText);
+void dismissCommonDialog(AFWidget& sender) {
+      s3_dialog->dismiss();
 }
-
-
-
-static void showLetterPickerDialog() {
-      int16_t W = setupWorld->getDisplay().width();
-      int16_t H = setupWorld->getDisplay().height();
-      
-      if (!letterPickerDialog) {
-            // Create the letter picker dialog (positioned at bottom of screen)
-            int16_t dialogHeight = 120;
-            int16_t dialogY = H - dialogHeight - 10;  // 10px margin from bottom
-            letterPickerDialog = new AFModalDialog(10, dialogY, W - 20, dialogHeight, makeID("Lpdg"));
-            
-            // Letter display label (top of dialog)
-            letterDisplayLabel = new AFLabel(20, dialogY + 15, W - 80, 25, "", makeID("LPLb"));
-            letterDisplayLabel->setJustification(AFJustificationCenter);
-            letterPickerDialog->addWidget(letterDisplayLabel, true);
-            
-            // Close button (X) in top-right corner
-            auto* closeBtn = new AFButton(W - 40, dialogY + 10, 30, 30, makeID("LPCs"), "X");
-            closeBtn->setOnClickCallback([](AFWidget& sender) { letterPickerDialog->dismiss(); });
-            letterPickerDialog->addWidget(closeBtn, true);
-            
-            // Letter select button (centered, half-screen width)
-            int16_t btnWidth = (W - 60) / 2;
-            int16_t btnX = (W - btnWidth) / 2;
-            letterSelectButton = new AFButton(btnX, dialogY + 50, btnWidth, 30, makeID("LPBt"), "A");
-            letterSelectButton->setOnClickCallback(handleCharacterEntered);
-            letterPickerDialog->addWidget(letterSelectButton, true);
-            
-            // Slider at bottom (full width minus margins)
-            letterSlider = new AFSlider(20, dialogY + 90, W - 40, 20);
-            letterSlider->setRange(0, 25);  // A-Z (26 letters)
-            letterSlider->setValue(0);      // Start with 'A'
-            letterSlider->setOnReleaseCallback(setLetterFromSlider);
-            letterSlider->setOnMoveCallback(setLetterFromSlider);
-            letterPickerDialog->addWidget(letterSlider, true);
-      }
-      
-      // Reset the dialog state
-      letterDisplayLabel->setText("");
-      letterSlider->setValue(0);
-      letterSelectButton->setLabel("A");
-      
-      letterPickerDialog->show(*screen3);
-}
-
-
 
 static void setupScreen3(int16_t width, int16_t height) {
       int16_t W = width;
       int16_t H = height;
 
-      screen3 = setupWorld->createScreen(true);
+      // Create fullscreen dialog instead of screen
+      screen3 = new AFFullscreenDialog(makeID("S3FS"));
 
       // ---- Top panel: 3 buttons ----
       AFPanel* topPanel = new AFPanel(0, 0, W, 40, makeID("S3TP"));
       int16_t btnW = (W - 20) / 3;  // 3 buttons with small gaps
       AFButton* tp1 = new AFButton(5, 5, btnW - 5, 30, makeID("TP01"), "Panel 1");
-      tp1->setOnClickCallback([](AFWidget& sender) { showScreen3Dialog("Top panel, button 1"); });
+      tp1->setOnClickCallback([](AFWidget& sender) { 
+            printf("Panel button 1 clicked!\n");
+            showScreen3Dialog("Top panel, button 1"); 
+      });
       topPanel->addWidget(tp1, true);
 
       AFButton* tp2 = new AFButton(btnW + 5, 5, btnW - 5, 30, makeID("TP02"), "Panel 2");
-      tp2->setOnClickCallback([](AFWidget& sender) { showScreen3Dialog("Top panel, button 2"); });
+      tp2->setOnClickCallback([](AFWidget& sender) { 
+            printf("Panel button 2 clicked!\n");
+            showScreen3Dialog("Top panel, button 2"); 
+      });
       topPanel->addWidget(tp2, true);
 
       AFButton* tp3 = new AFButton(btnW * 2 + 5, 5, btnW - 5, 30, makeID("TP03"), "Panel 3");
-      tp3->setOnClickCallback([](AFWidget& sender) { showScreen3Dialog("Top panel, button 3"); });
+      tp3->setOnClickCallback([](AFWidget& sender) { 
+            printf("Panel button 3 clicked!\n");
+            showScreen3Dialog("Top panel, button 3"); 
+      });
       topPanel->addWidget(tp3, true);
 
-      screen3->addPanel(topPanel, true);
+      screen3->addWidget(topPanel, true);
 
       // ---- Bottom panel: 2 image buttons ----
       AFPanel* botPanel = new AFPanel(0, H - 40, W, 40, makeID("S3BP"));
-      AFImageButton* ib1 = new AFImageButton(10, H - 35, &imageA, makeID("IB01"));
-      ib1->setOnClickCallback([](AFWidget& sender) { showScreen3Dialog("Bottom panel, image A"); });
+      AFImageButton* ib1 = new AFImageButton(10, 5, &imageA, makeID("IB01"));
+      ib1->setOnClickCallback([](AFWidget& sender) { 
+            printf("Image button A clicked!\n");
+            showScreen3Dialog("Bottom panel, image A"); 
+      });
       botPanel->addWidget(ib1, true);
 
-      AFImageButton* ib2 = new AFImageButton(40, H - 35, &imageB, makeID("IB02"));
-      ib2->setOnClickCallback([](AFWidget& sender) { showScreen3Dialog("Bottom panel, image B"); });
+      AFImageButton* ib2 = new AFImageButton(40, 5, &imageB, makeID("IB02"));
+      ib2->setOnClickCallback([](AFWidget& sender) { 
+            printf("Image button B clicked!\n");
+            showScreen3Dialog("Bottom panel, image B"); 
+      });
       botPanel->addWidget(ib2, true);
 
-      screen3->addPanel(botPanel, true);
+      screen3->addWidget(botPanel, true);
 
       // ---- Button to open dialog ----
       AFButton* dlgBtn = new AFButton(20, 50, W - 40, 30, makeID("S3DB"), "Progress Dialog");
       dlgBtn->setOnClickCallback([](AFWidget& sender) { showProgressDialog("Progress Dialog"); });
       screen3->addWidget(dlgBtn, true);
 
-      // ---- Button to open letter picker dialog ----
-      AFButton* letterPickerBtn = new AFButton(20, 90, W - 40, 30, makeID("S3LP"), "Letter Picker");
-      letterPickerBtn->setOnClickCallback([](AFWidget& sender) { showLetterPickerDialog(); });
-      screen3->addWidget(letterPickerBtn, true);
-
+      
       // ---- Label above bottom panel ----
       AFLabel* lbl = new AFLabel(60, H - 70, W - 120, 20, "Final Tests", makeID("S3Lb"));
       lbl->setJustification(AFJustificationCenter);
@@ -373,34 +332,37 @@ static void setupScreen3(int16_t width, int16_t height) {
 
       // ---- Restart button above label ----
       AFButton* restartBtn = new AFButton(20, H - 110, W - 40, 30, makeID("S3Rs"), "Restart");
-      restartBtn->setOnClickCallback([](AFWidget& sender) { setupWorld->setActiveScreen(screen1); });
+      restartBtn->setOnClickCallback([](AFWidget& sender) { screen3->dismiss(); setupWorld->setActiveScreen(screen1); });
       screen3->addWidget(restartBtn, true);
+
+
 
       // ---- Shared dialog for screen 3 ----
       s3_dialog = new AFModalDialog(20, 40, W - 40, 140, makeID("S3Dg"));
 
-      s3_dialogLabel = new AFLabel(30, 60, "placeholder", makeID("S3DL"));
+      s3_dialogLabel = new AFLabel(10, 60, "placeholder", makeID("S3DL"));
       s3_dialog->addWidget(s3_dialogLabel, true);
 
-      AFButton* okBtn = new AFButton(50, 120, 100, 40, makeID("S3OK"), "OK");
-      okBtn->setOnClickCallback([](AFWidget& sender) { s3_dialog->dismiss(); });
+      AFButton* okBtn = new AFButton(50, 90, 100, 40, makeID("S3OK"), "OK");
+      okBtn->setOnClickCallback(dismissCommonDialog);
       s3_dialog->addWidget(okBtn, true);
+
 
 
       // ---- Progress dialog for screen 3 ----
       s3_progressDialog = new AFModalDialog(20, 40, W - 40, 140, makeID("S3PD"));
 
-      s3_progressLabel = new AFLabel(30, 60, "placeholder", makeID("S3DL"));
+      s3_progressLabel = new AFLabel(30, 10, "placeholder", makeID("S3DL"));
       s3_progressDialog->addWidget(s3_progressLabel, true);
 
-      s3_progressBar = new AFProgressBar(30, 90, W-70, 20, makeID("S3PL"));
+      s3_progressBar = new AFProgressBar(30, 40, W-70, 20, makeID("S3PL"));
       s3_progressDialog->addWidget(s3_progressBar, true);
 
-      AFButton* progressOkBtn = new AFButton(50, 120, 100, 30, makeID("SPOK"), "OK");
-      progressOkBtn->setOnClickCallback([](AFWidget& sender) { s3_progressDialog->dismiss(); });
+      AFButton* progressOkBtn = new AFButton(50, 80, 100, 30, makeID("SPOK"), "OK");
+      progressOkBtn->setOnClickCallback(dismissProgressDialog);
       s3_progressDialog ->addWidget(progressOkBtn, true);
 
-      AFButton* makeProgressBtn = new AFButton(180, 120, 30, 30, makeID("SPMP"), "+");
+      AFButton* makeProgressBtn = new AFButton(180, 8, 30, 30, makeID("SPMP"), "+");
       makeProgressBtn->setOnClickCallback( makeProgress );
       s3_progressDialog ->addWidget(makeProgressBtn, true);
       
@@ -418,6 +380,87 @@ void setupUI(int16_t width, int16_t height) {
       setupScreen1(width, height);
       setupScreen2(width, height);
       setupScreen3(width, height);
+
+      setupWorld->setActiveScreen(screen1);
+}
+
+
+
+
+
+
+
+
+
+AFModalDialog modal2;
+AFLabel modalLabel2;
+AFButton closeBtn2;
+void secondModalDismiss(AFWidget& sender) {
+      modal2.dismiss();
+      printf("Second modal dismissed\n");
+}     
+
+void showSecondModalDialog(AFWidget& sender) {
+      modal2.init(40, 80, 200, 140, makeID("Mod2"));
+
+      modalLabel2.init(20, 20, 100, 30, "This is a second modal dialog", makeID("Lab2"));
+      modal2.addWidget(&modalLabel2);
+
+      closeBtn2.init(20, 60, 100, 30, makeID("Cls2"), "Close");
+      closeBtn2.setOnClickCallback(secondModalDismiss);
+      modal2.addWidget(&closeBtn2);
+
+      modal2.show(*screen1); 
+}
+
+AFModalDialog modal1;
+AFLabel modalLabel1;
+AFButton showBtn1;
+AFButton closeBtn1;
+
+void firstModalDismiss(AFWidget& sender) {
+      modal1.dismiss();
+      printf("Second modal dismissed\n");
+}     
+
+void showFirstModalDialog(AFWidget& sender) {
+      modal1.init(20, 40, 200, 140, makeID("Mod1"));
+
+      modalLabel1.init(20, 20, 100, 30, "This is a modal dialog", makeID("Lab1"));
+      modal1.addWidget(&modalLabel1);
+      
+      showBtn1.init(20, 60, 100, 30, makeID("Shw1"), "Show");
+      showBtn1.setOnClickCallback(showSecondModalDialog);
+      modal1.addWidget(&showBtn1);
+
+      closeBtn1.init(20, 100, 100, 30, makeID("Cls1"), "Close");
+      closeBtn1.setOnClickCallback(firstModalDismiss);
+      modal1.addWidget(&closeBtn1);
+
+      modal1.show(*screen1); 
+}     
+
+
+
+
+
+
+void setupScreenModalHost(int16_t width, int16_t height) {
+      int16_t W = width;
+      int16_t H = height;
+
+      screen1 = setupWorld->createScreen(true);
+
+      AFButton* showModalButton = new AFButton(60, H - 40, W - 120, 20, makeID("ShwS"), "Show First Modal");
+      showModalButton->setOnClickCallback(showFirstModalDialog);
+      screen1->addWidget(showModalButton, true);
+}
+
+
+void setupStackedModalTestUI(int16_t width, int16_t height) {
+      setupWorld = AFWorld::instance();
+ 
+      setupScreenModalHost(width, height);
 
       setupWorld->setActiveScreen(screen1);
 }

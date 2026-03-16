@@ -19,12 +19,18 @@
 
 class AFWidget {
 public:
+    AFWidget() = default;  // Default constructor for stack objects
     AFWidget(int16_t x, int16_t y, int16_t w, int16_t h, uint32_t id = 0);
     virtual ~AFWidget() = default;
 
     virtual void draw(AFDisplayInterface& displayInterface) = 0;
+    virtual void draw(AFDisplayInterface& displayInterface, int16_t screenOffsetX, int16_t screenOffsetY);
     virtual bool hitTest(int16_t px, int16_t py) const;
     virtual void erase(AFDisplayInterface& displayInterface);
+
+    virtual void handleEvent(const AFEvent& e) {
+          unused(e);
+    }
 
 
     virtual void onPress(const AFEvent& e) {
@@ -124,6 +130,11 @@ public:
     }
 
 
+    bool isContainer() const {
+        return m_isContainer;
+    }
+
+
     void setJustification(AFJustification j) {
             m_justification = j;
             markDirty();
@@ -133,6 +144,12 @@ public:
     AFJustification getJustification() const {
             return m_justification;
     }
+
+
+    AFWidget* getParent() const { return m_parent; }
+
+
+    uint8_t getEventMask() const { return m_eventMask; }
 
 
     void erase(AFDisplayInterface& displayInterface, int16_t x, int16_t y, int16_t w, int16_t h);
@@ -145,6 +162,7 @@ protected:
     bool      m_visible = true;
     bool      m_dirty   = true;  // Start dirty so initial draw happens
     bool      m_owned   = false; // If true, container will delete this widget
+    bool      m_isContainer = false; // If true, widget can contain child widgets (e.g. panels)
     uint32_t   m_id;
     uint8_t   m_eventMask = kEventTouch;  // default touch only
     AFWidget* m_parent  = nullptr;

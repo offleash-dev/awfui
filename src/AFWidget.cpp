@@ -20,6 +20,27 @@ AFWidget::AFWidget(int16_t x_, int16_t y_, int16_t w_, int16_t h_, uint32_t id_)
 
 
 
+// Draw with screen offset (for child widgets)
+//
+void AFWidget::draw(AFDisplayInterface& displayInterface, int16_t screenOffsetX, int16_t screenOffsetY) {
+      // Save original position
+      int16_t originalX = m_x;
+      int16_t originalY = m_y;
+      
+      // Temporarily set screen position
+      m_x += screenOffsetX;
+      m_y += screenOffsetY;
+      
+      // Draw using screen coordinates
+      draw(displayInterface);
+      
+      // Restore original local position
+      m_x = originalX;
+      m_y = originalY;
+}
+
+
+
 // Hit test: simple bounding box
 //
 bool AFWidget::hitTest(int16_t px, int16_t py) const {
