@@ -28,7 +28,7 @@ public:
         m_y = y;
         m_width = w;
         m_height = h;
-        m_id = id;
+        m_id_uint32 = id;
         
         // Initialize value widget properties
         m_minimum = 0;

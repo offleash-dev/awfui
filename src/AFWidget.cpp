@@ -12,7 +12,7 @@
 
 // Constructor
 //
-AFWidget::AFWidget(int16_t x_, int16_t y_, int16_t w_, int16_t h_, uint32_t id_) : m_x(x_), m_y(y_), m_width(w_), m_height(h_), m_id(id_) {
+AFWidget::AFWidget(int16_t x_, int16_t y_, int16_t w_, int16_t h_, uint32_t id_) : m_x(x_), m_y(y_), m_width(w_), m_height(h_), m_id_uint32(id_) {
       m_visible = true;
       m_parent  = nullptr;
       m_dirty   = true;  // Start dirty so initial draw happens
@@ -70,7 +70,7 @@ void AFWidget::erase(AFDisplayInterface& displayInterface) {
 
 
 void AFWidget::update() {
-        if (m_dirty) {
+        if (isDirty()) {
               draw(AFWorld::instance()->getDisplay());
               clearDirty();
         }

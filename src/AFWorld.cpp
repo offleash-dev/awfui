@@ -10,15 +10,6 @@
 
 
 
-static char* tempIdBuffer5 = new char[5];
-char* getAsChars(int32_t id) {
-      getAsChars(id, tempIdBuffer5);
-      return tempIdBuffer5;
-}
-
-
-
-
 // Singleton instance
 AFWorld* AFWorld::s_instance = nullptr;
 

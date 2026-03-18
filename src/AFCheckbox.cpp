@@ -52,7 +52,7 @@ void AFCheckbox::init(int16_t x,
       m_y = y;
       m_width = boxSize;
       m_height = boxSize;
-      m_id = id;
+      m_id_uint32 = id;
       m_label = labelText;
       m_boxSize = static_cast<uint8_t>(boxSize);
 

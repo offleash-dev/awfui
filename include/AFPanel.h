@@ -38,6 +38,7 @@ public:
       void handleEvent(const AFEvent& e) override;
      
       virtual bool isDirty() const override;
+      virtual void setVisible(bool v) override;
       
       
       int16_t toScreenX(int16_t localX) const {
@@ -89,4 +90,6 @@ protected:
       bool m_opaque = true;
       int  m_zOrder = 0; // unused as yet
       AFWidget* m_pressedWidget = nullptr;  // implicit capture for drag
+
+      void fillBackgroundRect(AFDisplayInterface& displayInterface);
 };

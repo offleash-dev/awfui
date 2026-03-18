@@ -40,7 +40,7 @@ void AFLabel::init(int16_t x, int16_t y, int16_t w, int16_t h, const char* text,
       m_y = y;
       m_width = w;
       m_height = h;
-      m_id = id;
+      m_id_uint32 = id;
       m_text = (char*)text;
       
       // width/height are usable for hit-testing

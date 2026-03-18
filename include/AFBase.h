@@ -18,9 +18,14 @@
 
 #include <cstddef>
 #include <stdint.h>
+#include <etl/vector.h>
 
 #include "AFResult.h"
 #include "AFVersion.h"
+
+// Forward declarations
+class AFWidget;
+class AFPanel;
 
 
 constexpr size_t MAX_WIDGETS_PER_PANEL  = 24;
@@ -89,6 +94,14 @@ constexpr void getAsChars(int32_t id, char* out5) {
 
 
 extern char* getAsChars(int32_t id);
+
+
+
+void markIntersectingDirty(etl::vector<AFWidget*, MAX_WIDGETS_PER_SCREEN>& widgets, 
+                          int16_t rx, int16_t ry, int16_t rw, int16_t rh);
+
+void markIntersectingDirty(etl::vector<AFPanel*, MAX_PANELS_PER_SCREEN>& panels, 
+                          int16_t rx, int16_t ry, int16_t rw, int16_t rh);
 
 
 

@@ -92,7 +92,7 @@ void AFProgressBar::showText(bool enable) {
 
             d.setTextColor(m_borderColor);
             d.setTextSize(1);
-            d.drawTextJustified(buf, x0, y0, m_width, m_height, AFJustificationCenter);
+            d.drawTextJustified(buf, screenX, screenY, m_width, m_height, AFJustificationCenter);
         }
     }
 

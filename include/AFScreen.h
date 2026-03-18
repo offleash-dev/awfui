@@ -60,7 +60,15 @@ public:
 
 
       uint32_t getId() const {
-            return m_id;
+            return m_id_uint32;
+      }
+
+      const char* getIdString() const {
+            return m_id_chars;
+      }
+
+      void setIdString(const char* id) {
+            m_id_chars = const_cast<char*>(id);
       }
 
 
@@ -85,7 +93,10 @@ protected:
 private:
       AFDisplayInterface& m_display;
       bool          m_needsScreenRedraw = false;
-      uint32_t      m_id;
+      union {
+            uint32_t m_id_uint32;
+            char*    m_id_chars;
+      };
 
       etl::vector<AFWidget*, MAX_WIDGETS_PER_SCREEN>        m_widgets;
       etl::vector<AFPanel*, MAX_PANELS_PER_SCREEN>          m_panels;

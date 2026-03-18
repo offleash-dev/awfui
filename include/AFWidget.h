@@ -53,7 +53,7 @@ public:
     }
 
 
-    void setVisible(bool v) {
+    virtual void setVisible(bool v) {
         if (m_visible != v) {
             m_visible = v;
             markDirty();
@@ -126,7 +126,15 @@ public:
 
 
     uint32_t getId() const {
-        return m_id;
+        return m_id_uint32;
+    }
+
+    const char* getIdString() const {
+        return m_id_chars;
+    }
+
+    void setIdString(const char* id) {
+        m_id_chars = const_cast<char*>(id);
     }
 
 
@@ -163,7 +171,10 @@ protected:
     bool      m_dirty   = true;  // Start dirty so initial draw happens
     bool      m_owned   = false; // If true, container will delete this widget
     bool      m_isContainer = false; // If true, widget can contain child widgets (e.g. panels)
-    uint32_t   m_id;
+    union {
+        uint32_t m_id_uint32;
+        char*    m_id_chars;
+    };
     uint8_t   m_eventMask = kEventTouch;  // default touch only
     AFWidget* m_parent  = nullptr;
     AFJustification m_justification = AFJustificationCenter;

@@ -51,7 +51,7 @@ void AFRadioButton::init(int16_t x,
       m_y = y;
       m_width = radius * 2;
       m_height = radius * 2;
-      m_id = id;
+      m_id_uint32 = id;
       m_label = labelText;
       m_radius = radius;
       
@@ -83,7 +83,7 @@ void AFRadioButton::setSelected(bool sel) {
     markDirty();
 
     if (sel && m_onSelectCallback)
-        m_onSelectCallback(*this, m_id);
+        m_onSelectCallback(*this, m_id_uint32);
 }
 
 

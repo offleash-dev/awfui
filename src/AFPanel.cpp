@@ -80,22 +80,30 @@ AFWidget* AFPanel::widgetAt(int16_t px, int16_t py) {
 
 
 
+void AFPanel::fillBackgroundRect(AFDisplayInterface& displayInterface) {
+      const AFTheme& theme = AFWorld::instance()->getTheme();
+            
+      // Use DMA-accelerated fill for large panel backgrounds (dialogs, etc.)
+      if (displayInterface.isDMAAvailable()) {
+            displayInterface.fastFillRectDMA(m_x, m_y, m_width, m_height, theme.widgetBgColor);
+      } else {
+            displayInterface.fillRect(m_x, m_y, m_width, m_height, theme.widgetBgColor);
+      }
+}
+
+
+
+
 // Draw panel and child widgets
 //
 void AFPanel::draw(AFDisplayInterface& displayInterface) {
       if (!m_visible)
             return;
 
-      if (m_opaque && m_dirty) {
+      if (m_opaque && isDirty()) {
             const AFTheme& theme = AFWorld::instance()->getTheme();
-            
-            // Use DMA-accelerated fill for large panel backgrounds (dialogs, etc.)
-            if (displayInterface.isDMAAvailable()) {
-                  displayInterface.fastFillRectDMA(m_x, m_y, m_width, m_height, theme.widgetBgColor);
-            } else {
-                  displayInterface.fillRect(m_x, m_y, m_width, m_height, theme.widgetBgColor);
-            }
-            
+            fillBackgroundRect(displayInterface);
+
             displayInterface.drawRect(m_x, m_y, m_width, m_height, theme.widgetBorderColor);
       }
 
@@ -109,6 +117,12 @@ void AFPanel::draw(AFDisplayInterface& displayInterface) {
       
       // Clear our own dirty flag after drawing children
       clearDirty();
+ }
+
+
+
+void AFPanel::setVisible(bool v) {
+      AFWidget::setVisible(v);
 }
 
 

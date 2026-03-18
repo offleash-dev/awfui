@@ -39,6 +39,7 @@ endif()
 # Library sources
 # -----------------------------------------------------------------------------
 set(AWFUI_SOURCES
+    src/AFBase.cpp
     src/AFDisplayInterface.cpp
     src/AFButton.cpp
     src/AFCheckbox.cpp

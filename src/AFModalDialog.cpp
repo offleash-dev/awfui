@@ -29,7 +29,7 @@ void AFModalDialog::init(int16_t x, int16_t y, int16_t w, int16_t h, uint32_t id
       m_y = y;
       m_width = w;
       m_height = h;
-      m_id = id;
+      m_id_uint32 = id;
       
       // Modal dialogs are visible by default
       m_visible = true;
