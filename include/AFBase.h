@@ -97,13 +97,5 @@ extern char* getAsChars(int32_t id);
 
 
 
-void markIntersectingDirty(etl::vector<AFWidget*, MAX_WIDGETS_PER_SCREEN>& widgets, 
-                          int16_t rx, int16_t ry, int16_t rw, int16_t rh);
-
-void markIntersectingDirty(etl::vector<AFPanel*, MAX_PANELS_PER_SCREEN>& panels, 
-                          int16_t rx, int16_t ry, int16_t rw, int16_t rh);
-
-
-
 // Macro to mark unused parameters and avoid compiler warnings
 #define unused(x) (void) (x)
