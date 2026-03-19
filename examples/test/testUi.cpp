@@ -86,6 +86,18 @@ static AFButton*   s1_btnTR;
 static AFButton*   s1_btnBL;
 static AFButton*   s1_btnBR;
 
+extern void createTextInputPanel(AFScreen& s, AFLabel* keyOutputLabel);  // Forward declaration
+
+
+
+void showKeyboard(AFWidget& sender) {
+      printf("Show keyboard callback triggered!\n");
+      
+      createTextInputPanel(*screen1, s1_statusLabel);
+}
+
+
+
 static void setupScreen1(int16_t width, int16_t height) {
       printf("setupScreen1: Starting\n");
       int16_t W = width;
@@ -97,6 +109,7 @@ static void setupScreen1(int16_t width, int16_t height) {
 
       // Title label — near bottom
       auto* titleLbl = new AFButton(60, H - 40, W - 120, 20, makeID("S1Tt"), "Click Test");
+      titleLbl->setOnClickCallback(showKeyboard);
       screen1->addWidget(titleLbl, true);
 
       // "Next Test Screen" button — above title
@@ -137,12 +150,12 @@ static void setupScreen1(int16_t width, int16_t height) {
       printf("setupScreen1: Button created\n");
 
       // Status label — shows which corner button was clicked
-      s1_statusLabel = new AFLabel(20, 60, W - 40, 30, "", makeID("S1St"));
+      s1_statusLabel = new AFLabel(20, 100, W - 80, 30, "", makeID("S1St"));
       s1_statusLabel->setJustification(AFJustificationCenter);
       screen1->addWidget(s1_statusLabel, true);
 
       // Slider to test touch capture
-      auto* testSlider = new AFSlider(20, 110, W - 40, 30, makeID("S1SL"));
+      auto* testSlider = new AFSlider(20, 60, W - 40, 30, makeID("S1SL"));
       testSlider->setRange(0, 100);
       testSlider->setValue(50);
       testSlider->setOnReleaseCallback([](AFSlider& sender, int value) {
@@ -153,7 +166,8 @@ static void setupScreen1(int16_t width, int16_t height) {
       screen1->addWidget(testSlider, true);
 
       // Checkbox — enables/disables corner buttons
-      auto* enableCb = new AFCheckbox(20, 150, 16, makeID("S1Cb"), "Corner buttons enabled");
+      // between tl and tr buttons
+      auto* enableCb = new AFCheckbox(60, 10, 16, makeID("S1Cb"), "Corner buttons enabled");
       enableCb->setChecked(true);
       enableCb->setOnChangeCallback([](AFCheckbox& sender, bool checked) {
             s1_btnTL->setEnabled(checked);
