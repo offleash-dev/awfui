@@ -17,6 +17,11 @@
 
 
 
+// Forward declaration
+class AFScreen;
+
+
+
 class AFWidget {
 public:
     AFWidget() = default;  // Default constructor for stack objects
@@ -137,6 +142,15 @@ public:
         m_id_chars = const_cast<char*>(id);
     }
 
+    // Owner management
+    AFScreen* getOwner() const {
+        return m_owner;
+    }
+
+    void setOwner(AFScreen* owner) {
+        m_owner = owner;
+    }
+
 
     bool isContainer() const {
         return m_isContainer;
@@ -177,6 +191,7 @@ protected:
     };
     uint8_t   m_eventMask = kEventTouch;  // default touch only
     AFWidget* m_parent  = nullptr;
+    AFScreen* m_owner   = nullptr;  // Screen that manages this widget
     AFJustification m_justification = AFJustificationCenter;
 
     friend class AFPanel;

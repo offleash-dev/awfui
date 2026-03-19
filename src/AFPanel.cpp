@@ -8,6 +8,7 @@
 
 #include "AFWorld.h"
 #include "AFPanel.h"
+#include "AFScreen.h"
 #include "AFWidget.h"
 #include "AFBase.h"
 
@@ -41,6 +42,7 @@ bool AFPanel::addWidget(AFWidget* w, bool owned) {
       if (!m_widgets.full()) {
             m_widgets.push_back(w);
             w->m_parent = this;
+            w->m_owner  = m_owner;  // Inherit owner from panel
             w->m_owned  = owned;
             w->markDirty();  // Mark as dirty so it gets drawn
             success     = true;
@@ -122,7 +124,30 @@ void AFPanel::draw(AFDisplayInterface& displayInterface) {
 
 
 void AFPanel::setVisible(bool v) {
-      AFWidget::setVisible(v);
+      if (m_visible != v) {
+            if (!v && m_visible) {
+                  // When hiding, mark intersecting widgets dirty so they get redrawn
+                  if (m_owner) {
+                        fillBackgroundRect(m_owner->getDisplay());
+
+                        // Convert local coordinates to screen coordinates
+                        int16_t screenX = m_x;
+                        int16_t screenY = m_y;
+                        
+                        // If parent is a panel, convert to screen coordinates
+                        if (m_parent && m_parent->isContainer()) {
+                            AFPanel* parentPanel = static_cast<AFPanel*>(m_parent);
+                            screenX = parentPanel->toScreenX(m_x);
+                            screenY = parentPanel->toScreenY(m_y);
+                        }
+                        
+                        m_owner->markIntersectingWidgetsDirty(screenX, screenY, m_width, m_height);
+                  }
+            }
+            
+            m_visible = v;
+            markDirty();
+      }
 }
 
 
@@ -213,4 +238,38 @@ void AFPanel::handleEvent(const AFEvent& e) {
                   return;
             }
       }
+}
+
+// Add panel to container
+//
+bool AFPanel::addPanel(AFPanel* p, bool owned) {
+    if (!m_panels.full()) {
+        m_panels.push_back(p);
+        p->m_parent = this;
+        p->m_owner = m_owner;  // Inherit owner from parent panel
+        p->m_owned = owned;
+        p->markDirty();  // Mark as dirty so it gets drawn
+        return true;
+    }
+    return false;
+}
+
+// Remove panel from container
+//
+void AFPanel::removePanel(AFPanel* p) {
+    for (size_t i = 0; i < m_panels.size(); ++i) {
+        if (m_panels[i] == p) {
+            m_panels.erase(m_panels.begin() + i);
+            p->m_parent = nullptr;
+            p->m_owned = false;
+            return;
+        }
+    }
+}
+
+// Mark intersecting widgets dirty
+//
+void AFPanel::markIntersectingWidgetsDirty(int16_t rx, int16_t ry, int16_t rw, int16_t rh) {
+    markIntersectingDirty(m_widgets, rx, ry, rw, rh);
+    markIntersectingDirty(m_panels, rx, ry, rw, rh);
 }

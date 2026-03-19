@@ -13,6 +13,7 @@
 #include "AFDisplayInterface.h"
 
 #include "AFBase.h"
+#include "AFContainer.h"
 #include "AFPanel.h"
 #include "AFEvent.h"
 #include "AFModalDialog.h"
@@ -20,7 +21,7 @@
 
 
 
-class AFScreen {
+class AFScreen : public AFContainer {
 public:
       AFScreen(AFDisplayInterface& display, uint32_t id = 0, bool useCanvas = false);
       virtual ~AFScreen();
@@ -71,6 +72,8 @@ public:
             m_id_chars = const_cast<char*>(id);
       }
 
+      // Container interface implementation
+      void markIntersectingWidgetsDirty(int16_t rx, int16_t ry, int16_t rw, int16_t rh) override;
 
 protected:
       // Override in subclass to handle non-positional events (kButton, kKey, kCustom)
@@ -98,8 +101,6 @@ private:
             char*    m_id_chars;
       };
 
-      etl::vector<AFWidget*, MAX_WIDGETS_PER_SCREEN>        m_widgets;
-      etl::vector<AFPanel*, MAX_PANELS_PER_SCREEN>          m_panels;
       etl::vector<AFModalDialog*, MAX_DIALOGS_PER_SCREEN>   m_modalStack;  // Modal dialog stack
       AFWidget*                                             m_pressedWidget = nullptr;  // implicit capture for drag
 };

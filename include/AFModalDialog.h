@@ -34,8 +34,4 @@ public:
       bool isModal() const {
             return true;
       }
-
-      
-protected:
-      AFScreen* m_owner = nullptr;
 };
