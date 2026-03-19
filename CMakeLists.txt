@@ -40,6 +40,7 @@ endif()
 # -----------------------------------------------------------------------------
 set(AWFUI_SOURCES
     src/AFBase.cpp
+    src/AFContainer.cpp
     src/AFDisplayInterface.cpp
     src/AFButton.cpp
     src/AFCheckbox.cpp
