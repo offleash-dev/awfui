@@ -49,6 +49,7 @@ set(AWFUI_SOURCES
     src/AFImage.cpp
     src/AFImageWidget.cpp
     src/AFImageButton.cpp
+    src/AFKeyboard.cpp
     src/AFLabel.cpp
     src/AFLayoutHelpers.cpp
     src/AFModalDialog.cpp
@@ -74,6 +75,7 @@ set(AWFUI_HEADERS
     include/AFImage.h
     include/AFImageWidget.h
     include/AFImageButton.h
+    include/AFKeyboard.h
     include/AFLabel.h
     include/AFLayoutHelpers.h
     include/AFModalDialog.h
