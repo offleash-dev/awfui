@@ -14,7 +14,7 @@
 
 
 
-AFImageButton::AFImageButton(int16_t x, int16_t y, const AFImage* img, uint32_t id)
+AFImageButton::AFImageButton(int16_t x, int16_t y, const AFImage* img, ID_TYPE id)
     : AFButton(x, y, img ? img->width() : 0, img ? img->height() : 0, id),
       m_image(img)
 {
@@ -24,7 +24,7 @@ AFImageButton::AFImageButton(int16_t x, int16_t y, const AFImage* img, uint32_t 
 
 // Initialize method for stack objects
 //
-void AFImageButton::init(int16_t x, int16_t y, const AFImage* img, uint32_t id) {
+void AFImageButton::init(int16_t x, int16_t y, const AFImage* img, ID_TYPE id) {
       // Initialize the base AFButton
       int16_t width = img ? img->width() : 0;
       int16_t height = img ? img->height() : 0;
@@ -50,12 +50,12 @@ void AFImageButton::onClick(const AFEvent& e) {
 
 void AFImageButton::draw(AFDisplayInterface& displayInterface)
 {
-    if (!m_visible || !m_image) {
+    if (!isVisible() || !m_image) {
         return;
     }
 
     const AFImage* image = m_image;
-    if (m_enabled) {
+    if (isEnabled()) {
         if (m_pressed) {
             if (m_imagePressed) {
                 image = m_imagePressed;
@@ -71,7 +71,7 @@ void AFImageButton::draw(AFDisplayInterface& displayInterface)
 
     if (image->format() == kAFImageFormat1bit) {
         const AFTheme& theme = AFWorld::instance()->getTheme();
-        uint16_t color = m_enabled ? theme.widgetFgColor : theme.widgetDisabledFgColor;
+        uint16_t color = isEnabled() ? theme.widgetFgColor : theme.widgetDisabledFgColor;
         displayInterface.drawBitmap(m_x, m_y, image->pixels(), image->width(), image->height(), color);
     } else {
         displayInterface.drawRGBBitmap(m_x, m_y, reinterpret_cast<const uint16_t*>(image->pixels()),

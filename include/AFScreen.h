@@ -23,7 +23,7 @@
 
 class AFScreen : public AFContainer {
 public:
-      AFScreen(AFDisplayInterface& display, uint32_t id = 0, bool useCanvas = false);
+      AFScreen(AFDisplayInterface& display, ID_TYPE id = 0, bool useCanvas = false);
       virtual ~AFScreen();
 
       // if owned, the screen or panel will delete the widget when deleted. 
@@ -60,16 +60,8 @@ public:
       }
 
 
-      uint32_t getId() const {
-            return m_id_uint32;
-      }
-
-      const char* getIdString() const {
-            return m_id_chars;
-      }
-
-      void setIdString(const char* id) {
-            m_id_chars = const_cast<char*>(id);
+      ID_TYPE getId() const {
+            return m_id;
       }
 
       // Container interface implementation
@@ -95,12 +87,9 @@ protected:
  
 private:
       AFDisplayInterface& m_display;
-      bool          m_needsScreenRedraw = false;
-      union {
-            uint32_t m_id_uint32;
-            char*    m_id_chars;
-      };
+      bool        m_needsScreenRedraw = false;
+      ID_TYPE     m_id;
 
       etl::vector<AFModalDialog*, MAX_DIALOGS_PER_SCREEN>   m_modalStack;  // Modal dialog stack
-      AFWidget*                                             m_pressedWidget = nullptr;  // implicit capture for drag
+      AFWidget* m_pressedWidget = nullptr;  // implicit capture for drag
 };

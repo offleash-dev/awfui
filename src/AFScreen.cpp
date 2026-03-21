@@ -14,7 +14,7 @@
 
 // Constructor
 //
-AFScreen::AFScreen(AFDisplayInterface& displayRef, uint32_t id, bool useCanvas) : m_display(displayRef), m_id_uint32(id) {
+AFScreen::AFScreen(AFDisplayInterface& displayRef, ID_TYPE id, bool useCanvas) : m_display(displayRef), m_id(id) {
       if (useCanvas) {
             // Create an off-screen buffer matching the display size
             m_canvas = m_display.createCanvas();
@@ -27,10 +27,10 @@ AFScreen::AFScreen(AFDisplayInterface& displayRef, uint32_t id, bool useCanvas) 
 //
 AFScreen::~AFScreen() {
       for (auto* w : m_widgets) {
-            if (w->m_owned) delete w;
+            if (w->isOwned()) delete w;
       }
       for (auto* p : m_panels) {
-            if (p->m_owned) delete p;
+            if (p->isOwned()) delete p;
       }
       if (m_canvas) {
             delete m_canvas;
@@ -49,7 +49,7 @@ bool AFScreen::addWidget(AFWidget* w, bool owned) {
             m_widgets.push_back(w);
             w->m_parent = nullptr; // root-level widget
             w->m_owner  = this;    // screen owns the widget
-            w->m_owned  = owned;
+            w->setOwned(owned);
 
             success = true;           
       }
@@ -68,7 +68,7 @@ bool AFScreen::addPanel(AFPanel* p, bool owned) {
             m_panels.push_back(p);
             p->m_parent = nullptr;
             p->m_owner  = this;    // screen owns the panel
-            p->m_owned  = owned;
+            p->setOwned(owned);
 
             success = true;
       }
@@ -85,7 +85,7 @@ void AFScreen::removeWidget(AFWidget* w) {
             if (m_widgets[i] == w) {
                   m_widgets.erase(m_widgets.begin() + i);
                   w->m_parent = nullptr;
-                  w->m_owned  = false;
+                  w->setOwned(false);
                   return;
             }
       }
@@ -101,7 +101,7 @@ void AFScreen::removePanel(AFPanel* p) {
             if (m_panels[i] == p) {
                   m_panels.erase(m_panels.begin() + i);
                   p->m_parent = nullptr;
-                  p->m_owned  = false;
+                  p->setOwned(false);
                   return;
             }
       }

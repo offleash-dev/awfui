@@ -1,7 +1,7 @@
 //// AFRadioButtonGroup.cpp
 //// Implementation of the AWFUI radio button group.
 ////
-//// Copyright (c) 2026 Matt Foster
+//// Copyright (c) 2026 Matt Fosterd
 //// Licensed under the MIT License. See LICENSE file for details.
 
 
@@ -18,13 +18,13 @@ AFRadioButtonGroup::AFRadioButtonGroup() {
 
 
 
-bool AFRadioButtonGroup::addButton(AFRadioButton* btn) {
+int16_t AFRadioButtonGroup::addButton(AFRadioButton* btn) {
     if (m_count >= MAX_WIDGETS_PER_PANEL)
-        return false;
+        return -1;
 
     m_buttons[m_count++] = btn;
     btn->m_group = this;
-    return true;
+    return m_count - 1;
 }
 
 
@@ -43,6 +43,9 @@ void AFRadioButtonGroup::select(AFRadioButton* btn) {
     btn->setSelected(true);
     m_selected = btn;
 
-    if (m_onChangeCallback)
-        m_onChangeCallback(*this, btn->getId());
+    if (m_onChangeIdCallback)
+        m_onChangeIdCallback(*this, btn->getId());
+        
+    if (m_onChangeOrdinalCallback)
+        m_onChangeOrdinalCallback(*this, btn->getOrdinal());
 }

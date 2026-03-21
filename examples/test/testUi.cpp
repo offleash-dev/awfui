@@ -90,7 +90,7 @@ extern void createTextInputPanel(AFScreen& s, AFLabel* keyOutputLabel);  // Forw
 
 
 
-void showKeyboard(AFWidget& sender) {
+void showKeyboard(AFButton& sender) {
       printf("Show keyboard callback triggered!\n");
       
       createTextInputPanel(*screen1, s1_statusLabel);
@@ -104,7 +104,7 @@ static void setupScreen1(int16_t width, int16_t height) {
       int16_t H = height;
 
       printf("setupScreen1: Creating screen\n");
-      screen1 = setupWorld->createScreen(true);
+      screen1 = setupWorld->createScreen(makeID("S1"), true);
       printf("setupScreen1: Screen created\n");
 
       // Title label — near bottom
@@ -115,21 +115,21 @@ static void setupScreen1(int16_t width, int16_t height) {
       // "Next Test Screen" button — above title
       printf("setupScreen1: Creating button\n");
       auto* nextBtn = new AFButton(20, H - 90, W - 40, 30, makeID("S1Nx"), "Next Test Screen");
-      nextBtn->setOnClickCallback([](AFWidget& sender) { setupWorld->setActiveScreen(screen2); });
+      nextBtn->setOnClickCallback([](AFButton& sender) { setupWorld->setActiveScreen(screen2); });
       screen1->addWidget(nextBtn, true);
       printf("setupScreen1: second Button created\n");
 
       // Corner buttons — 40x40
       printf("setupScreen1: Adding widget\n");
       s1_btnTL = new AFButton(0, 0, 40, 40, makeID("S1TL"), "TL");
-      s1_btnTL->setOnClickCallback([](AFWidget& sender) { s1_statusLabel->setText("TL clicked"); });
+      s1_btnTL->setOnClickCallback([](AFButton& sender) { s1_statusLabel->setText("TL clicked"); });
       screen1->addWidget(s1_btnTL, true);
       printf("setupScreen1: Widget added\n");
 
       printf("setupScreen1: Creating button s1tr\n");
       s1_btnTR = new AFButton(W - 40, 0, 40, 40, makeID("S1TR"), "TR");
       printf("setupScreen1: new button s1tr done\n");
-      s1_btnTR->setOnClickCallback([](AFWidget& sender) { s1_statusLabel->setText("TR clicked"); });
+      s1_btnTR->setOnClickCallback([](AFButton& sender) { s1_statusLabel->setText("TR clicked"); });
       printf("setupScreen1: set button calllback s1tr done\n");
       if (s1_btnTR == nullptr) {
             printf("setupScreen1: ERROR - s1_btnTR is null\n");
@@ -140,12 +140,12 @@ static void setupScreen1(int16_t width, int16_t height) {
       printf("setupScreen1: Button created\n");
 
       s1_btnBL = new AFButton(0, H - 40, 40, 40, makeID("S1BL"), "BL");
-      s1_btnBL->setOnClickCallback([](AFWidget& sender) { s1_statusLabel->setText("BL clicked"); });
+      s1_btnBL->setOnClickCallback([](AFButton& sender) { s1_statusLabel->setText("BL clicked"); });
       screen1->addWidget(s1_btnBL, true);
       printf("setupScreen1: Button created\n");
 
       s1_btnBR = new AFButton(W - 40, H - 40, 40, 40, makeID("S1BR"), "BR");
-      s1_btnBR->setOnClickCallback([](AFWidget& sender) { s1_statusLabel->setText("BR clicked"); });
+      s1_btnBR->setOnClickCallback([](AFButton& sender) { s1_statusLabel->setText("BR clicked"); });
       screen1->addWidget(s1_btnBR, true);
       printf("setupScreen1: Button created\n");
 
@@ -192,7 +192,7 @@ static void setupScreen2(int16_t width, int16_t height) {
       int16_t W = width;
       int16_t H = height;
 
-      screen2 = setupWorld->createScreen(true);
+      screen2 = setupWorld->createScreen(makeID("S2"), true);
 
       // Title label
       auto* titleLbl = new AFLabel(60, H - 40, W - 120, 20, "Radio Test", makeID("S2Tt"));
@@ -201,7 +201,7 @@ static void setupScreen2(int16_t width, int16_t height) {
 
       // "Next Test Screen" button
       auto* nextBtn = new AFButton(20, H - 90, W - 40, 30, makeID("S2Nx"), "Next Test Screen");
-      nextBtn->setOnClickCallback([](AFWidget& sender) { screen3->show(*screen2); });
+      nextBtn->setOnClickCallback([](AFButton& sender) { screen3->show(*screen2); });
       screen2->addWidget(nextBtn, true);
 
       // Radio buttons
@@ -265,7 +265,7 @@ static void showProgressDialog(const char* text) {
 
 int progressValue = 0;
 
-static void makeProgress(AFWidget& sender) {
+static void makeProgress(AFButton& sender) {
       progressValue += 10;
       s3_progressBar->setValue(progressValue);
       s3_progressBar->update();
@@ -273,12 +273,12 @@ static void makeProgress(AFWidget& sender) {
 
 
 
-void dismissProgressDialog(AFWidget& sender) {
+void dismissProgressDialog(AFButton& sender) {
       s3_progressDialog->dismiss();
       progressValue = 0;
 }
 
-void dismissCommonDialog(AFWidget& sender) {
+void dismissCommonDialog(AFButton& sender) {
       s3_dialog->dismiss();
 }
 
@@ -293,21 +293,21 @@ static void setupScreen3(int16_t width, int16_t height) {
       AFPanel* topPanel = new AFPanel(0, 0, W, 40, makeID("S3TP"));
       int16_t btnW = (W - 20) / 3;  // 3 buttons with small gaps
       AFButton* tp1 = new AFButton(5, 5, btnW - 5, 30, makeID("TP01"), "Panel 1");
-      tp1->setOnClickCallback([](AFWidget& sender) { 
+      tp1->setOnClickCallback([](AFButton& sender) { 
             printf("Panel button 1 clicked!\n");
             showScreen3Dialog("Top panel, button 1"); 
       });
       topPanel->addWidget(tp1, true);
 
       AFButton* tp2 = new AFButton(btnW + 5, 5, btnW - 5, 30, makeID("TP02"), "Panel 2");
-      tp2->setOnClickCallback([](AFWidget& sender) { 
+      tp2->setOnClickCallback([](AFButton& sender) { 
             printf("Panel button 2 clicked!\n");
             showScreen3Dialog("Top panel, button 2"); 
       });
       topPanel->addWidget(tp2, true);
 
       AFButton* tp3 = new AFButton(btnW * 2 + 5, 5, btnW - 5, 30, makeID("TP03"), "Panel 3");
-      tp3->setOnClickCallback([](AFWidget& sender) { 
+      tp3->setOnClickCallback([](AFButton& sender) { 
             printf("Panel button 3 clicked!\n");
             showScreen3Dialog("Top panel, button 3"); 
       });
@@ -318,14 +318,14 @@ static void setupScreen3(int16_t width, int16_t height) {
       // ---- Bottom panel: 2 image buttons ----
       AFPanel* botPanel = new AFPanel(0, H - 40, W, 40, makeID("S3BP"));
       AFImageButton* ib1 = new AFImageButton(10, 5, &imageA, makeID("IB01"));
-      ib1->setOnClickCallback([](AFWidget& sender) { 
+      ib1->setOnClickCallback([](AFButton& sender) { 
             printf("Image button A clicked!\n");
             showScreen3Dialog("Bottom panel, image A"); 
       });
       botPanel->addWidget(ib1, true);
 
       AFImageButton* ib2 = new AFImageButton(40, 5, &imageB, makeID("IB02"));
-      ib2->setOnClickCallback([](AFWidget& sender) { 
+      ib2->setOnClickCallback([](AFButton& sender) { 
             printf("Image button B clicked!\n");
             showScreen3Dialog("Bottom panel, image B"); 
       });
@@ -335,7 +335,7 @@ static void setupScreen3(int16_t width, int16_t height) {
 
       // ---- Button to open dialog ----
       AFButton* dlgBtn = new AFButton(20, 50, W - 40, 30, makeID("S3DB"), "Progress Dialog");
-      dlgBtn->setOnClickCallback([](AFWidget& sender) { showProgressDialog("Progress Dialog"); });
+      dlgBtn->setOnClickCallback([](AFButton& sender) { showProgressDialog("Progress Dialog"); });
       screen3->addWidget(dlgBtn, true);
 
       
@@ -346,7 +346,7 @@ static void setupScreen3(int16_t width, int16_t height) {
 
       // ---- Restart button above label ----
       AFButton* restartBtn = new AFButton(20, H - 110, W - 40, 30, makeID("S3Rs"), "Restart");
-      restartBtn->setOnClickCallback([](AFWidget& sender) { screen3->dismiss(); setupWorld->setActiveScreen(screen1); });
+      restartBtn->setOnClickCallback([](AFButton& sender) { screen3->dismiss(); setupWorld->setActiveScreen(screen1); });
       screen3->addWidget(restartBtn, true);
 
 
@@ -409,12 +409,12 @@ void setupUI(int16_t width, int16_t height) {
 AFModalDialog modal2;
 AFLabel modalLabel2;
 AFButton closeBtn2;
-void secondModalDismiss(AFWidget& sender) {
+void secondModalDismiss(AFButton& sender) {
       modal2.dismiss();
       printf("Second modal dismissed\n");
 }     
 
-void showSecondModalDialog(AFWidget& sender) {
+void showSecondModalDialog(AFButton& sender) {
       modal2.init(40, 80, 200, 140, makeID("Mod2"));
 
       modalLabel2.init(20, 20, 100, 30, "This is a second modal dialog", makeID("Lab2"));
@@ -432,12 +432,12 @@ AFLabel modalLabel1;
 AFButton showBtn1;
 AFButton closeBtn1;
 
-void firstModalDismiss(AFWidget& sender) {
+void firstModalDismiss(AFButton& sender) {
       modal1.dismiss();
       printf("Second modal dismissed\n");
 }     
 
-void showFirstModalDialog(AFWidget& sender) {
+void showFirstModalDialog(AFButton& sender) {
       modal1.init(20, 40, 200, 140, makeID("Mod1"));
 
       modalLabel1.init(20, 20, 100, 30, "This is a modal dialog", makeID("Lab1"));
@@ -463,7 +463,7 @@ void setupScreenModalHost(int16_t width, int16_t height) {
       int16_t W = width;
       int16_t H = height;
 
-      screen1 = setupWorld->createScreen(true);
+      screen1 = setupWorld->createScreen(makeID("S3"), true);
 
       AFButton* showModalButton = new AFButton(60, H - 40, W - 120, 20, makeID("ShwS"), "Show First Modal");
       showModalButton->setOnClickCallback(showFirstModalDialog);

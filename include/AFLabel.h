@@ -16,15 +16,15 @@
 class AFLabel : public AFWidget {
 public:
       // A simple positioned label
-      AFLabel(int16_t x, int16_t y, const char* text, uint32_t id = 0);
+      AFLabel(int16_t x, int16_t y, const char* text, ID_TYPE id = 0);
 
       AFLabel() = default;  // Default constructor for stack objects
       
       // A bordered label with width/height and justification
-      AFLabel(int16_t x, int16_t y, int16_t w, int16_t h, const char* text, uint32_t id = 0);
+      AFLabel(int16_t x, int16_t y, int16_t w, int16_t h, const char* text, ID_TYPE id = 0);
 
       // Initialize method for stack objects
-      void init(int16_t x, int16_t y, int16_t w, int16_t h, const char* text, uint32_t id = 0);
+      void init(int16_t x, int16_t y, int16_t w, int16_t h, const char* text, ID_TYPE id = 0);
 
 
       void setText(const char* t) {

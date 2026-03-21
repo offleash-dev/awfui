@@ -16,10 +16,9 @@
 
 // Constructor
 //
-AFPanel::AFPanel(int16_t x, int16_t y, int16_t w, int16_t h, uint32_t id) : AFWidget(x, y, w, h, id) {
-      // Panels default to visible
-      m_visible = true;
-      m_isContainer = true; // Panels can contain child widgets
+AFPanel::AFPanel(int16_t x, int16_t y, int16_t w, int16_t h, ID_TYPE id) : AFWidget(x, y, w, h, id) {
+      // Panels default to visible and are containers
+      m_flags |= FLAG_VISIBLE | FLAG_CONTAINER;
 }
 
 
@@ -28,7 +27,7 @@ AFPanel::AFPanel(int16_t x, int16_t y, int16_t w, int16_t h, uint32_t id) : AFWi
 //
 AFPanel::~AFPanel() {
       for (auto* w : m_widgets) {
-            if (w->m_owned) delete w;
+            if (w->isOwned()) delete w;
       }
 }
 
@@ -43,7 +42,7 @@ bool AFPanel::addWidget(AFWidget* w, bool owned) {
             m_widgets.push_back(w);
             w->m_parent = this;
             w->m_owner  = m_owner;  // Inherit owner from panel
-            w->m_owned  = owned;
+            w->setOwned(owned);
             w->markDirty();  // Mark as dirty so it gets drawn
             success     = true;
       }
@@ -60,7 +59,7 @@ void AFPanel::removeWidget(AFWidget* w) {
             if (m_widgets[i] == w) {
                   m_widgets.erase(m_widgets.begin() + i);
                   w->m_parent = nullptr;
-                  w->m_owned  = false;
+                  w->setOwned(false);
                   return;
             }
       }
@@ -99,7 +98,7 @@ void AFPanel::fillBackgroundRect(AFDisplayInterface& displayInterface) {
 // Draw panel and child widgets
 //
 void AFPanel::draw(AFDisplayInterface& displayInterface) {
-      if (!m_visible)
+      if (!isVisible())
             return;
 
       if (m_opaque && isDirty()) {
@@ -124,8 +123,9 @@ void AFPanel::draw(AFDisplayInterface& displayInterface) {
 
 
 void AFPanel::setVisible(bool v) {
-      if (m_visible != v) {
-            if (!v && m_visible) {
+      bool wasVisible = isVisible();
+      if (wasVisible != v) {
+            if (!v && wasVisible) {
                   // When hiding, mark intersecting widgets dirty so they get redrawn
                   if (m_owner) {
                         fillBackgroundRect(m_owner->getDisplay());
@@ -145,7 +145,8 @@ void AFPanel::setVisible(bool v) {
                   }
             }
             
-            m_visible = v;
+            if (v) m_flags |= FLAG_VISIBLE;
+            else m_flags &= ~FLAG_VISIBLE;
             markDirty();
       }
 }
@@ -153,7 +154,7 @@ void AFPanel::setVisible(bool v) {
 
 
 bool AFPanel::isDirty() const {
-      if (m_dirty)
+      if (m_flags & FLAG_DIRTY)
             return true;
 
       for (auto* w : m_widgets) {
@@ -247,7 +248,7 @@ bool AFPanel::addPanel(AFPanel* p, bool owned) {
         m_panels.push_back(p);
         p->m_parent = this;
         p->m_owner = m_owner;  // Inherit owner from parent panel
-        p->m_owned = owned;
+        p->setOwned(owned);
         p->markDirty();  // Mark as dirty so it gets drawn
         return true;
     }
@@ -261,7 +262,7 @@ void AFPanel::removePanel(AFPanel* p) {
         if (m_panels[i] == p) {
             m_panels.erase(m_panels.begin() + i);
             p->m_parent = nullptr;
-            p->m_owned = false;
+            p->setOwned(false);
             return;
         }
     }

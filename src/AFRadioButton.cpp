@@ -19,7 +19,7 @@
 AFRadioButton::AFRadioButton(int16_t x,
                              int16_t y,
                              int16_t radius,
-                             uint32_t id,
+                             ID_TYPE id,
                              const char* labelText)
     : AFWidget(x, y, radius * 2, radius * 2, id),
       m_label(labelText),
@@ -44,14 +44,14 @@ AFRadioButton::AFRadioButton(int16_t x,
 void AFRadioButton::init(int16_t x,
                           int16_t y,
                           int16_t radius,
-                          uint32_t id,
+                          ID_TYPE id,
                           const char* labelText) {
       // Initialize the base AFWidget
       m_x = x;
       m_y = y;
       m_width = radius * 2;
       m_height = radius * 2;
-      m_id_uint32 = id;
+      m_id = id;
       m_label = labelText;
       m_radius = radius;
       
@@ -83,7 +83,7 @@ void AFRadioButton::setSelected(bool sel) {
     markDirty();
 
     if (sel && m_onSelectCallback)
-        m_onSelectCallback(*this, m_id_uint32);
+        m_onSelectCallback(*this, m_id);
 }
 
 
@@ -99,14 +99,14 @@ void AFRadioButton::setColors(uint16_t circleColor, uint16_t dotColor, uint16_t 
 
 
 void AFRadioButton::draw(AFDisplayInterface& displayInterface) {
-    if (!m_visible)
+    if (!isVisible())
         return;
 
     uint16_t circleColor = m_circleColor;
     uint16_t dotColor    = m_dotColor;
     uint16_t labelColor  = m_labelColor;
 
-    if (!m_enabled) {
+    if (!isEnabled()) {
         AFTheme theTheme = AFWorld::instance()->getTheme();
         circleColor = theTheme.widgetDisabledFgColor;
         dotColor    = theTheme.widgetDisabledFgColor;

@@ -52,7 +52,7 @@ static AFImage backspaceImage(backspace_image_data);
 
 
 // Callback functions for better debugging
-void onCurrentModePressedWrapper(AFWidget& sender) {
+void onCurrentModePressedWrapper(AFButton& sender) {
     AFSliderKeyboard* keyboard = static_cast<AFSliderKeyboard*>(sender.getParent());
     if (keyboard) {
         keyboard->onCurrentModePressed(sender);
@@ -61,7 +61,7 @@ void onCurrentModePressedWrapper(AFWidget& sender) {
 
 
 
-void onNextModePressedWrapper(AFWidget& sender) {
+void onNextModePressedWrapper(AFButton& sender) {
     AFSliderKeyboard* keyboard = static_cast<AFSliderKeyboard*>(sender.getParent());
     if (keyboard) {
         keyboard->onNextModePressed(sender);
@@ -70,10 +70,10 @@ void onNextModePressedWrapper(AFWidget& sender) {
 
 
 
-void onBackspacePressedWrapper(AFWidget& sender) {
+void onSKBackspacePressedWrapper(AFButton& sender) {
     AFSliderKeyboard* keyboard = static_cast<AFSliderKeyboard*>(sender.getParent());
     if (keyboard) {
-        keyboard->onBackspacePressed(sender);
+        keyboard->onSKBackspacePressed(sender);
     }
 }
 
@@ -113,12 +113,12 @@ static const char* kModeTransitions[] = {"A2#", "2#a", "2#a", "#aA", "aA2"};
 
 // Constructor
 //
-AFSliderKeyboard::AFSliderKeyboard(int16_t x, int16_t y, int16_t w, int16_t h, uint32_t id)
+AFSliderKeyboard::AFSliderKeyboard(int16_t x, int16_t y, int16_t w, int16_t h, ID_TYPE id)
     : AFPanel(x, y, w, h, id)
     , m_characterMode(AFCharacterMode::kLowerCaseMode)
     , m_currentCharacter('a')
-    , m_onCharacterCallback(nullptr)
-    , m_onBackspaceCallback(nullptr)
+    , m_onSKCharacterCallback(nullptr)
+    , m_onSKBackspaceCallback(nullptr)
 {
     // Create child widgets in order from left to right
     
@@ -139,7 +139,7 @@ AFSliderKeyboard::AFSliderKeyboard(int16_t x, int16_t y, int16_t w, int16_t h, u
     // Back button (image button with backspace icon) - use local coordinates
     m_backButton = new AFImageButton(w - kBackButtonWidth - kMargin, h - kControlHeight - kMargin,
                                      &backspaceImage, makeID("SKBK"));
-    m_backButton->setOnClickCallback(onBackspacePressedWrapper);
+    m_backButton->setOnClickCallback(onSKBackspacePressedWrapper);
     addWidget(m_backButton, true);
     
     // Output character label (1 char width) - use local coordinates
@@ -322,8 +322,8 @@ void AFSliderKeyboard::onSliderReleased(AFSlider& sender, uint16_t value) {
     updateCharacterDisplay();
     
     // Send character callback
-    if (m_onCharacterCallback) {
-        m_onCharacterCallback(*this, m_currentCharacter);
+    if (m_onSKCharacterCallback) {
+        m_onSKCharacterCallback(*this, m_currentCharacter);
     }
     
     markDirty();
@@ -344,9 +344,9 @@ void AFSliderKeyboard::onSliderMoved(AFSlider& sender, uint16_t value) {
 
 // Handle backspace
 //
-void AFSliderKeyboard::onBackspacePressed(AFWidget& sender) {
-    if (m_onBackspaceCallback) {
-        m_onBackspaceCallback(*this, '\b'); // Use backspace character
+void AFSliderKeyboard::onSKBackspacePressed(AFButton& sender) {
+    if (m_onSKBackspaceCallback) {
+        m_onSKBackspaceCallback(*this, '\b'); // Use backspace character
     }
     markDirty();
 }
@@ -355,7 +355,7 @@ void AFSliderKeyboard::onBackspacePressed(AFWidget& sender) {
 
 // Handle next mode button
 //
-void AFSliderKeyboard::onNextModePressed(AFWidget& sender) {
+void AFSliderKeyboard::onNextModePressed(AFButton& sender) {
     // Cycle to next available mode
     int currentMode = static_cast<int>(m_characterMode);
     int nextMode = (currentMode + 1) % 5; // 5 total modes
@@ -367,7 +367,7 @@ void AFSliderKeyboard::onNextModePressed(AFWidget& sender) {
 
 // Handle current mode button (only active in uppercase modes)
 //
-void AFSliderKeyboard::onCurrentModePressed(AFWidget& sender) {
+void AFSliderKeyboard::onCurrentModePressed(AFButton& sender) {
     switch (m_characterMode) {
         case AFCharacterMode::kUpperCaseMode:
             // Switch to locked mode

@@ -25,20 +25,23 @@ enum class AFCharacterMode {
     kPunctuationMode    // '#' indicator, punctuation symbols
 };
 
+
 // Forward declaration
 class AFSliderKeyboard;
 
 // Callback type for character input
 using AFSliderKeyboardCallback = void (*)(AFSliderKeyboard& sender, char character);
 
+
+
 class AFSliderKeyboard : public AFPanel {
 public:
-    AFSliderKeyboard(int16_t x, int16_t y, int16_t w, int16_t h, uint32_t id = 0);
+    AFSliderKeyboard(int16_t x, int16_t y, int16_t w, int16_t h, ID_TYPE id = 0);
     
     // Friend functions for callback wrappers
-    friend void onCurrentModePressedWrapper(AFWidget& sender);
-    friend void onNextModePressedWrapper(AFWidget& sender);
-    friend void onBackspacePressedWrapper(AFWidget& sender);
+    friend void onCurrentModePressedWrapper(AFButton& sender);
+    friend void onNextModePressedWrapper(AFButton& sender);
+    friend void onSKBackspacePressedWrapper(AFButton& sender);
     friend void onSliderReleasedWrapper(AFSlider& sender, int value);
     friend void onSliderMovedWrapper(AFSlider& sender, int value);
     
@@ -47,16 +50,17 @@ public:
     AFCharacterMode getCharacterMode() const { return m_characterMode; }
     
     // Character input callback
-    void setOnCharacterCallback(AFSliderKeyboardCallback cb) { m_onCharacterCallback = cb; }
+    void setOnCharacterCallback(AFSliderKeyboardCallback cb) { m_onSKCharacterCallback = cb; }
     
     // Backspace handling
-    void setOnBackspaceCallback(AFSliderKeyboardCallback cb) { m_onBackspaceCallback = cb; }
+    void setOnBackspaceCallback(AFSliderKeyboardCallback cb) { m_onSKBackspaceCallback = cb; }
     
     // Get current character (based on slider position)
     char getCurrentCharacter() const;
     
     // Event handling
     void handleEvent(const AFEvent& e) override;
+
 
 protected:
     void updateModeDisplay();
@@ -66,9 +70,10 @@ protected:
     int getCharacterCountForMode(AFCharacterMode mode) const;
     void onSliderReleased(AFSlider& sender, uint16_t value);
     void onSliderMoved(AFSlider& sender, uint16_t value);
-    void onBackspacePressed(AFWidget& sender);
-    void onNextModePressed(AFWidget& sender);
-    void onCurrentModePressed(AFWidget& sender);
+    void onSKBackspacePressed(AFButton& sender);
+    void onNextModePressed(AFButton& sender);
+    void onCurrentModePressed(AFButton& sender);
+    
     
 private:
     // Child widgets
@@ -83,8 +88,8 @@ private:
     char m_currentCharacter;
     
     // Callbacks
-    AFSliderKeyboardCallback m_onCharacterCallback;
-    AFSliderKeyboardCallback m_onBackspaceCallback;
+    AFSliderKeyboardCallback m_onSKCharacterCallback;
+    AFSliderKeyboardCallback m_onSKBackspaceCallback;
     
     // Constants
     static constexpr int kModeButtonWidth = 20;      // 1 character width

@@ -14,11 +14,10 @@
 // Constructor: full‑screen modal dialog
 // Dimensions are set when show() is called
 //
-AFFullscreenDialog::AFFullscreenDialog(uint32_t id) 
+AFFullscreenDialog::AFFullscreenDialog(ID_TYPE id) 
     : AFModalDialog(0, 0, 0, 0, id) 
 {
-      // Fullscreen dialogs are visible by default
-      m_visible = true; 
+      // Fullscreen dialogs are visible by default (already set in AFWidget)
       m_opaque = true;
 }
 
@@ -43,11 +42,11 @@ void AFFullscreenDialog::show(AFScreen& screen) {
 // Draw: fullscreen, no border, simple background
 //
 void AFFullscreenDialog::draw(AFDisplayInterface& displayInterface) {
-      if (!m_visible)
+      if (!isVisible())
             return;
 
       // Fill entire screen area
-      if (m_dirty) {
+      if (isDirty()) {
             displayInterface.fillRect(m_x, m_y, m_width, m_height, AFWorld::instance()->getTheme().screenBgColor);
       }
 

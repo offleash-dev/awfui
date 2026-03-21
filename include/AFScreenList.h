@@ -28,7 +28,7 @@ public:
 
       bool      setActive(int16_t screenIndex);
       bool      setActive(AFScreen* screen);
-      bool      setActive(uint32_t screenId);
+      bool      setActive(ID_TYPE screenId);
       AFScreen* getActive() const;
 
 

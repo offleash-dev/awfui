@@ -15,7 +15,7 @@
 class AFRadioButton;
 class AFRadioButtonGroup;
 
-using AFRadioCallback = void (*)(AFRadioButton& sender, uint32_t id);
+using AFRadioCallback = void (*)(AFRadioButton& sender, ID_TYPE id);
 
 
 class AFRadioButton : public AFWidget {
@@ -24,11 +24,11 @@ public:
     AFRadioButton(int16_t x,
                   int16_t y,
                   int16_t radius = 0,
-                  uint32_t id = 0,
+                  ID_TYPE id = 0,
                   const char* label = nullptr);
 
     // Initialize method for stack objects
-    void init(int16_t x, int16_t y, int16_t radius = 0, uint32_t id = 0, const char* label = nullptr);
+    void init(int16_t x, int16_t y, int16_t radius = 0, ID_TYPE id = 0, const char* label = nullptr);
 
     void setLabel(const char* text);
     const char* getLabel() const { return m_label; }
@@ -36,6 +36,8 @@ public:
     void setSelected(bool sel);
     bool isSelected() const { return m_selected; }
 
+    void setOrdinal(int16_t ordinal) { m_Ordinal = ordinal; }
+    int16_t getOrdinal() const { return m_Ordinal; }
 
     void setTextSize(uint8_t size) { 
         m_textSize = size;
@@ -69,6 +71,8 @@ private:
 
     uint16_t    m_radius;
     uint8_t     m_textSize = 1;
+
+    int16_t     m_Ordinal; 
 
     AFRadioButtonGroup* m_group = nullptr;
     AFRadioCallback m_onSelectCallback = nullptr;

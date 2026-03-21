@@ -12,21 +12,21 @@
 
 // Constructor
 //
-AFLabel::AFLabel(int16_t x, int16_t y, const char* text, uint32_t id) : AFWidget(x, y, 0, 0, id), m_text((char*)(text)) {
+AFLabel::AFLabel(int16_t x, int16_t y, const char* text, ID_TYPE id) : AFWidget(x, y, 0, 0, id), m_text((char*)(text)) {
       // width/height are not usable for hit-testing
       m_width  = 0;
       m_height = 0;
-      m_justification = AFJustificationLeft;
+      setJustification(AFJustificationLeft);
       m_textSize = AFWorld::instance()->getTheme().widgetTextSize;
 }
 
 
 
-AFLabel::AFLabel(int16_t x, int16_t y, int16_t w, int16_t h, const char* text, uint32_t id) : AFWidget(x, y, w, h, id), m_text((char*)text) {
+AFLabel::AFLabel(int16_t x, int16_t y, int16_t w, int16_t h, const char* text, ID_TYPE id) : AFWidget(x, y, w, h, id), m_text((char*)text) {
       // width/height are usable for hit-testing
       m_width  = w;
       m_height = h;
-      m_justification = AFJustificationLeft;
+      setJustification(AFJustificationLeft);
       m_textSize = AFWorld::instance()->getTheme().widgetTextSize;
 }
 
@@ -34,17 +34,17 @@ AFLabel::AFLabel(int16_t x, int16_t y, int16_t w, int16_t h, const char* text, u
 
 // Initialize method for stack objects
 //
-void AFLabel::init(int16_t x, int16_t y, int16_t w, int16_t h, const char* text, uint32_t id) {
+void AFLabel::init(int16_t x, int16_t y, int16_t w, int16_t h, const char* text, ID_TYPE id) {
       // Initialize the base AFWidget
       m_x = x;
       m_y = y;
       m_width = w;
       m_height = h;
-      m_id_uint32 = id;
+      m_id = storeID(id);
       m_text = (char*)text;
       
       // width/height are usable for hit-testing
-      m_justification = AFJustificationLeft;
+      setJustification(AFJustificationLeft);
       m_textSize = AFWorld::instance()->getTheme().widgetTextSize;
 }
 
@@ -53,7 +53,7 @@ void AFLabel::init(int16_t x, int16_t y, int16_t w, int16_t h, const char* text,
 // Draw the label
 //
 void AFLabel::draw(AFDisplayInterface& displayInterface) {
-      if (!m_visible || m_text == nullptr) {
+      if (!isVisible() || m_text == nullptr) {
             return;
       }
 
@@ -67,7 +67,7 @@ void AFLabel::draw(AFDisplayInterface& displayInterface) {
       uint16_t color = (m_color < 0) ? AFWorld::instance()->getTheme().widgetTextColor : static_cast<uint16_t>(m_color);
       displayInterface.setTextColor(color);
 
-      if (!m_enabled) {
+      if (!isEnabled()) {
             color = AFWorld::instance()->getTheme().widgetDisabledFgColor;
             displayInterface.setTextColor(color);
       }
@@ -88,7 +88,7 @@ void AFLabel::draw(AFDisplayInterface& displayInterface) {
             m_lastDrawH = h;
       } else {
             // this is a bordered text label that supports justification
-            displayInterface.drawTextJustified(m_text, m_x, m_y, m_width, m_height, m_justification);
+            displayInterface.drawTextJustified(m_text, m_x, m_y, m_width, m_height, getJustification());
 
             // Save drawn bounds for next erase
             m_lastDrawX = m_x;
