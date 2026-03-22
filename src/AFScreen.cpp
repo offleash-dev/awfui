@@ -141,9 +141,12 @@ void AFScreen::showModal(AFModalDialog* d) {
 //
 void AFScreen::dismissModal(AFModalDialog* d) {
       // Find and remove this dialog from the stack
-      auto it = std::find(m_modalStack.begin(), m_modalStack.end(), d);
-      if (it != m_modalStack.end()) {
+      for (auto it = m_modalStack.begin(); it != m_modalStack.end(); ++it) {
+            if (*it == d) {
             m_modalStack.erase(it);
+                break;
+            }
+        }
             
             // Only clear the dialog area, not the entire screen
             AFDisplayInterface* displayInterface = m_canvas ? m_canvas : &m_display;
@@ -170,7 +173,6 @@ void AFScreen::dismissModal(AFModalDialog* d) {
             // Mark the new top modal as dirty (if there is one)
             if (!m_modalStack.empty()) {
                   m_modalStack.back()->markDirty();
-            }
       }
 }
 

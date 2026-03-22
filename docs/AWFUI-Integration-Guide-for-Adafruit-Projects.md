@@ -7,7 +7,6 @@ Integrating awfui into an STM32 project with existing Adafruit libraries require
 - **CMake configuration** for version detection
 - **Compatibility headers** for older Adafruit_GFX versions
 - **Build system fixes** for target conflicts
-- **External dependencies** (ETL library)
 
 
 
@@ -32,8 +31,6 @@ set(ADAFRUIT_GFX_MINOR "${CMAKE_MATCH_2}")
 set(ADAFRUIT_GFX_PATCH "${CMAKE_MATCH_3}")
 math(EXPR ADAFRUIT_GFX_VERSION_NUM "${ADAFRUIT_GFX_MAJOR} * 10000 + ${ADAFRUIT_GFX_MINOR} * 100 + ${ADAFRUIT_GFX_PATCH}")
 
-# ETL dependency path
-set(ETL_INCLUDE_DIR "${CMAKE_SOURCE_DIR}/Drivers/ETL/include")
 ```
 
 ### **Drivers/CMakeLists.txt - Add Subdirectory**

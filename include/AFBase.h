@@ -18,7 +18,7 @@
 
 #include <cstddef>
 #include <stdint.h>
-#include <etl/vector.h>
+#include "AFVector.h"
 
 #include "AFVersion.h"
 #include "AFResult.h"

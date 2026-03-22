@@ -9,7 +9,7 @@
 
 
 #include <stdint.h>
-#include <etl/vector.h>
+#include "AFVector.h"
 
 #include "AFBase.h"
 
@@ -32,22 +32,22 @@ public:
     virtual void markIntersectingWidgetsDirty(int16_t rx, int16_t ry, int16_t rw, int16_t rh) = 0;
     
     // Access to children
-    const etl::vector<AFWidget*, MAX_WIDGETS_PER_PANEL>& getWidgets() const { return m_widgets; }
-    const etl::vector<AFPanel*, MAX_PANELS_PER_SCREEN>& getPanels() const { return m_panels; }
+    const AFVector<AFWidget*, MAX_WIDGETS_PER_PANEL>& getWidgets() const { return m_widgets; }
+    const AFVector<AFPanel*, MAX_PANELS_PER_SCREEN>& getPanels() const { return m_panels; }
     
     virtual ~AFContainer() = default;
 
 
 protected:
     // Helper implementation that containers can use
-    void markIntersectingDirty(etl::vector<AFWidget*, MAX_WIDGETS_PER_PANEL>& widgets, 
+    void markIntersectingDirty(AFVector<AFWidget*, MAX_WIDGETS_PER_PANEL>& widgets, 
                                int16_t rx, int16_t ry, int16_t rw, int16_t rh);
     
-    void markIntersectingDirty(etl::vector<AFPanel*, MAX_PANELS_PER_SCREEN>& panels, 
+    void markIntersectingDirty(AFVector<AFPanel*, MAX_PANELS_PER_SCREEN>& panels, 
                                int16_t rx, int16_t ry, int16_t rw, int16_t rh);
 
 
 protected:
-    etl::vector<AFWidget*, MAX_WIDGETS_PER_PANEL> m_widgets;
-    etl::vector<AFPanel*, MAX_PANELS_PER_SCREEN> m_panels;
+    AFVector<AFWidget*, MAX_WIDGETS_PER_PANEL> m_widgets;
+    AFVector<AFPanel*, MAX_PANELS_PER_SCREEN> m_panels;
 };

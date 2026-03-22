@@ -8,7 +8,7 @@
 //// Copyright (c) 2026 Matt Foster
 //// Licensed under the MIT License. See LICENSE file for details.
 
-#include <etl/vector.h>
+#include "AFVector.h"
 
 #include "AFDisplayInterface.h"
 
@@ -90,6 +90,6 @@ private:
       bool        m_needsScreenRedraw = false;
       ID_TYPE     m_id;
 
-      etl::vector<AFModalDialog*, MAX_DIALOGS_PER_SCREEN>   m_modalStack;  // Modal dialog stack
+      AFVector<AFModalDialog*, MAX_DIALOGS_PER_SCREEN>   m_modalStack;  // Modal dialog stack
       AFWidget* m_pressedWidget = nullptr;  // implicit capture for drag
 };

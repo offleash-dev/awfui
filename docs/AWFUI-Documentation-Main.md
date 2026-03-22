@@ -200,7 +200,7 @@ While the ownership rules are intentionally simple, if you prefer to implement a
 
 ### **Memory Allocated per Container**
 
-Because AWFUI uses ETL and not STL, there is a preallocated ETL list for each container.  Bt default this is 32 widget pointers × 4 bytes = 128 bytes per screen/panel, regardless of how many widgets are actually used.  If you are running in tight memory system, change the defaults in AFBase.h
+Because AWFUI is intended for embedded it uses AFVector and AFQueue, not STL.  There is a pre-allocated list for each container.  The default for this is 32 widget pointers × 4 bytes = 128 bytes per screen/panel, regardless of how many widgets are actually used.  If you are running in tight memory system, change the defaults in AFBase.h
 
 ### **RTTI Optimization for Embedded Systems**
 
@@ -361,7 +361,7 @@ An offscreen buffer can take a big chunk of memory.  If using the canvas, be awa
 
 AWFUI uses C++, but it does so in a most minimal way.  There are many valuable C++ language features, but they are not all compatible with generating a small embeddable binary.  Y
 
-- **No STL** — ETL containers are used instead.
+- **No STL** — AFVector and AFQueue containers are used instead.
 - **No exceptions** — functions return `bool`, `nullptr`, or an `AFResult` enum.
 - **No RTTI** — disabled to save space.
 

@@ -16,7 +16,7 @@ The framework avoids heavy dependencies, uses **no STL** (ETL only), avoids exce
 
 - **Clarity and minimalism** — no extra junk; think embedded.
 
-- **No STL** — use ETL containers.
+- **No STL** — use ETL containers.  [UPDATE - ETL has a STL dependency.  Now using AFVector and AFQueue]
 
 - **No exceptions** — return `bool`, `nullptr`, or an `AFResult` enum.
 
