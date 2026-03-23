@@ -8,6 +8,7 @@
 
 #include "AFWorld.h"
 #include "AFPanel.h"
+#include <cstdio>
 #include "AFScreen.h"
 #include "AFWidget.h"
 #include "AFBase.h"
@@ -16,7 +17,8 @@
 
 // Constructor
 //
-AFPanel::AFPanel(int16_t x, int16_t y, int16_t w, int16_t h, ID_TYPE id) : AFWidget(x, y, w, h, id) {
+AFPanel::AFPanel(int16_t x, int16_t y, int16_t w, int16_t h, ID_TYPE id) 
+    : AFWidget(x, y, w, h, id), AFContainer() {
       // Panels default to visible and are containers
       m_flags |= FLAG_VISIBLE | FLAG_CONTAINER;
 }

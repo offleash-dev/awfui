@@ -1,6 +1,8 @@
 #define USE_SLIDER_KEYBOARD_TEST 0
 #define USE_BUTTON_KEYBOARD_TEST 1
 
+#include <stdio.h>
+
 #include "AFLabel.h"
 #include "AFScreen.h"
 #include "AFWorld.h"

@@ -32,7 +32,7 @@ The interface itself is minimal — just a fixed-size queue:
         virtual bool postEvent(const AFEvent& e) = 0;
     };
 
-A concrete implementation would use an etl::queue internally:
+A concrete implementation would use an AF queue internally:
 
     class AFEventQueue : public AFEventInterface {
     public:

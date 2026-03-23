@@ -79,6 +79,7 @@ set(AWFUI_HEADERS
     include/AFLabel.h
     include/AFLayoutHelpers.h
     include/AFModalDialog.h
+    include/AFQueue.h
     include/AFProgressBar.h
     include/AFRadioButton.h
     include/AFRadioButtonGroup.h
@@ -90,6 +91,7 @@ set(AWFUI_HEADERS
     include/AFTheme.h
     include/AFTouchInterface.h
     include/AFWidget.h
+    include/AFVector.h
     include/AFWorld.h
 )
 
@@ -141,7 +143,6 @@ endif()
 #
 # This library depends on:
 #   - Adafruit_GFX (graphics primitives)
-#   - ETL (Embedded Template Library)
 #
 # When used as a subdirectory in a larger project, link against targets.
 # When building standalone, provide paths via cache variables.
@@ -165,17 +166,6 @@ if(AWFUI_USE_ADAFRUIT)
     endif()
 endif()
 
-# ETL (header-only library)
-if(DEFINED ETL_INCLUDE_DIR)
-    target_include_directories(awfui
-        PUBLIC $<BUILD_INTERFACE:${ETL_INCLUDE_DIR}>
-    )
-else()
-    # Default: assume ETL is a sibling in modules directory
-    target_include_directories(awfui
-        PUBLIC $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/../etl/include>
-    )
-endif()
 
 if(AWFUI_USE_ADAFRUIT)
     # Arduino compatibility layer for non-Arduino builds (e.g., STM32)
