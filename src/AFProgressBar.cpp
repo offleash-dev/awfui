@@ -29,7 +29,8 @@ AFProgressBar::AFProgressBar(int16_t x, int16_t y, int16_t w, int16_t h, uint32_
 
 // Initialize method for stack objects
 //
-void AFProgressBar::init(int16_t x, int16_t y, int16_t w, int16_t h, uint32_t id) {
+void AFProgressBar::init(int16_t x, int16_t y, int16_t w, int16_t h, uint32_t id) 
+{
       // Initialize the base AFValueWidget
       AFValueWidget::init(x, y, w, h, id);
       

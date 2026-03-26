@@ -18,9 +18,9 @@
 //
 AFCheckbox::AFCheckbox(int16_t x,
                        int16_t y,
-                       int16_t boxSize
+                       int16_t boxSize,
                        const char* labelText,
-                       uint32_t id,)
+                       uint32_t id)
     : AFWidget(x, y, boxSize, boxSize, id),
       m_label(labelText),
       m_boxSize(static_cast<uint8_t>(boxSize)) {

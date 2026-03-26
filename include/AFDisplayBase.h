@@ -72,6 +72,7 @@ public:
                                const uint16_t* bitmap,
                                int16_t w, int16_t h) = 0;
 
+    virtual bool supportsCanvas() const { return false; }                           
 
     // Create an off-screen canvas matching the display dimensions.
     // Returns a heap-allocated AFDisplayInterface that draws to a buffer.

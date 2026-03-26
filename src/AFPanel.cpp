@@ -17,7 +17,7 @@
 // Constructor
 //
 AFPanel::AFPanel(int16_t x, int16_t y, int16_t w, int16_t h, uint32_t id)
-    : AFWidget(x, y, w, h, id), AFContainer() {
+    : AFWidget(x, y, w, h, id) {
       // Panels default to visible
       m_visible = true;
       m_isContainer = true; // Panels can contain child widgets

@@ -108,6 +108,7 @@ public:
         return m_x;
     }
 
+
     int16_t getY() const {
         return m_y;
     }
@@ -139,23 +140,25 @@ public:
     }
 
 
-    // Owner management
+    bool isContainer() const {
+        return m_isContainer;
+    }
+
+
     AFScreen* getOwner() const {
         return m_owner;
     }
+
 
     void setOwner(AFScreen* owner) {
         m_owner = owner;
     }
 
 
-    bool isContainer() const {
-        return m_isContainer;
-    }
-    
     bool isOwned() const {
         return m_owned;
     }
+
 
     void setOwned(bool owned) {
         m_owned = owned;

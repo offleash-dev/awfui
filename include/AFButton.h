@@ -22,10 +22,10 @@ using AFButtonCallback = void (*)(AFButton& sender);
 class AFButton : public AFWidget {
 public:
       AFButton() = default;  // Default constructor for stack objects
-      AFButton(int16_t x, int16_t y, int16_t w, int16_t h, uint32_t id = 0, const char* label = nullptr);
+      AFButton(int16_t x, int16_t y, int16_t w, int16_t h, const char* label = nullptr, uint32_t id = 0);
 
       // Initialize method for stack objects
-      void init(int16_t x, int16_t y, int16_t w, int16_t h, uint32_t id = 0, const char* label = nullptr);
+      void init(int16_t x, int16_t y, int16_t w, int16_t h, const char* label = nullptr, uint32_t id = 0);
 
       void setLabel(const char* text);
 

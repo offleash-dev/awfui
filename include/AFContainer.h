@@ -22,10 +22,7 @@ class AFPanel;
 // Interface for widget containers
 class AFContainer {
 public:
-    // Default constructor - ensure members are initialized 
-    AFContainer() : m_widgets(), m_panels() {
-    }
-    
+   
     // Container management
     virtual bool addWidget(AFWidget* widget, bool owned = false) = 0;
     virtual void removeWidget(AFWidget* widget) = 0;

@@ -125,6 +125,7 @@ void AFKeyboard::createKeyboardLayout() {
                 startX + col * (kKeyWidth + kKeyMargin),
                 startY,
                 kKeyWidth, kKeyHeight,
+                "",
                 MAKE_ID_FROM_STR(keyIds[keyIndex])
             );
 
@@ -151,6 +152,7 @@ void AFKeyboard::createKeyboardLayout() {
                 startX + col * (kKeyWidth + kKeyMargin),
                 row1Y,
                 kKeyWidth, kKeyHeight,
+                "",
                 MAKE_ID_FROM_STR(keyIds[keyIndex])
             );
             button->setOnClickCallback(onKeyPressedWrapper);
@@ -165,6 +167,7 @@ void AFKeyboard::createKeyboardLayout() {
                 startX + 9 * (kKeyWidth + kKeyMargin),
                 row1Y,
                 kKeyWidth, kKeyHeight, // Make it wider
+                "",
                 MAKE_ID_FROM_STR("BACK")
             );
             m_backspaceButton->setLabel("<-");
@@ -183,6 +186,7 @@ void AFKeyboard::createKeyboardLayout() {
         startX,
         row2Y,
         kShiftWidth, kKeyHeight,
+        "",
         MAKE_ID_FROM_STR("SHFT")
     );
     m_shiftButton->setLabel("^^");
@@ -200,6 +204,7 @@ void AFKeyboard::createKeyboardLayout() {
                 startX + kShiftWidth + kKeyMargin + (col) * (kKeyWidth + kKeyMargin),
                 row2Y,
                 kKeyWidth, kKeyHeight,
+                "",
                 MAKE_ID_FROM_STR(keyIds[keyIndex])
             );
             button->setOnClickCallback(onKeyPressedWrapper);
@@ -218,6 +223,7 @@ void AFKeyboard::createKeyboardLayout() {
         spaceX,
         row2Y,
         kSpaceWidth, kKeyHeight,
+        "",
         MAKE_ID_FROM_STR("SPCE")
     );
     m_spaceButton->setLabel("___");

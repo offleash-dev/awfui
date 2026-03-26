@@ -12,10 +12,12 @@
 
 
 
+
 // Constructor
 //
-AFScreen::AFScreen(AFDisplayInterface& displayRef, bool useCanvas, uint32_t id) : m_display(displayRef), m_id(id) {
-      if (useCanvas) {
+AFScreen::AFScreen(AFDisplayInterface& displayRef, bool useCanvas, uint32_t id)
+    : m_display(displayRef), m_id(id), m_canvas(0) {
+      if (displayRef.supportsCanvas() && useCanvas) {
             // Create an off-screen buffer matching the display size
             m_canvas = m_display.createCanvas();
       }
@@ -45,12 +47,13 @@ AFScreen::~AFScreen() {
 bool AFScreen::addWidget(AFWidget* w, bool owned) {
       bool success = false;
 
-      if (!m_widgets.full()) {
+    if (!m_widgets.full()) {
             m_widgets.push_back(w);
             
             w->m_parent = nullptr; // root-level widget
             w->m_owner  = this;    // screen owns the widget
-            w->m_owned  = owned;
+
+            w->setOwned(owned);
 
             success = true;           
       }
@@ -69,7 +72,8 @@ bool AFScreen::addPanel(AFPanel* p, bool owned) {
             m_panels.push_back(p);
             p->m_parent = nullptr;
             p->m_owner  = this;    // screen owns the panel
-            p->m_owned  = owned;
+
+            p->setOwned(owned);
 
             success = true;
       }
@@ -86,7 +90,7 @@ void AFScreen::removeWidget(AFWidget* w) {
             if (m_widgets[i] == w) {
                   m_widgets.erase(m_widgets.begin() + i);
                   w->m_parent = nullptr;
-                  w->m_owned  = false;
+                  w->setOwned(false);
                   return;
             }
       }
@@ -102,7 +106,7 @@ void AFScreen::removePanel(AFPanel* p) {
             if (m_panels[i] == p) {
                   m_panels.erase(m_panels.begin() + i);
                   p->m_parent = nullptr;
-                  p->m_owned  = false;
+                  p->setOwned(false);
                   return;
             }
       }
@@ -142,36 +146,43 @@ void AFScreen::showModal(AFModalDialog* d) {
 //
 void AFScreen::dismissModal(AFModalDialog* d) {
       // Find and remove this dialog from the stack
+#if 0 // use when switching to afvector
+      for (auto it = m_modalStack.begin(); it != m_modalStack.end(); ++it) {
+            if (*it == d) {
+                m_modalStack.erase(it);
+                break;
+            }
+        }
+#endif
       auto it = std::find(m_modalStack.begin(), m_modalStack.end(), d);
-      if (it != m_modalStack.end()) {
+      if (it != m_modalStack.end())
             m_modalStack.erase(it);
+      
+      // Only clear the dialog area, not the entire screen
+      AFDisplayInterface* displayInterface = m_canvas ? m_canvas : &m_display;
+      if (displayInterface->isDMAAvailable()) {
+            displayInterface->fastFillRectDMA(d->getX(), d->getY(), d->getWidth(), d->getHeight(), 
+                                             AFWorld::instance()->getTheme().screenBgColor);
+      } else {
+            displayInterface->fillRect(d->getX(), d->getY(), d->getWidth(), d->getHeight(), 
+                                     AFWorld::instance()->getTheme().screenBgColor);
+      }
             
-            // Only clear the dialog area, not the entire screen
-            AFDisplayInterface* displayInterface = m_canvas ? m_canvas : &m_display;
-            if (displayInterface->isDMAAvailable()) {
-                  displayInterface->fastFillRectDMA(d->getX(), d->getY(), d->getWidth(), d->getHeight(), 
-                                                  AFWorld::instance()->getTheme().screenBgColor);
-            } else {
-                  displayInterface->fillRect(d->getX(), d->getY(), d->getWidth(), d->getHeight(), 
-                                           AFWorld::instance()->getTheme().screenBgColor);
+      // Only mark widgets that were under the dialog as dirty
+      for (auto* w : m_widgets) {
+            if (w->isVisible() && w->intersects(d->getX(), d->getY(), d->getWidth(), d->getHeight())) {
+                  w->markDirty();
             }
+      }
+      for (auto* p : m_panels) {
+            if (p->isVisible() && p->intersects(d->getX(), d->getY(), d->getWidth(), d->getHeight())) {
+                  p->markDirty();
+            }
+      }
             
-            // Only mark widgets that were under the dialog as dirty
-            for (auto* w : m_widgets) {
-                  if (w->isVisible() && w->intersects(d->getX(), d->getY(), d->getWidth(), d->getHeight())) {
-                        w->markDirty();
-                  }
-            }
-            for (auto* p : m_panels) {
-                  if (p->isVisible() && p->intersects(d->getX(), d->getY(), d->getWidth(), d->getHeight())) {
-                        p->markDirty();
-                  }
-            }
-            
-            // Mark the new top modal as dirty (if there is one)
-            if (!m_modalStack.empty()) {
-                  m_modalStack.back()->markDirty();
-            }
+      // Mark the new top modal as dirty (if there is one)
+      if (!m_modalStack.empty()) {
+            m_modalStack.back()->markDirty();
       }
 }
 
@@ -285,7 +296,7 @@ bool AFScreen::needsRedraw() const {
       if (m_needsScreenRedraw)
             return true;
 
-      for (auto* w : m_widgets) {
+    for (auto* w : m_widgets) {
             if (w->isVisible() && w->isDirty()) {
                   return true;
             }

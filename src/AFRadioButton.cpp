@@ -19,8 +19,8 @@
 AFRadioButton::AFRadioButton(int16_t x,
                              int16_t y,
                              int16_t radius,
-                             uint32_t id,
-                             const char* labelText)
+                             const char* labelText,
+                             uint32_t id)
     : AFWidget(x, y, radius * 2, radius * 2, id),
       m_label(labelText),
       m_radius(radius)
@@ -44,8 +44,8 @@ AFRadioButton::AFRadioButton(int16_t x,
 void AFRadioButton::init(int16_t x,
                           int16_t y,
                           int16_t radius,
-                          uint32_t id,
-                          const char* labelText) {
+                          const char* labelText,
+                          uint32_t id) {
       // Initialize the base AFWidget
       m_x = x;
       m_y = y;

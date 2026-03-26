@@ -4,15 +4,14 @@
 //// Part of the AWFUI library
 ////
 //// ID configuration options and helpers for AWFUI framework.
-//// Developers should choose ONE ID strategy based on their needs.
 ////
 //// Copyright (c) 2026 Matt Foster
 //// Licensed under the MIT License. See LICENSE file for details.
 
 
-// ID STRATEGY CONFIGURATION
+// ID CONFIGURATION
 // IDs can be used for identifying widgets in event handling, debugging, and other operations. 
-// Being uint32_t values per AWFUI object, they come at a cost, so, for memory tight 
+// Being uint32_t values per AWFUI object, they come at a cost, so, for embedded memory tight 
 // situations, IDs can be disabled; though, you have to use object addresses individual 
 // callbacks or other means to identify widgets.  
 
@@ -45,10 +44,10 @@
 
 // Example: uint32_t myID = MAKE_ID_FROM_STR("TEST");
 #define MAKE_ID_FROM_STR(str) \
-      ((uint32_t)(str[0])<<24 | \
-       (uint32_t)(str[1])<<16 | \
-       (uint32_t)(str[2])<<8 | \
-       (uint32_t)(str[3]))
+    ( ((uint32_t)(str[0]) << 24) | \
+      ((uint32_t)(str[1]) << 16) | \
+      ((uint32_t)(str[2]) << 8)  | \
+      ((uint32_t)(str[3]) << 0) )
 
 
 

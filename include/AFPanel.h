@@ -21,7 +21,11 @@ class AFPanel : public AFWidget, public AFContainer {
 public:
       AFPanel() = default;  // Default constructor for stack objects
       AFPanel(int16_t x, int16_t y, int16_t w, int16_t h, uint32_t id = 0);
+     
       virtual ~AFPanel();
+
+      void init(int16_t x, int16_t y, int16_t w, int16_t h, uint32_t id = 0);
+
 
       // attaches and the panel takes ownership if indicated.
       // panel owned objects are deleted when the panel is deleted
@@ -39,7 +43,6 @@ public:
 
       virtual void draw(AFDisplayInterface& displayInterface) override;
 
-      // Event handling, panels/dialog widgets handled here
       void handleEvent(const AFEvent& e) override;
      
       virtual bool isDirty() const override;
@@ -92,10 +95,11 @@ public:
       virtual void markDirty() override;
 
 
+      void fillBackgroundRect(AFDisplayInterface& displayInterface);
+
+
 protected:
 
       bool m_opaque = true;
       AFWidget* m_pressedWidget = nullptr;  // implicit capture for drag
-
-      void fillBackgroundRect(AFDisplayInterface& displayInterface);
 };

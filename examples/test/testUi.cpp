@@ -107,26 +107,26 @@ static void setupScreen1(int16_t width, int16_t height) {
       printf("setupScreen1: Screen created\n");
 
       // Title label — near bottom
-      auto* titleLbl = new AFButton(60, H - 40, W - 120, 20, MAKE_ID_FROM_STR("S1Tt"), "Show Keyboard");
+      auto* titleLbl = new AFButton(60, H - 40, W - 120, 20, "Show Keyboard", MAKE_ID_FROM_STR("S1Tt"));
       titleLbl->setOnClickCallback(showKeyboardCallback);
       screen1->addWidget(titleLbl, true);
 
       // "Next Test Screen" button — above title
       printf("setupScreen1: Creating button\n");
-      auto* nextBtn = new AFButton(20, H - 90, W - 40, 30, MAKE_ID_FROM_STR("S1Nx"), "Next Test Screen");
+      auto* nextBtn = new AFButton(20, H - 90, W - 40, 30, "Next Test Screen", MAKE_ID_FROM_STR("S1Nx"));
       nextBtn->setOnClickCallback([](AFButton& sender) { setupWorld->setActiveScreen(screen2); });
       screen1->addWidget(nextBtn, true);
       printf("setupScreen1: second Button created\n");
 
       // Corner buttons — 40x40
       printf("setupScreen1: Adding widget\n");
-      s1_btnTL = new AFButton(0, 0, 40, 40, MAKE_ID_FROM_STR("S1TL"), "TL");
+      s1_btnTL = new AFButton(0, 0, 40, 40, "TL", MAKE_ID_FROM_STR("S1TL"));
       s1_btnTL->setOnClickCallback([](AFButton& sender) { s1_statusLabel->setText("TL clicked"); });
       screen1->addWidget(s1_btnTL, true);
       printf("setupScreen1: Widget added\n");
 
       printf("setupScreen1: Creating button s1tr\n");
-      s1_btnTR = new AFButton(W - 40, 0, 40, 40, MAKE_ID_FROM_STR("S1TR"), "TR");
+      s1_btnTR = new AFButton(W - 40, 0, 40, 40, "TR", MAKE_ID_FROM_STR("S1TR"));
       printf("setupScreen1: new button s1tr done\n");
       s1_btnTR->setOnClickCallback([](AFButton& sender) { s1_statusLabel->setText("TR clicked"); });
       printf("setupScreen1: set button calllback s1tr done\n");
@@ -138,12 +138,12 @@ static void setupScreen1(int16_t width, int16_t height) {
       screen1->addWidget(s1_btnTR, true);
       printf("setupScreen1: Button created\n");
 
-      s1_btnBL = new AFButton(0, H - 40, 40, 40, MAKE_ID_FROM_STR("S1BL"), "BL");
+      s1_btnBL = new AFButton(0, H - 40, 40, 40, "BL", MAKE_ID_FROM_STR("S1BL"));
       s1_btnBL->setOnClickCallback([](AFButton& sender) { s1_statusLabel->setText("BL clicked"); });
       screen1->addWidget(s1_btnBL, true);
       printf("setupScreen1: Button created\n");
 
-      s1_btnBR = new AFButton(W - 40, H - 40, 40, 40, MAKE_ID_FROM_STR("S1BR"), "BR");
+      s1_btnBR = new AFButton(W - 40, H - 40, 40, 40, "BR", MAKE_ID_FROM_STR("S1BR"));
       s1_btnBR->setOnClickCallback([](AFButton& sender) { s1_statusLabel->setText("BR clicked"); });
       screen1->addWidget(s1_btnBR, true);
       printf("setupScreen1: Button created\n");
@@ -154,7 +154,7 @@ static void setupScreen1(int16_t width, int16_t height) {
       screen1->addWidget(s1_statusLabel, true);
 
       // Checkbox — enables/disables corner buttons
-      auto* enableCb = new AFCheckbox(20, 110, 16, MAKE_ID_FROM_STR("S1Cb"), "Corner buttons enabled");
+      auto* enableCb = new AFCheckbox(20, 110, 16, "Corner buttons enabled", MAKE_ID_FROM_STR("S1Cb"));
       enableCb->setChecked(true);
       enableCb->setOnChangeCallback([](AFCheckbox& sender, bool checked) {
             s1_btnTL->setEnabled(checked);
@@ -179,7 +179,7 @@ static void setupScreen2(int16_t width, int16_t height) {
       int16_t W = width;
       int16_t H = height;
 
-      screen2 = setupWorld->createScreen(true);
+      screen2 = setupWorld->createScreen(false);
 
       // Title label
       auto* titleLbl = new AFLabel(60, H - 40, W - 120, 20, "Radio Test", MAKE_ID_FROM_STR("S2Tt"));
@@ -187,14 +187,14 @@ static void setupScreen2(int16_t width, int16_t height) {
       screen2->addWidget(titleLbl, true);
 
       // "Next Test Screen" button
-      auto* nextBtn = new AFButton(20, H - 90, W - 40, 30, MAKE_ID_FROM_STR("S2Nx"), "Next Test Screen");
+      auto* nextBtn = new AFButton(20, H - 90, W - 40, 30, "Next Test Screen", MAKE_ID_FROM_STR("S2Nx"));
       nextBtn->setOnClickCallback([](AFButton& sender) { setupWorld->setActiveScreen(screen3); });
       screen2->addWidget(nextBtn, true);
 
       // Radio buttons
-      auto* radio1 = new AFRadioButton(40, 60, 8, MAKE_ID_FROM_STR("S2R1"), "Radio Test 1");
-      s2_radio2    = new AFRadioButton(40, 80, 8, MAKE_ID_FROM_STR("S2R2"), "Radio Test 2");
-      auto* radio3 = new AFRadioButton(40, 100, 8, MAKE_ID_FROM_STR("S2R3"), "Radio Test 3");
+      auto* radio1 = new AFRadioButton(40, 60, 8, "Radio Test 1", MAKE_ID_FROM_STR("S2R1"));
+      s2_radio2    = new AFRadioButton(40, 80, 8, "Radio Test 2", MAKE_ID_FROM_STR("S2R2"));
+      auto* radio3 = new AFRadioButton(40, 100, 8, "Radio Test 3", MAKE_ID_FROM_STR("S2R3"));
 
       s2_radioGroup.addButton(radio1);
       s2_radioGroup.addButton(s2_radio2);
@@ -205,7 +205,7 @@ static void setupScreen2(int16_t width, int16_t height) {
       screen2->addWidget(radio3, true);
 
       // Checkbox 1 — enables/disables radio 2
-      s2_cb1 = new AFCheckbox(40, H - 110, 16, MAKE_ID_FROM_STR("S2C1"), "Radio 2 enabled");
+      s2_cb1 = new AFCheckbox(40, H - 110, 16, "Radio 2 enabled", MAKE_ID_FROM_STR("S2C1"));
       s2_cb1->setChecked(true);
       s2_cb1->setOnChangeCallback([](AFCheckbox& sender, bool checked) {
             s2_radio2->setEnabled(checked);
@@ -213,7 +213,7 @@ static void setupScreen2(int16_t width, int16_t height) {
       screen2->addWidget(s2_cb1, true);
 
       // Checkbox 2 — enables/disables checkbox 1
-      auto* cb2 = new AFCheckbox(40, H - 130, 16, MAKE_ID_FROM_STR("S2C2"), "Checkbox 1 enabled");
+      auto* cb2 = new AFCheckbox(40, H - 130, 16, "Checkbox 1 enabled", MAKE_ID_FROM_STR("S2C2"));
       cb2->setChecked(true);
       cb2->setOnChangeCallback([](AFCheckbox& sender, bool checked) {
             s2_cb1->setEnabled(checked);
@@ -280,14 +280,14 @@ static void showLetterPickerDialog() {
             letterPickerDialog->addWidget(letterDisplayLabel, true);
             
             // Close button (X) in top-right corner
-            auto* closeBtn = new AFButton(W - 40, dialogY + 10, 30, 30, MAKE_ID_FROM_STR("LPCs"), "X");
+            auto* closeBtn = new AFButton(W - 40, dialogY + 10, 30, 30, "X", MAKE_ID_FROM_STR("LPCs"));
             closeBtn->setOnClickCallback([](AFButton& sender) { letterPickerDialog->dismiss(); });
             letterPickerDialog->addWidget(closeBtn, true);
             
             // Letter select button (centered, half-screen width)
             int16_t btnWidth = (W - 60) / 2;
             int16_t btnX = (W - btnWidth) / 2;
-            letterSelectButton = new AFButton(btnX, dialogY + 50, btnWidth, 30, MAKE_ID_FROM_STR("LPBt"), "A");
+            letterSelectButton = new AFButton(btnX, dialogY + 50, btnWidth, 30, "A", MAKE_ID_FROM_STR("LPBt"));
             letterSelectButton->setOnClickCallback(handleCharacterEntered);
             letterPickerDialog->addWidget(letterSelectButton, true);
             
@@ -318,15 +318,15 @@ static void setupScreen3(int16_t width, int16_t height) {
       // ---- Top panel: 3 buttons ----
       auto* topPanel = new AFPanel(0, 0, W, 40, MAKE_ID_FROM_STR("S3TP"));
       int16_t btnW = (W - 20) / 3;  // 3 buttons with small gaps
-      auto* tp1 = new AFButton(5, 5, btnW - 5, 30, MAKE_ID_FROM_STR("TP01"), "Panel 1");
+      auto* tp1 = new AFButton(5, 5, btnW - 5, 30, "Panel 1", MAKE_ID_FROM_STR("TP01"));
       tp1->setOnClickCallback([](AFButton& sender) { showScreen3Dialog("Top panel, button 1"); });
       topPanel->addWidget(tp1, true);
 
-      auto* tp2 = new AFButton(btnW + 5, 5, btnW - 5, 30, MAKE_ID_FROM_STR("TP02"), "Panel 2");
+      auto* tp2 = new AFButton(btnW + 5, 5, btnW - 5, 30, "Panel 2", MAKE_ID_FROM_STR("TP02"));
       tp2->setOnClickCallback([](AFButton& sender) { showScreen3Dialog("Top panel, button 2"); });
       topPanel->addWidget(tp2, true);
 
-      auto* tp3 = new AFButton(btnW * 2 + 5, 5, btnW - 5, 30, MAKE_ID_FROM_STR("TP03"), "Panel 3");
+      auto* tp3 = new AFButton(btnW * 2 + 5, 5, btnW - 5, 30, "Panel 3", MAKE_ID_FROM_STR("TP03"));
       tp3->setOnClickCallback([](AFButton& sender) { showScreen3Dialog("Top panel, button 3"); });
       topPanel->addWidget(tp3, true);
 
@@ -345,12 +345,12 @@ static void setupScreen3(int16_t width, int16_t height) {
       screen3->addPanel(botPanel, true);
 
       // ---- Button to open dialog ----
-      auto* dlgBtn = new AFButton(20, 60, W - 40, 30, MAKE_ID_FROM_STR("S3DB"), "Open Dialog");
+      auto* dlgBtn = new AFButton(20, 60, W - 40, 30, "Open Dialog", MAKE_ID_FROM_STR("S3DB"));
       dlgBtn->setOnClickCallback([](AFButton& sender) { showScreen3Dialog("Dialog from button"); });
       screen3->addWidget(dlgBtn, true);
 
       // ---- Button to open letter picker dialog ----
-      auto* letterPickerBtn = new AFButton(20, 100, W - 40, 30, MAKE_ID_FROM_STR("S3LP"), "Letter Picker");
+      auto* letterPickerBtn = new AFButton(20, 100, W - 40, 30, "Letter Picker", MAKE_ID_FROM_STR("S3LP"));
       letterPickerBtn->setOnClickCallback([](AFButton& sender) { showLetterPickerDialog(); });
       screen3->addWidget(letterPickerBtn, true);
 
@@ -360,7 +360,7 @@ static void setupScreen3(int16_t width, int16_t height) {
       screen3->addWidget(lbl, true);
 
       // ---- Restart button above label ----
-      auto* restartBtn = new AFButton(20, H - 120, W - 40, 30, MAKE_ID_FROM_STR("S3Rs"), "Restart");
+      auto* restartBtn = new AFButton(20, H - 120, W - 40, 30, "Restart", MAKE_ID_FROM_STR("S3Rs"));
       restartBtn->setOnClickCallback([](AFButton& sender) { setupWorld->setActiveScreen(screen1); });
       screen3->addWidget(restartBtn, true);
 
@@ -370,7 +370,7 @@ static void setupScreen3(int16_t width, int16_t height) {
       s3_dialogLabel = new AFLabel(30, 60, "placeholder", MAKE_ID_FROM_STR("S3DL"));
       s3_dialog->addWidget(s3_dialogLabel, true);
 
-      auto* okBtn = new AFButton(50, 120, 100, 40, MAKE_ID_FROM_STR("S3OK"), "OK");
+      auto* okBtn = new AFButton(50, 120, 100, 40, "OK", MAKE_ID_FROM_STR("S3OK"));
       okBtn->setOnClickCallback([](AFButton& sender) { s3_dialog->dismiss(); });
       s3_dialog->addWidget(okBtn, true);
 }

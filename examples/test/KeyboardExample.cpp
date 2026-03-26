@@ -72,7 +72,7 @@ void createTextInputPanel(AFScreen& screen, AFLabel* keyOutputLabel) {
         int16_t submitButtonX = keyOutputLabel->getX() + keyOutputLabel->getWidth() + 5;
         int16_t submitButtonY = keyOutputLabel->getY();
 
-        submitButton = new AFButton(submitButtonX, submitButtonY, 50, 30, MAKE_ID_FROM_STR("S1Sb"), "Submit");
+        submitButton = new AFButton(submitButtonX, submitButtonY, 50, 30, "Submit", MAKE_ID_FROM_STR("S1Sb"));
         submitButton->setOnClickCallback(onSubmitButtonRelease);
         screen.addWidget(submitButton, true);
 

@@ -24,11 +24,11 @@ public:
     AFRadioButton(int16_t x,
                   int16_t y,
                   int16_t radius = 0,
-                  uint32_t id = 0,
-                  const char* label = nullptr);
+                  const char* label = nullptr,
+                  uint32_t id = 0);
 
     // Initialize method for stack objects
-    void init(int16_t x, int16_t y, int16_t radius = 0, uint32_t id = 0, const char* label = nullptr);
+    void init(int16_t x, int16_t y, int16_t radius = 0, const char* label = nullptr, uint32_t id = 0);
 
     void setLabel(const char* text);
     const char* getLabel() const { return m_label; }
