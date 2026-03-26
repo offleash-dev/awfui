@@ -10,15 +10,6 @@
 
 
 
-static char* tempIdBuffer5 = new char[5];
-char* getAsChars(int32_t id) {
-      getAsChars(id, tempIdBuffer5);
-      return tempIdBuffer5;
-}
-
-
-
-
 // Singleton instance
 AFWorld* AFWorld::s_instance = nullptr;
 
@@ -77,7 +68,7 @@ AFWorld::AFWorld(AFDisplayInterface& displayRef, AFTouchInterface* touch, AFEven
 // Create a new screen and register it with the screen list
 // return nullptr if allocation fails or max screens reached
 //
-AFScreen* AFWorld::createScreen(bool useCanvas) {
+AFScreen* AFWorld::createScreen(bool useCanvas, uint32_t id) {
       if (!m_screenList.canAdd()) {
             // Return nullptr if max screens reached
             // Note: caller must handle this case
@@ -85,7 +76,7 @@ AFScreen* AFWorld::createScreen(bool useCanvas) {
       }
 
       // Allocate a new screen
-      AFScreen* screen = new AFScreen(m_display, useCanvas);
+      AFScreen* screen = new AFScreen(m_display, useCanvas, id);
 
       // Register with screen list
       m_screenList.add(screen);
@@ -97,7 +88,7 @@ AFScreen* AFWorld::createScreen(bool useCanvas) {
 
 // Register an externally-created screen (e.g. an AFScreen subclass)
 //
-bool AFWorld::registerScreen(AFScreen* screen) {
+bool AFWorld::addScreen(AFScreen* screen) {
       if (!screen || !m_screenList.canAdd()) {
             return false;
       }

@@ -50,12 +50,12 @@ void AFImageButton::onClick(const AFEvent& e) {
 
 void AFImageButton::draw(AFDisplayInterface& displayInterface)
 {
-    if (!m_visible || !m_image) {
+    if (!isVisible() || !m_image) {
         return;
     }
 
     const AFImage* image = m_image;
-    if (m_enabled) {
+    if (isEnabled()) {
         if (m_pressed) {
             if (m_imagePressed) {
                 image = m_imagePressed;
@@ -71,7 +71,7 @@ void AFImageButton::draw(AFDisplayInterface& displayInterface)
 
     if (image->format() == kAFImageFormat1bit) {
         const AFTheme& theme = AFWorld::instance()->getTheme();
-        uint16_t color = m_enabled ? theme.widgetFgColor : theme.widgetDisabledFgColor;
+        uint16_t color = isEnabled() ? theme.widgetFgColor : theme.widgetDisabledFgColor;
         displayInterface.drawBitmap(m_x, m_y, image->pixels(), image->width(), image->height(), color);
     } else {
         displayInterface.drawRGBBitmap(m_x, m_y, reinterpret_cast<const uint16_t*>(image->pixels()),

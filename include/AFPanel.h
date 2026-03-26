@@ -13,10 +13,11 @@
 
 #include "AFBase.h"
 #include "AFWidget.h"
+#include "AFContainer.h"
 
 
 
-class AFPanel : public AFWidget {
+class AFPanel : public AFWidget, public AFContainer {
 public:
       AFPanel() = default;  // Default constructor for stack objects
       AFPanel(int16_t x, int16_t y, int16_t w, int16_t h, uint32_t id = 0);
@@ -30,6 +31,10 @@ public:
       // detaches only. removes ownership by the panel and th e caller takes responsibility for deleting
       void removeWidget(AFWidget* w);
 
+      // Panel management
+      bool addPanel(AFPanel* p, bool owned = false); // returns if successfully added (false indicates full)
+      void removePanel(AFPanel* p);
+
       AFWidget* widgetAt(int16_t px, int16_t py);
 
       virtual void draw(AFDisplayInterface& displayInterface) override;
@@ -38,6 +43,10 @@ public:
       void handleEvent(const AFEvent& e) override;
      
       virtual bool isDirty() const override;
+      virtual void setVisible(bool v) override;
+      
+      // Container interface implementation
+      void markIntersectingWidgetsDirty(int16_t rx, int16_t ry, int16_t rw, int16_t rh) override;
       
       
       int16_t toScreenX(int16_t localX) const {
@@ -84,9 +93,9 @@ public:
 
 
 protected:
-      etl::vector<AFWidget*, MAX_WIDGETS_PER_PANEL> m_widgets;
 
       bool m_opaque = true;
-      int  m_zOrder = 0; // unused as yet
       AFWidget* m_pressedWidget = nullptr;  // implicit capture for drag
+
+      void fillBackgroundRect(AFDisplayInterface& displayInterface);
 };

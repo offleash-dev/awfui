@@ -46,13 +46,13 @@ void AFSlider::setColors(uint16_t track, uint16_t fill, uint16_t thumb) {
 
 
 void AFSlider::draw(AFDisplayInterface& d) {
-      if (!m_visible)
+      if (!isVisible())
             return;
 
       uint16_t trackColor = m_trackColor;
       uint16_t fillColor  = m_fillColor;
       uint16_t thumbColor = m_thumbColor;
-      if (!m_enabled) {
+      if (!isEnabled()) {
             const AFTheme& theme = AFWorld::instance()->getTheme();
             trackColor = theme.widgetDisabledFgColor;
             fillColor  = theme.widgetDisabledFgColor;

@@ -17,6 +17,11 @@
 
 
 
+// Forward declaration
+class AFScreen;
+
+
+
 class AFWidget {
 public:
     AFWidget() = default;  // Default constructor for stack objects
@@ -53,7 +58,7 @@ public:
     }
 
 
-    void setVisible(bool v) {
+    virtual void setVisible(bool v) {
         if (m_visible != v) {
             m_visible = v;
             markDirty();
@@ -126,12 +131,34 @@ public:
 
 
     uint32_t getId() const {
-        return m_id;
+#if AWFUI_DISABLE_IDS
+            return AFUI_ID_NONE; // IDs are disabled, return none
+#else
+            return m_id;
+#endif
+    }
+
+
+    // Owner management
+    AFScreen* getOwner() const {
+        return m_owner;
+    }
+
+    void setOwner(AFScreen* owner) {
+        m_owner = owner;
     }
 
 
     bool isContainer() const {
         return m_isContainer;
+    }
+    
+    bool isOwned() const {
+        return m_owned;
+    }
+
+    void setOwned(bool owned) {
+        m_owned = owned;
     }
 
 
@@ -163,9 +190,12 @@ protected:
     bool      m_dirty   = true;  // Start dirty so initial draw happens
     bool      m_owned   = false; // If true, container will delete this widget
     bool      m_isContainer = false; // If true, widget can contain child widgets (e.g. panels)
-    uint32_t   m_id;
+
+    uint32_t m_id;
+
     uint8_t   m_eventMask = kEventTouch;  // default touch only
     AFWidget* m_parent  = nullptr;
+    AFScreen* m_owner   = nullptr;  // Screen that manages this widget
     AFJustification m_justification = AFJustificationCenter;
 
     friend class AFPanel;

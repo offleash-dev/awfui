@@ -14,7 +14,7 @@
 
 // Constructor
 //
-AFScreen::AFScreen(AFDisplayInterface& displayRef, uint32_t id, bool useCanvas) : m_display(displayRef), m_id(id) {
+AFScreen::AFScreen(AFDisplayInterface& displayRef, bool useCanvas, uint32_t id) : m_display(displayRef), m_id(id) {
       if (useCanvas) {
             // Create an off-screen buffer matching the display size
             m_canvas = m_display.createCanvas();
@@ -27,10 +27,10 @@ AFScreen::AFScreen(AFDisplayInterface& displayRef, uint32_t id, bool useCanvas) 
 //
 AFScreen::~AFScreen() {
       for (auto* w : m_widgets) {
-            if (w->m_owned) delete w;
+            if (w->isOwned()) delete w;
       }
       for (auto* p : m_panels) {
-            if (p->m_owned) delete p;
+            if (p->isOwned()) delete p;
       }
       if (m_canvas) {
             delete m_canvas;
@@ -47,7 +47,9 @@ bool AFScreen::addWidget(AFWidget* w, bool owned) {
 
       if (!m_widgets.full()) {
             m_widgets.push_back(w);
+            
             w->m_parent = nullptr; // root-level widget
+            w->m_owner  = this;    // screen owns the widget
             w->m_owned  = owned;
 
             success = true;           
@@ -66,6 +68,7 @@ bool AFScreen::addPanel(AFPanel* p, bool owned) {
       if (!m_panels.full()) {
             m_panels.push_back(p);
             p->m_parent = nullptr;
+            p->m_owner  = this;    // screen owns the panel
             p->m_owned  = owned;
 
             success = true;
@@ -354,4 +357,11 @@ void AFScreen::draw() {
             m_display.drawRGBBitmap(0, 0, buf, m_display.width(), m_display.height());
         }
     }
+}
+
+// Mark intersecting widgets dirty
+//
+void AFScreen::markIntersectingWidgetsDirty(int16_t rx, int16_t ry, int16_t rw, int16_t rh) {
+    markIntersectingDirty(m_widgets, rx, ry, rw, rh);
+    markIntersectingDirty(m_panels, rx, ry, rw, rh);
 }

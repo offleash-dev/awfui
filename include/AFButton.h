@@ -13,8 +13,9 @@
 
 
 
-// Callback type for button clicks (no STL, just a function pointer)
-using AFButtonCallback = void (*)(AFWidget& sender);
+// Callback type for button clicks 
+class AFButton;
+using AFButtonCallback = void (*)(AFButton& sender);
 
 
 

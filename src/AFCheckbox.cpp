@@ -18,9 +18,9 @@
 //
 AFCheckbox::AFCheckbox(int16_t x,
                        int16_t y,
-                       int16_t boxSize,
-                       uint32_t id,
-                       const char* labelText)
+                       int16_t boxSize
+                       const char* labelText,
+                       uint32_t id,)
     : AFWidget(x, y, boxSize, boxSize, id),
       m_label(labelText),
       m_boxSize(static_cast<uint8_t>(boxSize)) {
@@ -45,8 +45,8 @@ AFCheckbox::AFCheckbox(int16_t x,
 void AFCheckbox::init(int16_t x,
                       int16_t y,
                       int16_t boxSize,
-                      uint32_t id,
-                      const char* labelText) {
+                      const char* labelText,
+                      uint32_t id) {
       // Initialize the base AFWidget
       m_x = x;
       m_y = y;
@@ -110,7 +110,7 @@ void AFCheckbox::setColors(uint16_t boxColor, uint16_t checkColor, uint16_t bord
 // Draw the checkbox
 //
 void AFCheckbox::draw(AFDisplayInterface& displayInterface) {
-      if (!m_visible) {
+      if (!isVisible()) {
             return;
       }
 
@@ -122,7 +122,7 @@ void AFCheckbox::draw(AFDisplayInterface& displayInterface) {
       uint8_t radius       = theme.widgetCornerRadius;
 
       // set colors to theme colors if disabled
-      if (!m_enabled) {
+      if (!isEnabled()) {
             boxColor    = theme.widgetDisabledBgColor;
             checkColor  = theme.widgetDisabledFgColor;
             borderColor = theme.widgetBorderColor;

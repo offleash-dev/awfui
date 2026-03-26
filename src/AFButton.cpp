@@ -16,7 +16,7 @@
 
 // Constructor
 //
-AFButton::AFButton(int16_t x, int16_t y, int16_t w, int16_t h, uint32_t id, const char* labelText)
+AFButton::AFButton(int16_t x, int16_t y, int16_t w, int16_t h, const char* labelText, uint32_t id)
     : AFWidget(x, y, w, h, id), m_label(labelText) {
       const AFTheme& theme = AFWorld::instance()->getTheme();
       m_bgColor            = theme.widgetBgColor;
@@ -32,7 +32,7 @@ AFButton::AFButton(int16_t x, int16_t y, int16_t w, int16_t h, uint32_t id, cons
 
 // Initialize method for stack objects
 //
-void AFButton::init(int16_t x, int16_t y, int16_t w, int16_t h, uint32_t id, const char* labelText) {
+void AFButton::init(int16_t x, int16_t y, int16_t w, int16_t h, const char* labelText, uint32_t id) {
       // Initialize the base AFWidget
       m_x = x;
       m_y = y;
@@ -87,7 +87,7 @@ void AFButton::setPressedColors(uint16_t bg, uint16_t fg, uint16_t border) {
 // Draw the button
 //
 void AFButton::draw(AFDisplayInterface& displayInterface) {
-      if (!m_visible)
+      if (!isVisible())
             return;
 
       // Choose colors based on pressed state
@@ -95,7 +95,7 @@ void AFButton::draw(AFDisplayInterface& displayInterface) {
       uint16_t fg     = m_pressed ? m_fgColorPressed : m_fgColor;
       uint16_t border = m_pressed ? m_borderColorPressed : m_borderColor;
       // now override that if disabled
-      if (!m_enabled) {
+      if (!isEnabled()) {
             bg     = AFWorld::instance()->getTheme().widgetDisabledBgColor;
             fg     = AFWorld::instance()->getTheme().widgetDisabledFgColor;
             border = AFWorld::instance()->getTheme().widgetBorderColor;
@@ -115,7 +115,7 @@ void AFButton::draw(AFDisplayInterface& displayInterface) {
       if (m_label && strlen(m_label) > 0) {
             displayInterface.setTextSize(m_textSize);
             displayInterface.setTextColor(fg);
-            displayInterface.drawTextJustified(m_label, m_x, m_y, m_width, m_height, m_justification);
+            displayInterface.drawTextJustified(m_label, m_x, m_y, m_width, m_height, getJustification());
       }
 }
 

@@ -36,6 +36,8 @@ public:
     void setSelected(bool sel);
     bool isSelected() const { return m_selected; }
 
+    void setOrdinal(int16_t ordinal) { m_Ordinal = ordinal; }
+    int16_t getOrdinal() const { return m_Ordinal; }
 
     void setTextSize(uint8_t size) { 
         m_textSize = size;
@@ -69,6 +71,8 @@ private:
 
     uint16_t    m_radius;
     uint8_t     m_textSize = 1;
+
+    int16_t     m_Ordinal; 
 
     AFRadioButtonGroup* m_group = nullptr;
     AFRadioCallback m_onSelectCallback = nullptr;

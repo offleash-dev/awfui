@@ -99,14 +99,14 @@ void AFRadioButton::setColors(uint16_t circleColor, uint16_t dotColor, uint16_t 
 
 
 void AFRadioButton::draw(AFDisplayInterface& displayInterface) {
-    if (!m_visible)
+    if (!isVisible())
         return;
 
     uint16_t circleColor = m_circleColor;
     uint16_t dotColor    = m_dotColor;
     uint16_t labelColor  = m_labelColor;
 
-    if (!m_enabled) {
+    if (!isEnabled()) {
         AFTheme theTheme = AFWorld::instance()->getTheme();
         circleColor = theTheme.widgetDisabledFgColor;
         dotColor    = theTheme.widgetDisabledFgColor;

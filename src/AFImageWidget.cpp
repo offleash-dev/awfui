@@ -23,13 +23,13 @@ AFImageWidget::AFImageWidget(int16_t x, int16_t y, const AFImage* img, uint32_t 
 
 void AFImageWidget::draw(AFDisplayInterface& displayInterface)
 {
-    if (!m_visible || !m_img) {
+    if (!isVisible() || !m_img) {
         return;
     }
 
     if (m_img->format() == kAFImageFormat1bit) {
         const AFTheme& theme = AFWorld::instance()->getTheme();
-        uint16_t color = m_enabled ? theme.widgetFgColor : theme.widgetDisabledFgColor;
+        uint16_t color = isEnabled() ? theme.widgetFgColor : theme.widgetDisabledFgColor;
         displayInterface.drawBitmap(m_x, m_y, m_img->pixels(), m_img->width(), m_img->height(), color);
     } else {
         displayInterface.drawRGBBitmap(m_x, m_y, reinterpret_cast<const uint16_t*>(m_img->pixels()),

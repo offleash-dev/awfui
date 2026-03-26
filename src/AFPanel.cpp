@@ -8,6 +8,7 @@
 
 #include "AFWorld.h"
 #include "AFPanel.h"
+#include "AFScreen.h"
 #include "AFWidget.h"
 #include "AFBase.h"
 
@@ -15,7 +16,8 @@
 
 // Constructor
 //
-AFPanel::AFPanel(int16_t x, int16_t y, int16_t w, int16_t h, uint32_t id) : AFWidget(x, y, w, h, id) {
+AFPanel::AFPanel(int16_t x, int16_t y, int16_t w, int16_t h, uint32_t id)
+    : AFWidget(x, y, w, h, id), AFContainer() {
       // Panels default to visible
       m_visible = true;
       m_isContainer = true; // Panels can contain child widgets
@@ -27,7 +29,7 @@ AFPanel::AFPanel(int16_t x, int16_t y, int16_t w, int16_t h, uint32_t id) : AFWi
 //
 AFPanel::~AFPanel() {
       for (auto* w : m_widgets) {
-            if (w->m_owned) delete w;
+            if (w->isOwned()) delete w;
       }
 }
 
@@ -41,7 +43,8 @@ bool AFPanel::addWidget(AFWidget* w, bool owned) {
       if (!m_widgets.full()) {
             m_widgets.push_back(w);
             w->m_parent = this;
-            w->m_owned  = owned;
+            w->m_owner  = m_owner;  // Inherit owner from panel
+            w->setOwned(owned);
             w->markDirty();  // Mark as dirty so it gets drawn
             success     = true;
       }
@@ -58,7 +61,7 @@ void AFPanel::removeWidget(AFWidget* w) {
             if (m_widgets[i] == w) {
                   m_widgets.erase(m_widgets.begin() + i);
                   w->m_parent = nullptr;
-                  w->m_owned  = false;
+                  w->setOwned(false);
                   return;
             }
       }
@@ -80,22 +83,30 @@ AFWidget* AFPanel::widgetAt(int16_t px, int16_t py) {
 
 
 
+void AFPanel::fillBackgroundRect(AFDisplayInterface& displayInterface) {
+      const AFTheme& theme = AFWorld::instance()->getTheme();
+            
+      // Use DMA-accelerated fill for large panel backgrounds (dialogs, etc.)
+      if (displayInterface.isDMAAvailable()) {
+            displayInterface.fastFillRectDMA(m_x, m_y, m_width, m_height, theme.widgetBgColor);
+      } else {
+            displayInterface.fillRect(m_x, m_y, m_width, m_height, theme.widgetBgColor);
+      }
+}
+
+
+
+
 // Draw panel and child widgets
 //
 void AFPanel::draw(AFDisplayInterface& displayInterface) {
-      if (!m_visible)
+      if (!isVisible())
             return;
 
-      if (m_opaque && m_dirty) {
+      if (m_opaque && isDirty()) {
             const AFTheme& theme = AFWorld::instance()->getTheme();
-            
-            // Use DMA-accelerated fill for large panel backgrounds (dialogs, etc.)
-            if (displayInterface.isDMAAvailable()) {
-                  displayInterface.fastFillRectDMA(m_x, m_y, m_width, m_height, theme.widgetBgColor);
-            } else {
-                  displayInterface.fillRect(m_x, m_y, m_width, m_height, theme.widgetBgColor);
-            }
-            
+            fillBackgroundRect(displayInterface);
+
             displayInterface.drawRect(m_x, m_y, m_width, m_height, theme.widgetBorderColor);
       }
 
@@ -109,6 +120,36 @@ void AFPanel::draw(AFDisplayInterface& displayInterface) {
       
       // Clear our own dirty flag after drawing children
       clearDirty();
+ }
+
+
+
+void AFPanel::setVisible(bool v) {
+      bool wasVisible = isVisible();
+      if (wasVisible != v) {
+            if (!v && wasVisible) {
+                  // When hiding, mark intersecting widgets dirty so they get redrawn
+                  if (m_owner) {
+                        fillBackgroundRect(m_owner->getDisplay());
+
+                        // Convert local coordinates to screen coordinates
+                        int16_t screenX = m_x;
+                        int16_t screenY = m_y;
+                        
+                        // If parent is a panel, convert to screen coordinates
+                        if (m_parent && m_parent->isContainer()) {
+                            AFPanel* parentPanel = static_cast<AFPanel*>(m_parent);
+                            screenX = parentPanel->toScreenX(m_x);
+                            screenY = parentPanel->toScreenY(m_y);
+                        }
+                        
+                        m_owner->markIntersectingWidgetsDirty(screenX, screenY, m_width, m_height);
+                  }
+            }
+            
+            setVisible(v);
+            markDirty();
+      }
 }
 
 
@@ -199,4 +240,38 @@ void AFPanel::handleEvent(const AFEvent& e) {
                   return;
             }
       }
+}
+
+// Add panel to container
+//
+bool AFPanel::addPanel(AFPanel* p, bool owned) {
+    if (!m_panels.full()) {
+        m_panels.push_back(p);
+        p->m_parent = this;
+        p->m_owner = m_owner;  // Inherit owner from parent panel
+        p->setOwned(owned);
+        p->markDirty();  // Mark as dirty so it gets drawn
+        return true;
+    }
+    return false;
+}
+
+// Remove panel from container
+//
+void AFPanel::removePanel(AFPanel* p) {
+    for (size_t i = 0; i < m_panels.size(); ++i) {
+        if (m_panels[i] == p) {
+            m_panels.erase(m_panels.begin() + i);
+            p->m_parent = nullptr;
+            p->setOwned(false);
+            return;
+        }
+    }
+}
+
+// Mark intersecting widgets dirty
+//
+void AFPanel::markIntersectingWidgetsDirty(int16_t rx, int16_t ry, int16_t rw, int16_t rh) {
+    markIntersectingDirty(m_widgets, rx, ry, rw, rh);
+    markIntersectingDirty(m_panels, rx, ry, rw, rh);
 }

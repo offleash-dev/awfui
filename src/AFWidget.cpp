@@ -12,7 +12,7 @@
 
 // Constructor
 //
-AFWidget::AFWidget(int16_t x_, int16_t y_, int16_t w_, int16_t h_, uint32_t id_) : m_x(x_), m_y(y_), m_width(w_), m_height(h_), m_id(id_) {
+AFWidget::AFWidget(int16_t x, int16_t y, int16_t w, int16_t h, uint32_t id) : m_x(x), m_y(y), m_width(w), m_height(h), m_id(id) {
       m_visible = true;
       m_parent  = nullptr;
       m_dirty   = true;  // Start dirty so initial draw happens
@@ -44,7 +44,7 @@ void AFWidget::draw(AFDisplayInterface& displayInterface, int16_t screenOffsetX,
 // Hit test: simple bounding box
 //
 bool AFWidget::hitTest(int16_t px, int16_t py) const {
-      if (!m_visible || !m_enabled) {
+      if (!isVisible() || !isEnabled()) {
             return false;
       }
 
@@ -55,7 +55,7 @@ bool AFWidget::hitTest(int16_t px, int16_t py) const {
 
 void AFWidget::erase(AFDisplayInterface& displayInterface, int16_t x, int16_t y, int16_t w, int16_t h) {
       uint16_t fillColor = AFWorld::instance()->getTheme().widgetBgColor;
-      if (!m_enabled)
+      if (!isEnabled())
             fillColor = AFWorld::instance()->getTheme().widgetDisabledBgColor;
       displayInterface.fillRect(x, y, w, h, fillColor);
 }
@@ -70,7 +70,7 @@ void AFWidget::erase(AFDisplayInterface& displayInterface) {
 
 
 void AFWidget::update() {
-        if (m_dirty) {
+        if (isDirty()) {
               draw(AFWorld::instance()->getDisplay());
               clearDirty();
         }
