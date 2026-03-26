@@ -14,7 +14,7 @@
 
 // Helper implementation for widgets
 //
-void AFContainer::markIntersectingDirty(AFVector<AFWidget*, MAX_WIDGETS_PER_PANEL>& widgets, 
+void AFContainer::markIntersectingDirty(etl::vector<AFWidget*, MAX_WIDGETS_PER_PANEL>& widgets, 
                                        int16_t rx, int16_t ry, int16_t rw, int16_t rh) {
     for (auto* widget : widgets) {
         if (widget && widget->intersects(rx, ry, rw, rh)) {
@@ -27,7 +27,7 @@ void AFContainer::markIntersectingDirty(AFVector<AFWidget*, MAX_WIDGETS_PER_PANE
 
 // Helper implementation for panels
 //
-void AFContainer::markIntersectingDirty(AFVector<AFPanel*, MAX_PANELS_PER_SCREEN>& panels, 
+void AFContainer::markIntersectingDirty(etl::vector<AFPanel*, MAX_PANELS_PER_SCREEN>& panels, 
                                        int16_t rx, int16_t ry, int16_t rw, int16_t rh) {
     for (auto* panel : panels) {
         if (panel && panel->intersects(rx, ry, rw, rh)) {

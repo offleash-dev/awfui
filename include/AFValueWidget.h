@@ -17,18 +17,18 @@
 class AFValueWidget : public AFWidget {
 public:
     AFValueWidget() = default;  // Default constructor for stack objects
-    AFValueWidget(int16_t x, int16_t y, int16_t w, int16_t h, ID_TYPE id = 0)
+    AFValueWidget(int16_t x, int16_t y, int16_t w, int16_t h, uint32_t id = 0)
         : AFWidget(x, y, w, h, id),
           m_minimum(0), m_maximum(100), m_value(0) {}
 
     // Initialize method for stack objects
-    void init(int16_t x, int16_t y, int16_t w, int16_t h, ID_TYPE id = 0) {
+    void init(int16_t x, int16_t y, int16_t w, int16_t h, uint32_t id = 0) {
         // Initialize the base AFWidget
         m_x = x;
         m_y = y;
         m_width = w;
         m_height = h;
-        m_id = storeID(id);
+        m_id = id;
         
         // Initialize value widget properties
         m_minimum = 0;

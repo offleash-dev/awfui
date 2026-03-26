@@ -1,9 +1,14 @@
+
+#include "stdio.h"
+#include "string.h"
+
+
 #include "AFLabel.h"
 #include "AFScreen.h"
 #include "AFWorld.h"
 #include "AFSlider.h"
 #include "AFButton.h"
-#include "AFSliderKeyboard.h"
+#include "AFKeyboard.h"
 
 
 
@@ -13,11 +18,10 @@ void createTextInputPanel(AFScreen& screen, AFLabel* keyOutputLabel);
 
 char textBuffer[64] = {0}; // Buffer to hold the current text for display
 AFButton* submitButton;
-AFSliderKeyboard* keyboard = nullptr;
+AFKeyboard* keyboard = nullptr;
 AFLabel* keyboardOutputLabel = nullptr;
 
-
-void onKeyboardCharacterCallback(AFSliderKeyboard& sender, char character) {
+void onKeyboardCharacterCallback(AFKeyboard& sender, char character) {
     if (keyboardOutputLabel == nullptr) {
         return; 
     }
@@ -34,7 +38,7 @@ void onKeyboardCharacterCallback(AFSliderKeyboard& sender, char character) {
 
 
 
-void onKeyboardBackspaceCallBack(AFSliderKeyboard& sender, char character) {
+void onKeyboardBackspaceCallBack(AFKeyboard& sender, char character) {
     if (keyboardOutputLabel == nullptr) {
         return; 
     }
@@ -48,7 +52,7 @@ void onKeyboardBackspaceCallBack(AFSliderKeyboard& sender, char character) {
 
 
 
-void onSubmitButtonRelease(AFWidget& sender) {
+void onSubmitButtonRelease(AFButton& sender) {
       textBuffer[0] = 0; // Clear the text buffer
       if (keyboardOutputLabel) {
             keyboardOutputLabel->setText("");
@@ -68,11 +72,11 @@ void createTextInputPanel(AFScreen& screen, AFLabel* keyOutputLabel) {
         int16_t submitButtonX = keyOutputLabel->getX() + keyOutputLabel->getWidth() + 5;
         int16_t submitButtonY = keyOutputLabel->getY();
 
-        submitButton = new AFButton(submitButtonX, submitButtonY, 50, 30, makeID("S1Sb"), "Submit");
+        submitButton = new AFButton(submitButtonX, submitButtonY, 50, 30, "Submit", MAKE_ID_FROM_STR("S1Sb"));
         submitButton->setOnClickCallback(onSubmitButtonRelease);
         screen.addWidget(submitButton, true);
 
-        keyboard = new AFSliderKeyboard(0, screen.getDisplay().height() - 50, screen.getDisplay().width(), 50, makeID("SKbd"));
+        keyboard = new AFKeyboard(0, screen.getDisplay().height() - 50, screen.getDisplay().width(), 50, MAKE_ID_FROM_STR("SKbd"));
         keyboard->setOnCharacterCallback(onKeyboardCharacterCallback);
         keyboard->setOnBackspaceCallback(onKeyboardBackspaceCallBack);
         screen.addPanel(keyboard, true);

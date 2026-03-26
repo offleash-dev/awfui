@@ -1,132 +1,86 @@
 #pragma once
 
-//// AFConfig.h
+//// AFIdConfig.h
 //// Part of the AWFUI library
 ////
-//// Configuration options for AWFUI framework.
-//// Developers should choose ONE ID strategy based on their needs.
+//// ID configuration options and helpers for AWFUI framework.
 ////
 //// Copyright (c) 2026 Matt Foster
 //// Licensed under the MIT License. See LICENSE file for details.
 
 
-// ID STRATEGY CONFIGURATION
-// IDs are used for identifying widgets in event handling and other operations. 
-//The choice of ID strategy can impact memory usage and ease of development.
-// 
-// Choose ONE of the following ID strategies:
-//
-// USE_NO_IDS:        No IDs at all - saves 4 bytes per widget
-// USE_UINT32_IDS:    4-byte unsigned int IDs - current default approach
-// USE_C_STRING_IDS:  C-string pointer IDs - human-readable but incurs string cost
-//
-// by uncommenting ONE of these or, better, defining AWFUI_ID_STRATEGY in your build system 
-// (e.g. -DAWFUI_ID_STRATEGY=0) to avoid hardcoding in the header file.:
+// ID CONFIGURATION
+// IDs can be used for identifying widgets in event handling, debugging, and other operations. 
+// Being uint32_t values per AWFUI object, they come at a cost, so, for embedded memory tight 
+// situations, IDs can be disabled; though, you have to use object addresses individual 
+// callbacks or other means to identify widgets.  
 
-//#define USE_NO_IDS        0         // Most memory efficient - no ID storage
-//#define USE_UINT32_IDS    1         // 4-byte unsigned int IDs - fast numeric
-//#define USE_C_STRING_IDS  2         // C-string pointers - human-readable
+// The awfui APIs accept IDs as uint32_t in either case, the ID value is just discarded
+// and 0 is returned for any ID query.
 
-// COMPILATION VALIDATION
-//
-#if !defined(USE_NO_IDS) && !defined(USE_UINT32_IDS) && !defined(USE_C_STRING_IDS)
-#define AWFUI_ID_STRATEGY 2  // Default to C-string IDs if none defined
+
+
+// Set this to 1 to disable IDs
+#define AWFUI_DISABLE_IDS 0
+
+#if AWFUI_DISABLE_IDS
+#warning "AWFUI: Widget IDs are disabled. All widgets will report AFUI_ID_NONE."
 #endif
 
-#if (AWFUI_ID_STRATEGY == 0)
-    #define USE_NO_IDS
-#elif (AWFUI_ID_STRATEGY == 1)
-     #define USE_UINT32_IDS
-#elif (AWFUI_ID_STRATEGY == 2)
-     #define USE_C_STRING_IDS
-#else
-    #define USE_C_STRING_IDS  // Default fallback
-#endif
-
-
-
-// MEMORY USAGE IMPACT
-// Strategy            | Memory per Widget | Use Case
-// --------------------|-------------------|-------------------
-// USE_NO_IDS          | 0 bytes           | Simple UIs, no widget identification needed
-// USE_UINT32_IDS      | 4 bytes           | Performance-critical UIs, numeric IDs
-// USE_C_STRING_IDS    | 4 bytes + strings | Development/debugging, readable names
-
-
-
-// UNIFIED ID TYPE DEFINITION
-//
-#if defined(USE_NO_IDS)
-    typedef int ID_TYPE;              // int but parameter is ignored
-    #define ID_TYPE_NAME "none"
-#elif defined(USE_UINT32_IDS)
-    typedef uint32_t ID_TYPE;
-    #define ID_TYPE_NAME "uint32"
-#elif defined(USE_C_STRING_IDS)
-    typedef const char* ID_TYPE;
-    #define ID_TYPE_NAME "cstring"
-#endif
-
-
-
-// HELPER MACROS
-// 
-#if defined(USE_NO_IDS)
-    #define storeID(id) (0)            // Don't store the ID
-#elif defined(USE_UINT32_IDS)
-    #include <string>
-    static uint32_t g_nextWidgetID = 1000;  // Start from 1000 to avoid conflicts
-    #define storeID(id) (id)             // Store the ID as-is
-#elif defined(USE_C_STRING_IDS)
-    #define storeID(id) (id)             // Store the ID as-is
-#endif
+#define AFUI_ID_NONE 0u
 
 
 
 // Helpers to create 4-character IDs used for widgets, screens, dialogs, etc.
-// Example: constexpr uint32_t myID = MAKE_ID('T','E','S','T');
-#define MAKE_UINT32_ID(a,b,c,d) \ ((uint32_t)(a)<<24 | (uint32_t)(b)<<16 | (uint32_t)(c)<<8 | (uint32_t)(d))
+
+// Example: uint32_t myID = MAKE_ID('T','E','S','T');
+#define MAKE_ID(a,b,c,d) \
+    ( ((uint32_t)(a) << 24) | \
+      ((uint32_t)(b) << 16) | \
+      ((uint32_t)(c) << 8)  | \
+      ((uint32_t)(d) << 0) )
 
 
 
-// Example: constexpr uint32_t myID = makeID("TEST");
-#if defined(USE_NO_IDS) || defined(USE_UINT32_IDS)
-constexpr uint32_t makeID(const char (&s)[5]) {
-#if defined(USE_NO_IDS)
-    return 0;
-#elif defined(USE_UINT32_IDS)
-    return (uint32_t(s[0]) << 24) |
-           (uint32_t(s[1]) << 16) |
-           (uint32_t(s[2]) << 8)  |
-           (uint32_t(s[3]));
-#endif
-}
-#elif defined(USE_C_STRING_IDS)
-constexpr const char* makeID(const char* s) {
-    return s;
-}
-#else
-#endif
+// Example: uint32_t myID = MAKE_ID_FROM_STR("TEST");
+#define MAKE_ID_FROM_STR(str) \
+    ( ((uint32_t)(str[0]) << 24) | \
+      ((uint32_t)(str[1]) << 16) | \
+      ((uint32_t)(str[2]) << 8)  | \
+      ((uint32_t)(str[3]) << 0) )
 
 
 
 // Example: char idOut5[5];
-//         getAsChars(makeID("TEST"), idOut5);
+//         getIdAsChars(MAKE_ID_FROM_STR("TEST"), idOut5);
 // will fill idOut5 with {'T', 'E', 'S', 'T', '\0'}
-inline void getAsChars(int32_t id, char* out5) {
-#if defined(USE_NO_IDS)
-    out5[0] = 0;
-    out5[1] = 0;
-    out5[2] = 0;
-    out5[3] = 0;
-    out5[4] = '\0';
-#elif defined(USE_UINT32_IDS)
+inline void getIdAsChars(uint32_t id, char* out5) {
+#if AWFUI_DISABLE_IDS
+    out5[0] = '\0'; // All IDs are disabled, return empty string
+#else
     out5[0] = (char)((id >> 24) & 0xFF);
     out5[1] = (char)((id >> 16) & 0xFF);
     out5[2] = (char)((id >> 8)  & 0xFF);
     out5[3] = (char)((id >> 0)  & 0xFF);
     out5[4] = '\0';
-#elif defined(USE_C_STRING_IDS)
-    // Already a string, do nothing
 #endif
+}
+
+
+
+// Example:
+//         getIdByte(MAKE_ID_FROM_STR("TEST"), 2);
+// will return the ASCII code for 'S' 
+inline uint8_t getIdByte(uint32_t id, int n) {
+    return (uint8_t)((id >> (24 - (n * 8))) & 0xFF);
+}
+
+
+
+// Example: uint32_t myID = MAKE_ID_FROM_STR("TEST");
+//          setIdByte(myID, 2, 'X');
+// will change myID to represent "TEXT"
+inline void setIdByte(uint32_t& id, int n, uint8_t value) {
+    id &= ~(0xFFu << (24 - (n * 8)));
+    id |= ((uint32_t)value << (24 - (n * 8)));
 }

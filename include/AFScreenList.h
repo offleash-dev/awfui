@@ -8,7 +8,7 @@
 //// Copyright (c) 2026 Matt Foster
 //// Licensed under the MIT License. See LICENSE file for details.
 
-#include "AFVector.h"
+#include <etl/vector.h>
 
 #include "AFBase.h"
 
@@ -28,11 +28,11 @@ public:
 
       bool      setActive(int16_t screenIndex);
       bool      setActive(AFScreen* screen);
-      bool      setActive(ID_TYPE screenId);
+      bool      setActive(uint32_t screenId);
       AFScreen* getActive() const;
 
 
 private:
-      AFVector<AFScreen*, MAX_SCREENS_PER_WORLD> m_screens;
+      etl::vector<AFScreen*, MAX_SCREENS_PER_WORLD> m_screens;
       AFScreen*                                     m_active = nullptr;
 };

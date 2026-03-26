@@ -6,10 +6,7 @@
 
 // Tell SDL we handle our own main() entry point
 
-
-#ifndef AWFUI_USE_SDL
 #define AWFUI_USE_SDL
-#endif
 
 #ifdef AWFUI_USE_SDL
 #define SDL_MAIN_HANDLED
@@ -54,8 +51,13 @@ AFWorld*  world;
 // ============================================================
 #define THE_BIG_TEST 1
 #define STACKED_MODAL_TEST 0
+#define VECTOR_TEST 0
+
+#if VECTOR_TEST
 extern void testAFVector();
 extern void testAFQueue();
+#endif
+
 
 void setup() {
 #ifdef AWFUI_USE_SDL
@@ -73,8 +75,10 @@ void setup() {
       AFWorld::init(display);
 #endif
 
+#if VECTOR_TEST
       testAFVector();
       testAFQueue();
+#endif
 
       world = AFWorld::instance();
 

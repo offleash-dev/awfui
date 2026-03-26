@@ -12,7 +12,7 @@
 
 // Constructor
 //
-AFLabel::AFLabel(int16_t x, int16_t y, const char* text, ID_TYPE id) : AFWidget(x, y, 0, 0, id), m_text((char*)(text)) {
+AFLabel::AFLabel(int16_t x, int16_t y, const char* text, uint32_t id) : AFWidget(x, y, 0, 0, id), m_text((char*)(text)) {
       // width/height are not usable for hit-testing
       m_width  = 0;
       m_height = 0;
@@ -22,7 +22,7 @@ AFLabel::AFLabel(int16_t x, int16_t y, const char* text, ID_TYPE id) : AFWidget(
 
 
 
-AFLabel::AFLabel(int16_t x, int16_t y, int16_t w, int16_t h, const char* text, ID_TYPE id) : AFWidget(x, y, w, h, id), m_text((char*)text) {
+AFLabel::AFLabel(int16_t x, int16_t y, int16_t w, int16_t h, const char* text, uint32_t id) : AFWidget(x, y, w, h, id), m_text((char*)text) {
       // width/height are usable for hit-testing
       m_width  = w;
       m_height = h;
@@ -34,13 +34,13 @@ AFLabel::AFLabel(int16_t x, int16_t y, int16_t w, int16_t h, const char* text, I
 
 // Initialize method for stack objects
 //
-void AFLabel::init(int16_t x, int16_t y, int16_t w, int16_t h, const char* text, ID_TYPE id) {
+void AFLabel::init(int16_t x, int16_t y, int16_t w, int16_t h, const char* text, uint32_t id) {
       // Initialize the base AFWidget
       m_x = x;
       m_y = y;
       m_width = w;
       m_height = h;
-      m_id = storeID(id);
+      m_id = id;
       m_text = (char*)text;
       
       // width/height are usable for hit-testing

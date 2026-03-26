@@ -9,7 +9,7 @@
 
 
 #include <stdint.h>
-#include "AFVector.h"
+#include <etl/vector.h>
 
 #include "AFBase.h"
 
@@ -22,10 +22,7 @@ class AFPanel;
 // Interface for widget containers
 class AFContainer {
 public:
-    // Default constructor - ensure members are initialized 
-    AFContainer() : m_widgets(), m_panels() {
-    }
-    
+   
     // Container management
     virtual bool addWidget(AFWidget* widget, bool owned = false) = 0;
     virtual void removeWidget(AFWidget* widget) = 0;
@@ -36,22 +33,22 @@ public:
     virtual void markIntersectingWidgetsDirty(int16_t rx, int16_t ry, int16_t rw, int16_t rh) = 0;
     
     // Access to children
-    const AFVector<AFWidget*, MAX_WIDGETS_PER_PANEL>& getWidgets() const { return m_widgets; }
-    const AFVector<AFPanel*, MAX_PANELS_PER_SCREEN>& getPanels() const { return m_panels; }
+    const etl::vector<AFWidget*, MAX_WIDGETS_PER_PANEL>& getWidgets() const { return m_widgets; }
+    const etl::vector<AFPanel*, MAX_PANELS_PER_SCREEN>& getPanels() const { return m_panels; }
     
     virtual ~AFContainer() = default;
 
 
 protected:
     // Helper implementation that containers can use
-    void markIntersectingDirty(AFVector<AFWidget*, MAX_WIDGETS_PER_PANEL>& widgets, 
+    void markIntersectingDirty(etl::vector<AFWidget*, MAX_WIDGETS_PER_PANEL>& widgets, 
                                int16_t rx, int16_t ry, int16_t rw, int16_t rh);
     
-    void markIntersectingDirty(AFVector<AFPanel*, MAX_PANELS_PER_SCREEN>& panels, 
+    void markIntersectingDirty(etl::vector<AFPanel*, MAX_PANELS_PER_SCREEN>& panels, 
                                int16_t rx, int16_t ry, int16_t rw, int16_t rh);
 
 
 protected:
-    AFVector<AFWidget*, MAX_WIDGETS_PER_PANEL> m_widgets;
-    AFVector<AFPanel*, MAX_PANELS_PER_SCREEN> m_panels;
+    etl::vector<AFWidget*, MAX_WIDGETS_PER_PANEL> m_widgets;
+    etl::vector<AFPanel*, MAX_PANELS_PER_SCREEN> m_panels;
 };

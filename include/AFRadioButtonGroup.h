@@ -16,7 +16,8 @@
 class AFRadioButton;
 class AFRadioButtonGroup;
 
-using AFRadioGroupIdCallback = void (*)(AFRadioButtonGroup& sender, ID_TYPE selectedId);
+
+using AFRadioGroupIdCallback = void (*)(AFRadioButtonGroup& sender, uint32_t selectedId);
 using AFRadioGroupOrdinalCallback = void (*)(AFRadioButtonGroup& sender, int16_t ordinal);
 
 
@@ -33,10 +34,11 @@ public:
     void setOnChangeIdCallback(AFRadioGroupIdCallback cb) {
         m_onChangeIdCallback = cb;
     }
-    
+
     void setOnChangeOrdinalCallback(AFRadioGroupOrdinalCallback cb) {
         m_onChangeOrdinalCallback = cb;
     }
+
 
 private:
     AFRadioButton* m_buttons[MAX_WIDGETS_PER_PANEL];

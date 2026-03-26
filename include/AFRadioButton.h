@@ -15,7 +15,7 @@
 class AFRadioButton;
 class AFRadioButtonGroup;
 
-using AFRadioCallback = void (*)(AFRadioButton& sender, ID_TYPE id);
+using AFRadioCallback = void (*)(AFRadioButton& sender, uint32_t id);
 
 
 class AFRadioButton : public AFWidget {
@@ -24,11 +24,11 @@ public:
     AFRadioButton(int16_t x,
                   int16_t y,
                   int16_t radius = 0,
-                  ID_TYPE id = 0,
-                  const char* label = nullptr);
+                  const char* label = nullptr,
+                  uint32_t id = 0);
 
     // Initialize method for stack objects
-    void init(int16_t x, int16_t y, int16_t radius = 0, ID_TYPE id = 0, const char* label = nullptr);
+    void init(int16_t x, int16_t y, int16_t radius = 0, const char* label = nullptr, uint32_t id = 0);
 
     void setLabel(const char* text);
     const char* getLabel() const { return m_label; }

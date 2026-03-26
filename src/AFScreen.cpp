@@ -15,9 +15,9 @@
 
 // Constructor
 //
-AFScreen::AFScreen(AFDisplayInterface& displayRef, ID_TYPE id, bool useCanvas) 
-    : AFContainer(), m_display(displayRef), m_id(id) {
-      if (useCanvas) {
+AFScreen::AFScreen(AFDisplayInterface& displayRef, bool useCanvas, uint32_t id)
+    : m_display(displayRef), m_id(id) {
+      if (displayRef.supportsCanvas() && useCanvas) {
             // Create an off-screen buffer matching the display size
             m_canvas = m_display.createCanvas();
       }
@@ -52,6 +52,7 @@ bool AFScreen::addWidget(AFWidget* w, bool owned) {
             
             w->m_parent = nullptr; // root-level widget
             w->m_owner  = this;    // screen owns the widget
+
             w->setOwned(owned);
 
             success = true;           
@@ -71,6 +72,7 @@ bool AFScreen::addPanel(AFPanel* p, bool owned) {
             m_panels.push_back(p);
             p->m_parent = nullptr;
             p->m_owner  = this;    // screen owns the panel
+
             p->setOwned(owned);
 
             success = true;
@@ -144,12 +146,17 @@ void AFScreen::showModal(AFModalDialog* d) {
 //
 void AFScreen::dismissModal(AFModalDialog* d) {
       // Find and remove this dialog from the stack
+#if 0 // use when switching to afvector
       for (auto it = m_modalStack.begin(); it != m_modalStack.end(); ++it) {
             if (*it == d) {
                 m_modalStack.erase(it);
                 break;
             }
         }
+#endif
+      auto it = std::find(m_modalStack.begin(), m_modalStack.end(), d);
+      if (it != m_modalStack.end())
+            m_modalStack.erase(it);
       
       // Only clear the dialog area, not the entire screen
       AFDisplayInterface* displayInterface = m_canvas ? m_canvas : &m_display;

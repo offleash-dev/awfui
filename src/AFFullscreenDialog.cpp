@@ -14,10 +14,11 @@
 // Constructor: full‑screen modal dialog
 // Dimensions are set when show() is called
 //
-AFFullscreenDialog::AFFullscreenDialog(ID_TYPE id) 
+AFFullscreenDialog::AFFullscreenDialog(uint32_t id) 
     : AFModalDialog(0, 0, 0, 0, id) 
 {
-      // Fullscreen dialogs are visible by default (already set in AFWidget)
+      // Fullscreen dialogs are visible by default
+      m_visible = true; 
       m_opaque = true;
 }
 

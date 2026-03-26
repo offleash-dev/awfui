@@ -12,9 +12,10 @@
 
 // Constructor
 //
-AFWidget::AFWidget(int16_t x_, int16_t y_, int16_t w_, int16_t h_, ID_TYPE id_) : m_x(x_), m_y(y_), m_width(w_), m_height(h_), m_id(storeID(id_)) {
-      // Flags already initialized in header: enabled, visible, dirty
+AFWidget::AFWidget(int16_t x, int16_t y, int16_t w, int16_t h, uint32_t id) : m_x(x), m_y(y), m_width(w), m_height(h), m_id(id) {
+      m_visible = true;
       m_parent  = nullptr;
+      m_dirty   = true;  // Start dirty so initial draw happens
 }
 
 

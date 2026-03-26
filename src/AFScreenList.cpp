@@ -70,7 +70,7 @@ bool AFScreenList::setActive(AFScreen* screen) {
 
 // Set active screen by id
 //
-bool AFScreenList::setActive(ID_TYPE screenId) {
+bool AFScreenList::setActive(uint32_t screenId) {
       bool found = false;
 
       // Only allow active screens that are in the list

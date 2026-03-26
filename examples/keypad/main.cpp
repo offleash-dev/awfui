@@ -38,13 +38,9 @@ public:
 
       void appendDigit(AFWidget& sender) {
             int len = (int)strlen(m_numberBuf);
-
-            // Extract digit from button ID (e.g. "Key1" -> '1')
-            if (sender.getId()[0] != 'K') return; // Not a key button
-            char digit = sender.getId()[3]; // 4th char is the digit (e.g. "Key1" -> '1')
-            
+            char ch      = sender.getId() & 0xFF; // low byte of button ID is the char
             if (len < kMaxDigits) {
-                  m_numberBuf[len]     = digit;
+                  m_numberBuf[len]     = ch;
                   m_numberBuf[len + 1] = '\0';
                   m_numberLabel->setText(m_numberBuf);
             }
@@ -145,7 +141,7 @@ void setup() {
       //   [7] [8] [9]
       //   [*] [0] [#]
       // ------------------------------------------------------------
-      struct KeyDef { const char* label; ID_TYPE id; };
+      struct KeyDef { const char* label; uint32_t id; };
       static const KeyDef keys[4][3] = {
             { {"1",makeID("Key1")}, {"2",makeID("Key2")}, {"3",makeID("Key3")} },
             { {"4",makeID("Key4")}, {"5",makeID("Key5")}, {"6",makeID("Key6")} },

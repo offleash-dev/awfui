@@ -68,7 +68,7 @@ AFWorld::AFWorld(AFDisplayInterface& displayRef, AFTouchInterface* touch, AFEven
 // Create a new screen and register it with the screen list
 // return nullptr if allocation fails or max screens reached
 //
-AFScreen* AFWorld::createScreen(ID_TYPE id, bool useCanvas) {
+AFScreen* AFWorld::createScreen(bool useCanvas, uint32_t id) {
       if (!m_screenList.canAdd()) {
             // Return nullptr if max screens reached
             // Note: caller must handle this case
@@ -76,7 +76,7 @@ AFScreen* AFWorld::createScreen(ID_TYPE id, bool useCanvas) {
       }
 
       // Allocate a new screen
-      AFScreen* screen = new AFScreen(m_display, id, useCanvas);
+      AFScreen* screen = new AFScreen(m_display, useCanvas, id);
 
       // Register with screen list
       m_screenList.add(screen);
@@ -88,7 +88,7 @@ AFScreen* AFWorld::createScreen(ID_TYPE id, bool useCanvas) {
 
 // Register an externally-created screen (e.g. an AFScreen subclass)
 //
-bool AFWorld::registerScreen(AFScreen* screen) {
+bool AFWorld::addScreen(AFScreen* screen) {
       if (!screen || !m_screenList.canAdd()) {
             return false;
       }

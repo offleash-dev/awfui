@@ -13,7 +13,7 @@
 
 
 
-AFImageWidget::AFImageWidget(int16_t x, int16_t y, const AFImage* img, ID_TYPE id)
+AFImageWidget::AFImageWidget(int16_t x, int16_t y, const AFImage* img, uint32_t id)
     : AFWidget(x, y, img ? img->width() : 0, img ? img->height() : 0, id),
       m_img(img)
 {

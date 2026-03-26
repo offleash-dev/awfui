@@ -30,10 +30,10 @@ static const char* kExtraChars2TopRow = "1234567890";
 static const char* kExtraChars2MainRow = "/~;:'\"%^|";
 static const char* kExtraChars2BottomRow = "[]{}\\<>";
 
-char keyLabels[26][2];   // Pre-allocated labels for buttons (1 char + null terminator)
-char keyIds[26][4];   // Pre-allocated IDs for buttons (1 char + null terminator)
+char keyLabels[26][2] = {0};   // Pre-allocated labels for buttons (1 char + null terminator)
+char keyIds[26][5] = {0};   // Pre-allocated IDs for buttons (1 char + null terminator)
 
-
+ 
 
 static const char* theButtonKeys[12]= {  // Indexed by AFCharacterMode, then row  
     kLowerCaseCharsTopRow, kLowerCaseCharsMainRow, kLowerCaseCharsBottomRow,
@@ -82,7 +82,7 @@ void onBackspacePressedWrapper(AFButton& sender) {
 
 
 // Constructor
-AFKeyboard::AFKeyboard(int16_t x, int16_t y, int16_t w, int16_t h, ID_TYPE id)
+AFKeyboard::AFKeyboard(int16_t x, int16_t y, int16_t w, int16_t h, uint32_t id)
     : AFPanel(x, y, w, h, id)
     , m_characterMode(AFCharacterMode::kLowerCaseMode)
     , m_currentCharacter('a')
@@ -125,7 +125,8 @@ void AFKeyboard::createKeyboardLayout() {
                 startX + col * (kKeyWidth + kKeyMargin),
                 startY,
                 kKeyWidth, kKeyHeight,
-                makeID(keyIds[keyIndex])
+                "",
+                MAKE_ID_FROM_STR(keyIds[keyIndex])
             );
 
             button->setOnClickCallback(onKeyPressedWrapper);
@@ -151,7 +152,8 @@ void AFKeyboard::createKeyboardLayout() {
                 startX + col * (kKeyWidth + kKeyMargin),
                 row1Y,
                 kKeyWidth, kKeyHeight,
-                makeID(keyIds[keyIndex])
+                "",
+                MAKE_ID_FROM_STR(keyIds[keyIndex])
             );
             button->setOnClickCallback(onKeyPressedWrapper);
             addWidget(button, true);
@@ -165,7 +167,8 @@ void AFKeyboard::createKeyboardLayout() {
                 startX + 9 * (kKeyWidth + kKeyMargin),
                 row1Y,
                 kKeyWidth, kKeyHeight, // Make it wider
-                makeID("BACK")
+                "",
+                MAKE_ID_FROM_STR("BACK")
             );
             m_backspaceButton->setLabel("<-");
             m_backspaceButton->setOnClickCallback(onBackspacePressedWrapper);
@@ -183,7 +186,8 @@ void AFKeyboard::createKeyboardLayout() {
         startX,
         row2Y,
         kShiftWidth, kKeyHeight,
-        makeID("SHFT")
+        "",
+        MAKE_ID_FROM_STR("SHFT")
     );
     m_shiftButton->setLabel("^^");
     m_shiftButton->setOnClickCallback(onShiftPressedWrapper);
@@ -200,7 +204,8 @@ void AFKeyboard::createKeyboardLayout() {
                 startX + kShiftWidth + kKeyMargin + (col) * (kKeyWidth + kKeyMargin),
                 row2Y,
                 kKeyWidth, kKeyHeight,
-                makeID(keyIds[keyIndex])
+                "",
+                MAKE_ID_FROM_STR(keyIds[keyIndex])
             );
             button->setOnClickCallback(onKeyPressedWrapper);
             addWidget(button, true);
@@ -218,7 +223,8 @@ void AFKeyboard::createKeyboardLayout() {
         spaceX,
         row2Y,
         kSpaceWidth, kKeyHeight,
-        makeID("SPCE")
+        "",
+        MAKE_ID_FROM_STR("SPCE")
     );
     m_spaceButton->setLabel("___");
     m_spaceButton->setOnClickCallback(onSpacePressedWrapper);
@@ -343,13 +349,13 @@ char AFKeyboard::getCharacterForButton(int buttonIndex) const {
 
 void AFKeyboard::onKeyPressed(AFButton& sender) {
     // Extract button index from button ID
-    ID_TYPE id = sender.getId();
+    uint32_t id = sender.getId();
     // button IDs are in the format "KXX" where XX is the button index (e.g. K00, K01, ..., K29)
-    if (id[0] != 'K') 
+    if (getIdByte(id, 0) != 'K') 
         return; // Not a key button
     
     // button index is char 1 and 2, convert to integer
-    int buttonIndex = (id[1] - '0') * 10 + (id[2] - '0'); // Convert "KXX" to integer index
+    int buttonIndex = (getIdByte(id, 1) - '0') * 10 + (getIdByte(id, 2) - '0'); // Convert "KXX" to integer index
     if (buttonIndex < 0 || buttonIndex >= 26) 
         return; // We have 26 buttons
     

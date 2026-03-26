@@ -16,7 +16,7 @@
 class AFFullscreenDialog : public AFModalDialog {
 public:
       // No dimensions needed - automatically fills the screen when shown
-      AFFullscreenDialog(ID_TYPE id = 0);
+      AFFullscreenDialog(uint32_t id = 0);
 
       // Override show to resize to screen dimensions
       void show(AFScreen& screen) override;

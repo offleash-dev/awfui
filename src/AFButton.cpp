@@ -16,7 +16,7 @@
 
 // Constructor
 //
-AFButton::AFButton(int16_t x, int16_t y, int16_t w, int16_t h, ID_TYPE id, const char* labelText)
+AFButton::AFButton(int16_t x, int16_t y, int16_t w, int16_t h, const char* labelText, uint32_t id)
     : AFWidget(x, y, w, h, id), m_label(labelText) {
       const AFTheme& theme = AFWorld::instance()->getTheme();
       m_bgColor            = theme.widgetBgColor;
@@ -28,15 +28,17 @@ AFButton::AFButton(int16_t x, int16_t y, int16_t w, int16_t h, ID_TYPE id, const
       m_textSize           = theme.widgetTextSize;
 }
 
+
+
 // Initialize method for stack objects
 //
-void AFButton::init(int16_t x, int16_t y, int16_t w, int16_t h, ID_TYPE id, const char* labelText) {
+void AFButton::init(int16_t x, int16_t y, int16_t w, int16_t h, const char* labelText, uint32_t id) {
       // Initialize the base AFWidget
       m_x = x;
       m_y = y;
       m_width = w;
       m_height = h;
-      m_id = storeID(id);
+      m_id = id;
       m_label = labelText;
       
       const AFTheme& theme = AFWorld::instance()->getTheme();

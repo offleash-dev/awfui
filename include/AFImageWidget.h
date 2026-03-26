@@ -17,7 +17,7 @@
 
 class AFImageWidget : public AFWidget {
 public:
-    AFImageWidget(int16_t x, int16_t y, const AFImage* img, ID_TYPE id = 0);
+    AFImageWidget(int16_t x, int16_t y, const AFImage* img, uint32_t id = 0);
 
     void draw(AFDisplayInterface& displayInterface) override;
 

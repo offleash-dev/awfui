@@ -8,7 +8,7 @@
 //// Copyright (c) 2026 Matt Foster
 //// Licensed under the MIT License. See LICENSE file for details.
 
-#include "AFVector.h"
+#include <etl/vector.h>
 
 #include "AFDisplayInterface.h"
 
@@ -23,7 +23,7 @@
 
 class AFScreen : public AFContainer {
 public:
-      AFScreen(AFDisplayInterface& display, ID_TYPE id = 0, bool useCanvas = false);
+      AFScreen(AFDisplayInterface& display, bool useCanvas = false, uint32_t id = 0);
       virtual ~AFScreen();
 
       // if owned, the screen or panel will delete the widget when deleted. 
@@ -60,13 +60,19 @@ public:
       }
 
 
-      ID_TYPE getId() const {
+      uint32_t getId() const {
+#if AWFUI_DISABLE_IDS
+            return AFUI_ID_NONE; // IDs are disabled, return none
+#else
             return m_id;
+#endif
       }
+
 
       // Container interface implementation
       void markIntersectingWidgetsDirty(int16_t rx, int16_t ry, int16_t rw, int16_t rh) override;
 
+      
 protected:
       // Override in subclass to handle non-positional events (kButton, kKey, kCustom)
       virtual void onExternalEvent(const AFEvent& e) {
@@ -87,9 +93,9 @@ protected:
  
 private:
       AFDisplayInterface& m_display;
-      bool        m_needsScreenRedraw = false;
-      ID_TYPE     m_id;
+      bool          m_needsScreenRedraw = false;
+      uint32_t m_id;
 
-      AFVector<AFModalDialog*, MAX_DIALOGS_PER_SCREEN>   m_modalStack;  // Modal dialog stack
-      AFWidget* m_pressedWidget = nullptr;  // implicit capture for drag
+      etl::vector<AFModalDialog*, MAX_DIALOGS_PER_SCREEN>   m_modalStack;  // Modal dialog stack
+      AFWidget*                                             m_pressedWidget = nullptr;  // implicit capture for drag
 };

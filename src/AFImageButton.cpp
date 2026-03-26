@@ -14,8 +14,8 @@
 
 
 
-AFImageButton::AFImageButton(int16_t x, int16_t y, const AFImage* img, ID_TYPE id)
-    : AFButton(x, y, img ? img->width() : 0, img ? img->height() : 0, id),
+AFImageButton::AFImageButton(int16_t x, int16_t y, const AFImage* img, uint32_t id)
+    : AFButton(x, y, img ? img->width() : 0, img ? img->height() : 0, "", id),
       m_image(img)
 {
 }
@@ -24,11 +24,11 @@ AFImageButton::AFImageButton(int16_t x, int16_t y, const AFImage* img, ID_TYPE i
 
 // Initialize method for stack objects
 //
-void AFImageButton::init(int16_t x, int16_t y, const AFImage* img, ID_TYPE id) {
+void AFImageButton::init(int16_t x, int16_t y, const AFImage* img, uint32_t id) {
       // Initialize the base AFButton
       int16_t width = img ? img->width() : 0;
       int16_t height = img ? img->height() : 0;
-      AFButton::init(x, y, width, height, id, nullptr);
+      AFButton::init(x, y, width, height, "", id);
       
       m_image = img;
 }

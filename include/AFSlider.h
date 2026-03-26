@@ -30,10 +30,10 @@ using AFSliderCallback = void (*)(AFSlider& sender, int value);
 class AFSlider : public AFValueWidget {
 public:
     AFSlider() = default;  // Default constructor for stack objects
-    AFSlider(int16_t x, int16_t y, int16_t w, int16_t h, ID_TYPE id = 0);
+    AFSlider(int16_t x, int16_t y, int16_t w, int16_t h, uint32_t id = 0);
 
     // Initialize method for stack objects
-    void init(int16_t x, int16_t y, int16_t w, int16_t h, ID_TYPE id = 0);
+    void init(int16_t x, int16_t y, int16_t w, int16_t h, uint32_t id = 0);
 
     void setColors(uint16_t track, uint16_t fill, uint16_t thumb);
 
