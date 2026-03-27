@@ -43,7 +43,7 @@ public:
 
       virtual void draw(AFDisplayInterface& displayInterface) override;
 
-      void handleEvent(const AFEvent& e) override;
+      virtual void handleEvent(const AFEvent& e) override;
      
       virtual bool isDirty() const override;
       virtual void setVisible(bool v) override;
@@ -99,6 +99,15 @@ public:
 
 
 protected:
+      void captureWidget(AFWidget* w, const AFEvent& e);
+      void capturedWidgetMove(const AFEvent& e);
+      void capturedWidgetRelease(const AFEvent& e);
+
+
+      bool hasCaputuredWidget() const {
+            return m_pressedWidget != nullptr;
+      }
+
 
       bool m_opaque = true;
       AFWidget* m_pressedWidget = nullptr;  // implicit capture for drag

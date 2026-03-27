@@ -197,19 +197,11 @@ void AFPanel::handleEvent(const AFEvent& e) {
 
       // Move/Up go to captured widget (no hit-test)
       if (e.type == AFEventType::kTouchMove && m_pressedWidget) {
-            m_pressedWidget->onMove(e);
+            capturedWidgetMove(e);
             return;
       }
       if (e.type == AFEventType::kTouchUp && m_pressedWidget) {
-            AFWidget* w = m_pressedWidget;
-            m_pressedWidget = nullptr;
-            
-            w->onRelease(e);
-            int16_t localX = e.x - m_x;  // Convert screen to panel-local
-            int16_t localY = e.y - m_y;
-            if (w->hitTest(localX, localY)) {
-                  w->onClick(e);
-            }
+            capturedWidgetRelease(e);
             return;
       }
 
@@ -237,13 +229,37 @@ void AFPanel::handleEvent(const AFEvent& e) {
                   }
                   
                   // Otherwise, capture this widget
-                  m_pressedWidget = w;
-                  w->onPress(e);
+                  captureWidget(w, e);
                   
                   return;
             }
       }
 }
+
+
+
+void AFPanel::captureWidget(AFWidget* w, const AFEvent& e) {
+      m_pressedWidget = w;
+      w->onPress(e);
+}
+
+void AFPanel::capturedWidgetMove(const AFEvent& e) {
+      m_pressedWidget->onMove(e);
+}
+
+
+void AFPanel::capturedWidgetRelease(const AFEvent& e) {
+      AFWidget* w = m_pressedWidget;
+      m_pressedWidget = nullptr;
+      
+      w->onRelease(e);
+      int16_t localX = e.x - m_x;  // Convert screen to panel-local
+      int16_t localY = e.y - m_y;
+      if (w->hitTest(localX, localY)) {
+            w->onClick(e);
+      }
+}
+
 
 // Add panel to container
 //

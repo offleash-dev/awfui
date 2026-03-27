@@ -58,6 +58,8 @@ public:
     // Backspace handling
     void setOnBackspaceCallback(AFKeyboardCallback cb) { m_onBackspaceCallback = cb; }
     
+    // Optimized event handling for grid layout
+    void handleEvent(const AFEvent& e) override;
 
 protected:
     void createKeyboardLayout();

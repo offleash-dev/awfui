@@ -109,7 +109,7 @@ AFKeyboard::AFKeyboard(int16_t x, int16_t y, int16_t w, int16_t h, uint32_t id)
 
 
 void AFKeyboard::createKeyboardLayout() {
-    int16_t startX = kKeyMargin;
+    int16_t startX = kKeyMargin+2;
     int16_t startY = kKeyMargin;
 
     int keyIndex = 0;
@@ -415,6 +415,104 @@ void AFKeyboard::onSpacePressed(AFButton& sender) {
         m_onCharacterCallback(*this, ' ');
     }
     markDirty();
+}
+
+
+
+// Optimized event handling using grid-based hit testing
+void AFKeyboard::handleEvent(const AFEvent& e) {
+    // Only handle touch events
+    if (e.type != AFEventType::kTouchDown && 
+        e.type != AFEventType::kTouchUp && 
+        e.type != AFEventType::kTouchMove) {
+        AFPanel::handleEvent(e);
+        return;
+    }
+    
+    // Move/Up go to captured widget (no hit-test)
+    if (e.type == AFEventType::kTouchMove && hasCaputuredWidget()) {
+            capturedWidgetMove(e);
+            return;
+    }
+    if (e.type == AFEventType::kTouchUp && hasCaputuredWidget()) {
+            capturedWidgetRelease(e);
+            return;
+    }
+
+      // Convert to local coordinates
+    int16_t localX = e.x - m_x;
+    int16_t localY = e.y - m_y;
+    
+    // Quick bounds check
+    if (localX < 0 || localY < 0 || localX >= m_width || localY >= m_height) {
+        return;
+    }
+    
+    // Grid-based hit testing for letter keys
+    // Calculate which row/column was touched
+    int16_t startX = kKeyMargin + 2;
+    int16_t startY = kKeyMargin;
+    
+    AFWidget* foundButton = nullptr;
+    // Check row 0 (10 keys: qwerty...)
+    if (localY >= startY && localY < startY + kKeyHeight) {
+        int col = (localX - startX) / (kKeyWidth + kKeyMargin);
+        if (col >= 0 && col < 10) {
+            int buttonIndex = col;
+            if (m_keyButtons[buttonIndex]) {
+                foundButton = m_keyButtons[buttonIndex];
+            }
+        }
+    }
+    
+    // Check row 1 (9 keys + backspace)
+    int16_t row1Y = startY + kKeyHeight + kKeyMargin;
+    if (foundButton == nullptr && localY >= row1Y && localY < row1Y + kKeyHeight) {
+        int col = (localX - startX) / (kKeyWidth + kKeyMargin);
+        if (col >= 0 && col < 9) {
+            int buttonIndex = 10 + col;
+            if (m_keyButtons[buttonIndex]) {
+                foundButton = m_keyButtons[buttonIndex];
+            }
+        } else if (col == 9 && m_backspaceButton) {
+            foundButton = m_backspaceButton;
+        }
+    }
+    
+    // Check row 2 (shift + 7 keys + space)
+    int16_t row2Y = row1Y + kKeyHeight + kKeyMargin;
+    if (foundButton == nullptr && localY >= row2Y && localY < row2Y + kKeyHeight) {
+        // Check shift button
+        if (localX >= startX && localX < startX + kShiftWidth && m_shiftButton) {
+            foundButton = m_shiftButton;
+        }
+        
+        // Check letter keys (offset by shift button)
+        int offsetX = localX - (startX + kShiftWidth + kKeyMargin);
+        if (offsetX >= 0) {
+            int col = offsetX / (kKeyWidth + kKeyMargin);
+            if (col >= 0 && col < 7) {
+                int buttonIndex = 19 + col;
+                if (m_keyButtons[buttonIndex]) {
+                    foundButton = m_keyButtons[buttonIndex];
+                }
+            }
+            
+            // Check space button
+            int spaceX = startX + kShiftWidth + kKeyMargin + 7 * (kKeyWidth + kKeyMargin) + kKeyMargin;
+            if (localX >= spaceX && localX < spaceX + kSpaceWidth && m_spaceButton) {
+                foundButton = m_spaceButton;
+            }
+        }
+    }
+    
+    if (foundButton) {
+        captureWidget(foundButton, e);
+        return;
+    }
+
+    // Fallback to default panel hit testing for any edge cases
+    AFPanel::handleEvent(e);
 }
 
 
