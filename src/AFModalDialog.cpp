@@ -76,9 +76,7 @@ void AFModalDialog::show() {
 void AFModalDialog::dismiss() {
       if (m_owner) {
             onHide();
-            setVisible(false);
-            m_owner->dismissModal(this);
-
+            m_owner->dismissModal(this);  // This just removes from modal stack
             m_owner = nullptr;
       }
 }

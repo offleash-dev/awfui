@@ -19,8 +19,8 @@
 AFPanel::AFPanel(int16_t x, int16_t y, int16_t w, int16_t h, uint32_t id)
     : AFWidget(x, y, w, h, id) {
       // Panels default to visible
-      setVisible(true);
-      setIsContainer(true); // Panels can contain child widgets
+      AFWidget::setVisible(true);
+      AFWidget::setIsContainer(true); // Panels can contain child widgets
 }
 
 
@@ -100,32 +100,34 @@ void AFPanel::fillBackgroundRect(AFDisplayInterface& displayInterface) {
 // Draw panel and child widgets
 //
 void AFPanel::draw(AFDisplayInterface& displayInterface) {
-      if (!isVisible())
+      if (!AFWidget::isVisible())
             return;
 
+      bool didRedraw = false;
       if (m_opaque && isDirty()) {
             const AFTheme& theme = AFWorld::instance()->getTheme();
             fillBackgroundRect(displayInterface);
 
             displayInterface.drawRect(m_x, m_y, m_width, m_height, theme.widgetBorderColor);
+            didRedraw = true;
       }
 
       // Draw child widgets with screen offset
       for (auto* w : m_widgets) {
-            if (w->isVisible() && isDirty()) {
+            if ((w->isVisible() && w->isDirty()) || didRedraw) {
                   w->draw(displayInterface, m_x, m_y);  // Convert local to screen
                   w->clearDirty();
             }
       }
       
       // Clear our own dirty flag after drawing children
-      clearDirty();
+      AFWidget::clearDirty();
  }
 
 
 
 void AFPanel::setVisible(bool v) {
-      bool wasVisible = isVisible();
+      bool wasVisible = AFWidget::isVisible();
       if (wasVisible != v) {
             if (!v && wasVisible) {
                   // When hiding, mark intersecting widgets dirty so they get redrawn
@@ -143,11 +145,12 @@ void AFPanel::setVisible(bool v) {
                             screenY = parentPanel->toScreenY(m_y);
                         }
                         
+                        // Mark underlying widgets/panels dirty 
                         m_owner->markIntersectingWidgetsDirty(screenX, screenY, m_width, m_height);
                   }
             }
             
-            setVisible(v);
+            AFWidget::setVisible(v);
             markDirty();
       }
 }
