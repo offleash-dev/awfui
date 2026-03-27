@@ -89,7 +89,7 @@ private:
     // Constants
     static constexpr int kKeyWidth = 20;
     static constexpr int kKeyHeight = 20;
-    static constexpr int kKeyMargin = 2;
+    static constexpr int kKeyMargin = 3;
     static constexpr int kShiftWidth = 20;  // 1x key width
     static constexpr int kSpaceWidth = 40;   // 2x key width
     static constexpr int kControlHeight = 96;

@@ -161,6 +161,8 @@ void AFKeyboard::createKeyboardLayout() {
             if (buttonIndex < 26) {
                 m_keyButtons[buttonIndex] = button;
             }
+            
+            keyIndex++;  // Only increment when we actually use keyIds
         } else if (col == 9) {
             // Backspace button
             m_backspaceButton = new AFButton(
@@ -174,8 +176,6 @@ void AFKeyboard::createKeyboardLayout() {
             m_backspaceButton->setOnClickCallback(onBackspacePressedWrapper);
             addWidget(m_backspaceButton, true);
         }
-
-        keyIndex++;
     }
     
     // Row 2: shift + z x c v b n m + space
@@ -195,7 +195,7 @@ void AFKeyboard::createKeyboardLayout() {
     
     // z x c v b n m (7 keys, offset by shift button)
     for (int col = 0; col < 7; col++) {
-            int buttonIndex = 2 * 10 + col; // Row 2, column col
+            int buttonIndex = 19 + col; // Row 2, column col (10 from row 0 + 9 from row 1 = 19)
             keyIds[keyIndex][0] = 'K';
             snprintf(keyIds[keyIndex] + 1, sizeof(keyIds[keyIndex]) - 1, "%02d", buttonIndex);
             keyIds[keyIndex][3] = '\0';
@@ -248,7 +248,8 @@ void AFKeyboard::updateKeyLabels() {
             if (!m_keyButtons[key]) 
                 continue;
 
-            keyLabels[key][0] = getCharacterForButton(key);
+            char ch = getCharacterForButton(key);
+            keyLabels[key][0] = ch;
             keyLabels[key][1] = '\0';
             
             m_keyButtons[key]->setLabel(keyLabels[key]);
@@ -321,7 +322,7 @@ char AFKeyboard::getCharacterForButton(int buttonIndex) const {
             col = buttonIndex - 19;
         }
 
-        //  the  character set for this mode and row is theKeyButtons
+        //  the  character set for this mode and row is theButtonKeys
         switch (m_characterMode) {
             case AFCharacterMode::kLowerCaseMode:
                 break;

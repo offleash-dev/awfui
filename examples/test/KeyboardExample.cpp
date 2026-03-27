@@ -76,7 +76,7 @@ void createTextInputPanel(AFScreen& screen, AFLabel* keyOutputLabel) {
         submitButton->setOnClickCallback(onSubmitButtonRelease);
         screen.addWidget(submitButton, true);
 
-        keyboard = new AFKeyboard(0, screen.getDisplay().height() - 50, screen.getDisplay().width(), 50, MAKE_ID_FROM_STR("SKbd"));
+        keyboard = new AFKeyboard(0, screen.getDisplay().height() - 70, screen.getDisplay().width(), 70, MAKE_ID_FROM_STR("SKbd"));
         keyboard->setOnCharacterCallback(onKeyboardCharacterCallback);
         keyboard->setOnBackspaceCallback(onKeyboardBackspaceCallBack);
         screen.addPanel(keyboard, true);
