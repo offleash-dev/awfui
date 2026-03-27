@@ -59,44 +59,52 @@ public:
 
 
     virtual void setVisible(bool v) {
-        if (m_visible != v) {
-            m_visible = v;
+        bool wasVisible = m_flags & FLAG_VISIBLE;
+        if (wasVisible != v) {
+            if (v) 
+                m_flags |= FLAG_VISIBLE;
+            else 
+                m_flags &= ~FLAG_VISIBLE;
             markDirty();
         }
     }
 
 
     bool isVisible() const {
-        return m_visible;
+        return m_flags & FLAG_VISIBLE;
     }
 
 
     void setEnabled(bool e) {
-        if (m_enabled != e) {
-            m_enabled = e;
+        bool wasEnabled = m_flags & FLAG_ENABLED;
+        if (wasEnabled != e) {
+            if (e) 
+                m_flags |= FLAG_ENABLED;
+            else 
+                m_flags &= ~FLAG_ENABLED;
             markDirty();
         }
     }
 
 
     bool isEnabled() const {
-        return m_enabled;
+        return m_flags & FLAG_ENABLED;
     }
 
 
     virtual void markDirty() {
-        m_dirty = true;
+        m_flags |= FLAG_DIRTY;
         // Note: We don't cascade to parent because needsRedraw() already checks all children
     }
 
 
     virtual bool isDirty() const {
-        return m_dirty;
+        return m_flags & FLAG_DIRTY;
     }
 
 
     void clearDirty() {
-        m_dirty = false;
+        m_flags &= ~FLAG_DIRTY;
     }
 
 
@@ -140,11 +148,6 @@ public:
     }
 
 
-    bool isContainer() const {
-        return m_isContainer;
-    }
-
-
     AFScreen* getOwner() const {
         return m_owner;
     }
@@ -155,24 +158,40 @@ public:
     }
 
 
+    bool isContainer() const {
+        return m_flags & FLAG_CONTAINER;
+    }
+
+
+    void setIsContainer(bool container) {
+        if (container) 
+            m_flags |= FLAG_CONTAINER;
+        else 
+            m_flags &= ~FLAG_CONTAINER;
+    }
+
+
     bool isOwned() const {
-        return m_owned;
+        return m_flags & FLAG_OWNED;
     }
 
 
     void setOwned(bool owned) {
-        m_owned = owned;
+        if (owned) 
+            m_flags |= FLAG_OWNED;
+        else 
+            m_flags &= ~FLAG_OWNED;
     }
 
 
     void setJustification(AFJustification j) {
-            m_justification = j;
+            m_flags = (m_flags & ~FLAG_JUSTIFICATION_MASK) | (static_cast<uint8_t>(j) << FLAG_JUSTIFICATION_SHIFT);
             markDirty();
     }
 
 
     AFJustification getJustification() const {
-            return m_justification;
+            return static_cast<AFJustification>((m_flags & FLAG_JUSTIFICATION_MASK) >> FLAG_JUSTIFICATION_SHIFT);
     }
 
 
@@ -186,20 +205,27 @@ public:
 
 
 protected:
+    // Flag bits for packed boolean storage
+    static constexpr uint8_t FLAG_ENABLED     = 0x01;
+    static constexpr uint8_t FLAG_VISIBLE     = 0x02;
+    static constexpr uint8_t FLAG_DIRTY       = 0x04;
+    static constexpr uint8_t FLAG_OWNED       = 0x08;
+    static constexpr uint8_t FLAG_CONTAINER   = 0x10;
+    // Justification uses bits 5-6 (2 bits for 3 values)
+    static constexpr uint8_t FLAG_JUSTIFICATION_MASK   = 0x60;  // 0110 0000
+    static constexpr uint8_t FLAG_JUSTIFICATION_SHIFT  = 5;
+
     int16_t   m_x, m_y;
     int16_t   m_width, m_height;
-    bool      m_enabled = true;
-    bool      m_visible = true;
-    bool      m_dirty   = true;  // Start dirty so initial draw happens
-    bool      m_owned   = false; // If true, container will delete this widget
-    bool      m_isContainer = false; // If true, widget can contain child widgets (e.g. panels)
 
-    uint32_t m_id;
+     // Start enabled, visible, dirty, centered
+    uint8_t   m_flags = FLAG_ENABLED | FLAG_VISIBLE | FLAG_DIRTY | (AFJustificationCenter << FLAG_JUSTIFICATION_SHIFT);
+
+    uint32_t  m_id = 0;
 
     uint8_t   m_eventMask = kEventTouch;  // default touch only
     AFWidget* m_parent  = nullptr;
     AFScreen* m_owner   = nullptr;  // Screen that manages this widget
-    AFJustification m_justification = AFJustificationCenter;
 
     friend class AFPanel;
     friend class AFScreen;

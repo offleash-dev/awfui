@@ -365,12 +365,12 @@ static void setupScreen3(int16_t width, int16_t height) {
       screen3->addWidget(restartBtn, true);
 
       // ---- Shared dialog for screen 3 ----
-      s3_dialog = new AFModalDialog(20, 40, W - 40, 140, MAKE_ID_FROM_STR("S3Dg"));
+      s3_dialog = new AFModalDialog(20, 50, W - 40, 140, MAKE_ID_FROM_STR("S3Dg"));
 
       s3_dialogLabel = new AFLabel(30, 60, "placeholder", MAKE_ID_FROM_STR("S3DL"));
       s3_dialog->addWidget(s3_dialogLabel, true);
 
-      auto* okBtn = new AFButton(50, 120, 100, 40, "OK", MAKE_ID_FROM_STR("S3OK"));
+      auto* okBtn = new AFButton(50, 90, 100, 40, "OK", MAKE_ID_FROM_STR("S3OK"));
       okBtn->setOnClickCallback([](AFButton& sender) { s3_dialog->dismiss(); });
       s3_dialog->addWidget(okBtn, true);
 }
