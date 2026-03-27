@@ -12,11 +12,12 @@
 
 
 
-
 // Constructor
 //
 AFScreen::AFScreen(AFDisplayInterface& displayRef, bool useCanvas, uint32_t id)
-    : m_display(displayRef), m_id(id), m_canvas(0) {
+    : m_display(displayRef) {
+      m_id = id;
+      m_canvas = nullptr;
       if (displayRef.supportsCanvas() && useCanvas) {
             // Create an off-screen buffer matching the display size
             m_canvas = m_display.createCanvas();

@@ -14,8 +14,7 @@
 // Constructor
 //
 AFModalDialog::AFModalDialog(int16_t x, int16_t y, int16_t w, int16_t h, uint32_t id) : AFPanel(x, y, w, h, id) {
-      // Modal dialogs are visible by default
-      m_visible = true;
+      setVisible(true);
       m_opaque = true;
 }
 
@@ -31,8 +30,7 @@ void AFModalDialog::init(int16_t x, int16_t y, int16_t w, int16_t h, uint32_t id
       m_height = h;
       m_id = id;
       
-      // Modal dialogs are visible by default
-      m_visible = true;
+      setVisible(true);
       m_opaque = true;
 }
 

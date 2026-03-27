@@ -13,9 +13,11 @@
 // Constructor
 //
 AFWidget::AFWidget(int16_t x, int16_t y, int16_t w, int16_t h, uint32_t id) : m_x(x), m_y(y), m_width(w), m_height(h), m_id(id) {
-      m_visible = true;
       m_parent  = nullptr;
-      m_dirty   = true;  // Start dirty so initial draw happens
+      m_owner   = nullptr;
+
+      // Start enabled, visible, dirty, centered text justification
+      m_flags   = FLAG_ENABLED | FLAG_VISIBLE | FLAG_DIRTY | (AFJustificationCenter << FLAG_JUSTIFICATION_SHIFT); 
 }
 
 
