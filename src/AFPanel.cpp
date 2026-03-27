@@ -243,9 +243,12 @@ void AFPanel::captureWidget(AFWidget* w, const AFEvent& e) {
       w->onPress(e);
 }
 
+
+
 void AFPanel::capturedWidgetMove(const AFEvent& e) {
       m_pressedWidget->onMove(e);
 }
+
 
 
 void AFPanel::capturedWidgetRelease(const AFEvent& e) {
@@ -259,6 +262,7 @@ void AFPanel::capturedWidgetRelease(const AFEvent& e) {
             w->onClick(e);
       }
 }
+
 
 
 // Add panel to container

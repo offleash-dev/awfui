@@ -25,7 +25,7 @@
 ////
 //// For RTOS, wrap postEvent/nextEvent with a mutex in a subclass.
 
-#include <etl/queue.h>
+#include "AFQueue.h"
 
 #include "AFEvent.h"
 
@@ -75,5 +75,5 @@ protected:
 
 
 private:
-    etl::queue<AFEvent, AF_EVENT_QUEUE_SIZE> m_queue;
+    AFQueue<AFEvent, AF_EVENT_QUEUE_SIZE> m_queue;
 };
