@@ -57,12 +57,12 @@ AFEventQueue   eventQueue;
 AFModalDialog* dialog;
 
 
-void showMainScreenDialog(AFWidget& sender) {
+void showMainScreenDialog(AFButton& sender) {
       dialog->show(*mainScreen);
 }
 
 
-void dismissMainScreenDialog(AFWidget& sender) {
+void dismissMainScreenDialog(AFButton& sender) {
       dialog->show(*mainScreen);
 }
 

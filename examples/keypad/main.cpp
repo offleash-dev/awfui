@@ -77,16 +77,16 @@ KeypadScreen*   keypadScreen;
 AFEventQueue    eventQueue;
 
 
-void dialCallback(AFWidget& sender) {
+void dialCallback(AFButton& sender) {
       // Placeholder — just clear the display
       keypadScreen->dial(sender);
 }
 
-void backspaceCallback(AFWidget& sender) {
+void backspaceCallback(AFButton& sender) {
       keypadScreen->backspace(sender);
 }
 
-void appendDigitCallback(AFWidget& sender) {
+void appendDigitCallback(AFButton& sender) {
       keypadScreen->appendDigit(sender);
 }
 

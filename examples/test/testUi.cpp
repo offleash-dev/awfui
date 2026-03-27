@@ -32,6 +32,7 @@
 extern void createTextInputPanel(AFScreen& screen, AFLabel* keyOutputLabel);
 
 
+
 AFWorld* setupWorld = nullptr;
 AFScreen* screen1;
 AFScreen* screen2;
@@ -92,9 +93,12 @@ static AFButton*   s1_btnTR;
 static AFButton*   s1_btnBL;
 static AFButton*   s1_btnBR;
 
+
+
 void showKeyboardCallback(AFButton& sender) {
       createTextInputPanel(*screen1, s1_statusLabel);
 }
+
 
 
 static void setupScreen1(int16_t width, int16_t height) {

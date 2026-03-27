@@ -73,11 +73,11 @@ DemoScreen*    mainScreen;
 AFEventQueue   eventQueue;
 AFModalDialog* dialog;
 
-void handleShowButtonClick(AFWidget& sender) {
+void handleShowButtonClick(AFButton& sender) {
       dialog->show(*mainScreen);
 }
 
-void handleDialogOkClick(AFWidget& sender) {
+void handleDialogOkClick(AFButton& sender) {
       dialog->dismiss();
 }
 
