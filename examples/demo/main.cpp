@@ -33,7 +33,7 @@
 class DemoScreen : public AFScreen {
 public:
       DemoScreen(AFDisplayInterface& display, bool useCanvas)
-            : AFScreen(display, makeID("Main"), useCanvas) {}
+            : AFScreen(display, useCanvas, MAKE_ID_FROM_STR("Main")) {}
 
       void setCounterLabel(AFLabel* lbl) { m_counterLabel = lbl; }
 
@@ -103,32 +103,32 @@ void setup() {
 
       // Create and register our custom screen
       mainScreen = new DemoScreen(display, true);
-      world->registerScreen(mainScreen);
+      world->addScreen(mainScreen);
       world->setActiveScreen(mainScreen);
 
       // ------------------------------------------------------------
       // Counter label — updated by onExternalEvent
       // ------------------------------------------------------------
-      AFLabel* counterLbl = new AFLabel(60, 10, 200, 20, "Button presses: 0", makeID("Cntr"));
+      AFLabel* counterLbl = new AFLabel(60, 10, 200, 20, "Button presses: 0", MAKE_ID_FROM_STR("Cntr"));
       mainScreen->addWidget(counterLbl);
       mainScreen->setCounterLabel(counterLbl);
 
       // ------------------------------------------------------------
       // Main screen button
       // ------------------------------------------------------------
-      AFButton* openBtn = new AFButton(120, 40, 160, 50, makeID("Open"), "Open Dialog");
+      AFButton* openBtn = new AFButton(120, 40, 160, 50, "Open Dialog", MAKE_ID_FROM_STR("Open"));
       openBtn->setOnClickCallback(handleShowButtonClick);
       mainScreen->addWidget(openBtn);
 
       // ------------------------------------------------------------
       // Modal dialog
       // ------------------------------------------------------------
-      dialog = new AFModalDialog(20, 40, 200, 140, makeID("HDlg"));
+      dialog = new AFModalDialog(20, 40, 200, 140, MAKE_ID_FROM_STR("HDlg"));
 
-      AFLabel* lbl = new AFLabel(30, 60, "Hello from AWFUI!", makeID("Helo"));
+      AFLabel* lbl = new AFLabel(30, 60, "Hello from AWFUI!", MAKE_ID_FROM_STR("Helo"));
       dialog->addWidget(lbl);
 
-      AFButton* okBtn = new AFButton(50, 100, 100, 40, makeID("OKBt"), "OK");
+      AFButton* okBtn = new AFButton(50, 100, 100, 40, "OK", MAKE_ID_FROM_STR("OKBt"));
       okBtn->setOnClickCallback(handleDialogOkClick);
       dialog->addWidget(okBtn);
 }
