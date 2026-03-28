@@ -372,7 +372,7 @@ void AFKeyboard::onKeyPressed(AFButton& sender) {
         m_onCharacterCallback(*this, m_currentCharacter);
     }
     
-    markDirty();
+//    markDirty();
 }
 
 
@@ -521,5 +521,4 @@ void AFKeyboard::onBackspacePressed(AFButton& sender) {
     if (m_onBackspaceCallback) {
         m_onBackspaceCallback(*this, '\b'); // Use backspace character
     }
-    markDirty();
 }
