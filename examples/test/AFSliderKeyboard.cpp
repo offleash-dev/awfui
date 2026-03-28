@@ -113,7 +113,7 @@ static const char* kModeTransitions[] = {"A2#", "2#a", "2#a", "#aA", "aA2"};
 
 // Constructor
 //
-AFSliderKeyboard::AFSliderKeyboard(int16_t x, int16_t y, int16_t w, int16_t h, ID_TYPE id)
+AFSliderKeyboard::AFSliderKeyboard(int16_t x, int16_t y, int16_t w, int16_t h, uint32_t id)
     : AFPanel(x, y, w, h, id)
     , m_characterMode(AFCharacterMode::kLowerCaseMode)
     , m_currentCharacter('a')
@@ -124,28 +124,28 @@ AFSliderKeyboard::AFSliderKeyboard(int16_t x, int16_t y, int16_t w, int16_t h, I
     
     // Current mode button (1 char width) - use local coordinates
     m_currentModeButton = new AFButton(kMargin, h - kControlHeight - kMargin, 
-                                       kModeButtonWidth, kControlHeight, 
-                                       makeID("SKCM"));
+                                       kModeButtonWidth, kControlHeight, "",
+                                       MAKE_ID_FROM_STR("SKCM"));
     m_currentModeButton->setOnClickCallback(onCurrentModePressedWrapper);
     addWidget(m_currentModeButton, true);
-    
+     
     // Next mode button (3 chars width) - use local coordinates
     m_nextModeButton = new AFButton(kMargin + kModeButtonWidth + kMargin, h - kControlHeight - kMargin,
-                                    kNextModeButtonWidth, kControlHeight,
-                                    makeID("SKNM"));
+                                    kNextModeButtonWidth, kControlHeight, "",
+                                    MAKE_ID_FROM_STR("SKNM"));
     m_nextModeButton->setOnClickCallback(onNextModePressedWrapper);
     addWidget(m_nextModeButton, true);
     
     // Back button (image button with backspace icon) - use local coordinates
     m_backButton = new AFImageButton(w - kBackButtonWidth - kMargin, h - kControlHeight - kMargin,
-                                     &backspaceImage, makeID("SKBK"));
+                                     &backspaceImage, MAKE_ID_FROM_STR("SKBK"));
     m_backButton->setOnClickCallback(onSKBackspacePressedWrapper);
     addWidget(m_backButton, true);
     
     // Output character label (1 char width) - use local coordinates
     m_outputCharacterLabel = new AFLabel(w - kBackButtonWidth - kMargin - kCharacterLabelWidth - kMargin,
                                        h - kControlHeight - kMargin, kCharacterLabelWidth, kControlHeight,
-                                       "", makeID("SKOL"));
+                                       "", MAKE_ID_FROM_STR("SKOL"));
     m_outputCharacterLabel->setJustification(AFJustificationCenter);
     addWidget(m_outputCharacterLabel, true);
     
@@ -153,7 +153,7 @@ AFSliderKeyboard::AFSliderKeyboard(int16_t x, int16_t y, int16_t w, int16_t h, I
     int sliderX = kMargin + kModeButtonWidth + kMargin + kNextModeButtonWidth + kMargin;
     int sliderWidth = w - sliderX - kBackButtonWidth - kCharacterLabelWidth - kMargin * 4;
     m_characterSlider = new AFSlider(sliderX, h - kControlHeight - kMargin,
-                                     sliderWidth, kSliderHeight, makeID("SKSL"));
+                                     sliderWidth, kSliderHeight, MAKE_ID_FROM_STR("SKSL"));
     m_characterSlider->setOnReleaseCallback(onSliderReleasedWrapper);
     m_characterSlider->setOnMoveCallback(onSliderMovedWrapper);
     addWidget(m_characterSlider, true);

@@ -36,7 +36,7 @@ using AFSliderKeyboardCallback = void (*)(AFSliderKeyboard& sender, char charact
 
 class AFSliderKeyboard : public AFPanel {
 public:
-    AFSliderKeyboard(int16_t x, int16_t y, int16_t w, int16_t h, ID_TYPE id = 0);
+    AFSliderKeyboard(int16_t x, int16_t y, int16_t w, int16_t h, uint32_t id = 0);
     
     // Friend functions for callback wrappers
     friend void onCurrentModePressedWrapper(AFButton& sender);
