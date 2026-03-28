@@ -226,7 +226,7 @@ Radio buttons provide mutually exclusive selection within a group.
 AFRadioButtonGroup group;
 group.addButton(&radio1);
 group.addButton(&radio2);
-group.setOnChangeCallback(onRadioChanged);  // void (*)(uint32_t id)
+group.setOnChangeCallback(onRadioChanged);  // void (*)(ID_TYPE id)
 ```
 
 The callback receives the `id` of the newly selected button.

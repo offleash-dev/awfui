@@ -12,7 +12,6 @@ AWFUI lives in a `/modules` directory alongside its dependencies. The expected l
 /modules
 	/awfui      	# this framework`
 		/backends 	# hardware support layer
-	/etl       		# Embedded Template Library
 	/sdl       		# SDL2 (desktop simulator only)
 	/drivers    	# Adafruit, HAL, and other hardware support`
 ```
@@ -25,7 +24,7 @@ Application projects that use AWFUI are siblings or parents of `/modules` — no
 
 AWFUI uses C++ minimally. Features that add binary expansionare avoided:
 
-- **No STL** — use [ETL](https://www.etlcpp.com/) containers instead.
+- **No STL** — use AFVector and AFQueue containers instead.  If you need other STL/ETL containers do not include them.  Create minimal AF* equivalents.
 - **No exceptions** — return `bool`, `nullptr`, or an `AFResult` enum. 
 - **Asserts** — for programmer errors only.
 - **No RTTI** — disabled to save space.
@@ -71,7 +70,7 @@ The code is the style guide. A few things worth calling out:
 
 - **Spacing:** 3 blank lines between functions in `.cpp` files, 2 blank lines between declarations in headers. The generous spacing makes individual methods easy to scan.
 
-- **Include order:** C standard headers, then ETL/platform libraries, then `AF*` headers.
+- **Include order:** C standard headers, then platform libraries, then `AF*` headers.
 
   
 

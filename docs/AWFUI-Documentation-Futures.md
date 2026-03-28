@@ -26,7 +26,7 @@
 
   - **Focus management** — Version 1 has no concept of an "active" widget that receives keyboard or button input. Adding focus means new events (`kGetFocus`, `kLoseFocus`), a focus chain, and tab-order tracking. It's a prerequisite for text editing and non-touch input.
   - **AFTextEdit** — text input needs focus, a cursor, and keyboard events. A significant addition.
-  - **AFWidgetList** — if focus is added, containers will need a managed widget list to track focus order and state. Currently, containers use a simple `etl::vector` of pointers.
+  - **AFWidgetList** — if focus is added, containers will need a managed widget list to track focus order and state. Currently, containers use a simple `AFVector` of pointers.
   - **Encoder / D-pad navigation** — non-touch input devices need focus traversal. Requires a tab-order or spatial navigation scheme.
 
   #### Rendering
