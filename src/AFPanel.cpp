@@ -222,7 +222,6 @@ void AFPanel::handleEvent(const AFEvent& e) {
                   
                   // If this is a panel, let it handle its own children
                   if (w->isContainer()) {
-                        printf("  Delegating to child panel\n");
                         // Convert screen coordinates to panel's local coordinates
                         static_cast<AFPanel*>(w)->handleEvent(e);
                         return;

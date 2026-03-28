@@ -7,7 +7,7 @@
 template <size_t MAX_DIALOGS>
 class AFDialogList {
 public:
-    using Container = etl::vector<AFDialog*, MAX_DIALOGS>;
+    using Container = AFVector<AFDialog*, MAX_DIALOGS>;
 
     bool add(AFDialog* d) {
         if (dialogs.full()) return false;
@@ -177,7 +177,7 @@ public:
     void handleEvent(const AFEvent& e);
 
 private:
-    etl::vector<AFWidget*, MAX_WIDGETS> widgets;
+    AFVector<AFWidget*, MAX_WIDGETS> widgets;
     AFWidget* focused = nullptr;
     AFWidget* captured = nullptr;
 };

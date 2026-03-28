@@ -51,7 +51,7 @@ A concrete implementation would use an AF queue internally:
         }
 
     private:
-        etl::queue<AFEvent, 8> m_queue;
+        AFQueue<AFEvent, 8> m_queue;
     };
 
 Usage from an STM32 GPIO ISR or RTOS task:

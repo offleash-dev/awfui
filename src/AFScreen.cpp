@@ -147,17 +147,12 @@ void AFScreen::showModal(AFModalDialog* d) {
 //
 void AFScreen::dismissModal(AFModalDialog* d) {
       // Find and remove this dialog from the stack
-#if 0 // use when switching to afvector
       for (auto it = m_modalStack.begin(); it != m_modalStack.end(); ++it) {
             if (*it == d) {
                 m_modalStack.erase(it);
                 break;
             }
         }
-#endif
-      auto it = std::find(m_modalStack.begin(), m_modalStack.end(), d);
-      if (it != m_modalStack.end())
-            m_modalStack.erase(it);
       
       // Only clear the dialog area, not the entire screen
       AFDisplayInterface* displayInterface = m_canvas ? m_canvas : &m_display;

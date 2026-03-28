@@ -414,7 +414,6 @@ void AFKeyboard::onSpacePressed(AFButton& sender) {
     if (m_onCharacterCallback) {
         m_onCharacterCallback(*this, ' ');
     }
-    markDirty();
 }
 
 
