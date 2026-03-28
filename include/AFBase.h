@@ -67,7 +67,10 @@ enum AFJustification {
 
 
 
-extern char* getAsChars(int32_t id);
+// this will safely convert the id from a 4 bytes to a usable char string
+// the 5 character memory is common for every call this, so it only works
+// one ID at a time.    
+extern char* getIdAsCharPtr(uint32_t id);
 
 
 

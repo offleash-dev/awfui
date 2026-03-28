@@ -9,6 +9,7 @@
 #include <stdio.h>
 #include <string.h>
 
+#include "AFBase.h"
 #include "AFButton.h"
 #include "AFLabel.h"
 #include "AFLayoutHelpers.h"
@@ -30,7 +31,7 @@ static const int kMaxDigits = 16;
 class KeypadScreen : public AFScreen {
 public:
       KeypadScreen(AFDisplayInterface& display, bool useCanvas)
-            : AFScreen(display, makeID("KPad"), useCanvas) {
+            : AFScreen(display, useCanvas, MAKE_ID_FROM_STR("KPad")) {
             m_numberBuf[0] = '\0';
       }
 
@@ -123,14 +124,14 @@ void setup() {
 
       // Create and register keypad screen
       keypadScreen = new KeypadScreen(display, true);
-      world->registerScreen(keypadScreen);
+      world->addScreen(keypadScreen);
       world->setActiveScreen(keypadScreen);
 
       // ------------------------------------------------------------
       // Entered-number label — centered
       // ------------------------------------------------------------
       int16_t lblX = AFLayoutHelpers::centerX(0, kScreenW, kLabelW);
-      AFLabel* numberLbl = new AFLabel(lblX, kLabelY, kLabelW, kLabelH, "", makeID("Numb"));
+      AFLabel* numberLbl = new AFLabel(lblX, kLabelY, kLabelW, kLabelH, "", MAKE_ID_FROM_STR("Numb"));
       keypadScreen->addWidget(numberLbl);
       keypadScreen->setNumberLabel(numberLbl);
 
@@ -143,10 +144,10 @@ void setup() {
       // ------------------------------------------------------------
       struct KeyDef { const char* label; uint32_t id; };
       static const KeyDef keys[4][3] = {
-            { {"1",makeID("Key1")}, {"2",makeID("Key2")}, {"3",makeID("Key3")} },
-            { {"4",makeID("Key4")}, {"5",makeID("Key5")}, {"6",makeID("Key6")} },
-            { {"7",makeID("Key7")}, {"8",makeID("Key8")}, {"9",makeID("Key9")} },
-            { {"*",makeID("KeyS")}, {"0",makeID("Key0")}, {"#",makeID("KeyH")} },
+            { {"1",MAKE_ID_FROM_STR("Key1")}, {"2",MAKE_ID_FROM_STR("Key2")}, {"3",MAKE_ID_FROM_STR("Key3")} },
+            { {"4",MAKE_ID_FROM_STR("Key4")}, {"5",MAKE_ID_FROM_STR("Key5")}, {"6",MAKE_ID_FROM_STR("Key6")} },
+            { {"7",MAKE_ID_FROM_STR("Key7")}, {"8",MAKE_ID_FROM_STR("Key8")}, {"9",MAKE_ID_FROM_STR("Key9")} },
+            { {"*",MAKE_ID_FROM_STR("KeyS")}, {"0",MAKE_ID_FROM_STR("Key0")}, {"#",MAKE_ID_FROM_STR("KeyH")} },
       };
 
 
@@ -156,7 +157,7 @@ void setup() {
                                                 col, row, kBtnW, kBtnH, kGapX, kGapY);
                   const KeyDef& k = keys[row][col];
                   AFButton* btn = new AFButton(r.x, r.y, r.w, r.h,
-                                               k.id, k.label);
+                                               k.label, k.id);
                   btn->setOnClickCallback(appendDigitCallback);
                   keypadScreen->addWidget(btn);
             }
@@ -170,13 +171,13 @@ void setup() {
                                            0, 3, kBtnW, kBtnH, kGapX, kGapY);
       int16_t bottomY = (int16_t)(lastCell.y + lastCell.h + kGapY);
 
-      AFButton* callBtn = new AFButton(30, bottomY, 100, kBottomRowH, makeID("Call"), "Call");
+      AFButton* callBtn = new AFButton(30, bottomY, 100, kBottomRowH, "Call", MAKE_ID_FROM_STR("Call"));
       callBtn->setOnClickCallback(dialCallback);
       keypadScreen->addWidget(callBtn);
 
       AFButton* bkspBtn = new AFButton(
             AFLayoutHelpers::rightOf(*callBtn, kGapX), bottomY,
-            30, kBottomRowH, makeID("BkSp"), "<");
+            30, kBottomRowH, "<", MAKE_ID_FROM_STR("BkSp"));
       bkspBtn->setOnClickCallback(backspaceCallback);
       keypadScreen->addWidget(bkspBtn);
 }
