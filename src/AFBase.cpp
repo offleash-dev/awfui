@@ -17,7 +17,8 @@
 
 
 static char* tempIdBuffer5 = new char[5];
-char* getAsChars(int32_t id) {
-      getAsChars(id, tempIdBuffer5);
+
+char* getIdAsCharPtr(uint32_t id) {
+      getIdAsChars(id, tempIdBuffer5);
       return tempIdBuffer5;
 }
