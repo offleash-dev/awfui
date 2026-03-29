@@ -47,7 +47,7 @@ void AFFullscreenDialog::draw(AFDisplayInterface& displayInterface) {
             return;
 
       // Fill entire screen area
-      if (isDirty()) {
+      if (AFWidget::isDirty()) {
             displayInterface.fillRect(m_x, m_y, m_width, m_height, AFWorld::instance()->getTheme().screenBgColor);
       }
 

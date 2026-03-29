@@ -104,7 +104,7 @@ void AFPanel::draw(AFDisplayInterface& displayInterface) {
             return;
 
       bool didRedraw = false;
-      if (m_opaque && AFWidget::isDirty()) {
+      if (m_opaque && AFWidget::isDirty()) { 
             const AFTheme& theme = AFWorld::instance()->getTheme();
             fillBackgroundRect(displayInterface);
 
