@@ -180,7 +180,9 @@ void AFWorld::pollHardware(AFEvent& outEvent) {
             *m_touchReady = false;
         }
 
+        m_touch->sharedTouchAcquire();
         AFTouchPoint pt = m_touch->getPoint();
+        m_touch->sharedTouchRelease();
 
         if (pt.touched || m_wasTouched) {
               // Touch libraries report raw physical panel coordinates
@@ -240,5 +242,7 @@ void AFWorld::loop() {
       }
 
       // 4. Draw active screen
+      m_display.sharedDrawAquire();
       active->draw();
+      m_display.sharedDrawRelease();
 }

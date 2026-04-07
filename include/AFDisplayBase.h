@@ -19,6 +19,18 @@
 
 class AFDisplayInterface;
 
+
+// Callback types for drawing on a shared hardware bus.
+// Eg. these are used to manage locking of the SPI bus when multiple components need to access it.
+// If defined, AWFUI will call the hold callback before drawing operations and the release callback after, 
+// to allow the backend to manage bus access appropriately.  
+// They are optional if you manage the bus on your own or the display is not shared with other components.
+//
+// Also note that these callbacks work for quick operations.  Long operation might be better handled by the host app directly,
+// or you might need to prebuild a UI and cache its instead of building it on the fly.
+using AFSharedDrawCallback = void (*)();
+
+
 class AFDisplayBase {
 public:
     virtual ~AFDisplayBase() = default;
@@ -107,4 +119,31 @@ public:
         (void)data;
         (void)count;
     }
+
+
+    // Set SPI bus locking callbacks for drawing operations
+    // Called before/after display rendering to aquire and hold the SPI bus exclusively
+    void setSharedDrawCallbacks(AFSharedDrawCallback aquire, AFSharedDrawCallback release) {
+        m_aquireDrawCallback = aquire;
+        m_releaseDrawCallback = release;
+    }
+
+
+    void sharedDrawAquire() {
+        if (m_aquireDrawCallback) {
+            m_aquireDrawCallback();
+        }
+    }
+
+
+    void sharedDrawRelease() {
+        if (m_releaseDrawCallback) {
+            m_releaseDrawCallback();
+        }
+    }
+    
+
+protected:
+    AFSharedDrawCallback m_aquireDrawCallback = nullptr;
+    AFSharedDrawCallback m_releaseDrawCallback = nullptr;
 };
