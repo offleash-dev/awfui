@@ -8,6 +8,7 @@
 //// Licensed under the MIT License. See LICENSE file for details.
 
 #include "AFDisplayLovyanGFX.h"
+// may need to make this local for arduino, e.g. #include "../lib/awfui/backends/Lovyan/AFDisplayLovyanGFX.h"
 #include <LovyanGFX.hpp>
 #include <cstring>
 
