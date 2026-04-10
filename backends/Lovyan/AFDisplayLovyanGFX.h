@@ -87,7 +87,7 @@ public:
     virtual void endCanvasUpdate(bool copyToScreen = true) override;
     
     // Return the raw pixel buffer of a canvas, or nullptr if N/A.
-    virtual const AFCanvasData getCurrentCanvasBuffer() const override;
+    virtual AFCanvasData getCurrentCanvasBuffer() override;
 
     // Access the underlying LovyanGFX for backend-specific operations
     lgfx::LGFX_Device* getLGFX() { return m_gfx; }

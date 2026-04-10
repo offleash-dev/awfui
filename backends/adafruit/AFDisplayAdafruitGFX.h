@@ -53,11 +53,10 @@ class AFDisplayAdafruitGFX : public AFDisplayInterface {
 public:
     explicit AFDisplayAdafruitGFX(Adafruit_GFX& gfx) : m_gfx(gfx) {}
 
-    // Initialize the display
-    void begin() {
-        // This is a no-op
-        // The actual display initialization should be done by the specific driver
-    }
+    // functionality queries
+    virtual bool supportsCanvas() const { return false; }
+    virtual bool supportsFastFill() const { return true; }
+    virtual bool supportsFastBitmap() const { return false; }
 
     // --- Dimensions & orientation ---
     int16_t width()  const override { return m_gfx.width();  }
@@ -213,24 +212,9 @@ public:
 
 
 private:
-    Adafruit_GFX& m_gfx;
+    Adafruit_GFX&   m_gfx;
     uint16_t* m_lineBuffer = nullptr;  // Screen-width line buffer
     int16_t m_screenWidth = 0;
 };
 
 
-
-// Canvas wrapper: owns a buffer and optionally GFXcanvas16
-class AFCanvasAdafruitGFX : public AFDisplayAdafruitGFX {
-public:
-    AFCanvasAdafruitGFX(int16_t w, int16_t h)
-        : AFDisplayAdafruitGFX(m_canvas), m_canvas(w, h) {}
-
-
-    const uint16_t* getCanvasBuffer() const override {
-        return m_canvas.getBuffer();
-    }
-
-private:
-    GFXcanvas16 m_canvas;
-};

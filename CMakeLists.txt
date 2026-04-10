@@ -164,6 +164,12 @@ if(AWFUI_USE_ADAFRUIT)
     else()
         message(FATAL_ERROR "AWFUI_USE_ADAFRUIT is ON but Adafruit_GFX headers were not found. Set ADAFRUIT_GFX_INCLUDE_DIR or disable AWFUI_USE_ADAFRUIT.")
     endif()
+    
+    # Link to adafruit_ili9341 target for ILI9341 hardware-specific optimizations
+    if(TARGET adafruit_ili9341)
+        target_link_libraries(awfui_adafruit PUBLIC adafruit_ili9341)
+        target_compile_definitions(awfui_adafruit PUBLIC HAVE_ADAFRUIT_ILI9341=1)
+    endif()
 endif()
 
 
