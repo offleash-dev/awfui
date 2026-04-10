@@ -11,5 +11,5 @@
 
 
 #define AF_VERSION_MAJOR 0
-#define AF_VERSION_MINOR 5   // bump for API changes, new features, or significant internal changes
-#define AF_VERSION_BUILD 2   // bump for bug fixes, optimizations, or minor internal
+#define AF_VERSION_MINOR 4   // bump for API changes, new features, or significant internal changes
+#define AF_VERSION_BUILD 1   // bump for bug fixes, optimizations, or minor internal

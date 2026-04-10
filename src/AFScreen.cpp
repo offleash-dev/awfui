@@ -20,7 +20,7 @@ AFScreen::AFScreen(AFDisplayInterface& displayRef, bool useCanvas, uint32_t id)
       m_canvas = nullptr;
       if (displayRef.supportsCanvas() && useCanvas) {
             // Create an off-screen buffer matching the display size
-            m_canvas = m_display.createCanvas();
+            m_canvas = m_display.createCanvas(displayRef.width(), displayRef.height());
       }
 }
 
@@ -35,7 +35,7 @@ AFScreen::~AFScreen() {
       for (auto* p : m_panels) {
             if (p->isOwned()) delete p;
       }
-      if (m_canvas) {
+      if (m_canvas != nullptr) {
             delete m_canvas;
             m_canvas = nullptr;
       }
@@ -130,15 +130,13 @@ void AFScreen::showModal(AFModalDialog* d) {
       // Set owner directly so dismiss() works (don't call show() - we're already showing)
       d->m_owner = this;
       
-      // Only clear the dialog area, not the entire screen
-      AFDisplayInterface* displayInterface = m_canvas ? m_canvas : &m_display;
-      if (displayInterface->isDMAAvailable()) {
-            displayInterface->fastFillRectDMA(d->getX(), d->getY(), d->getWidth(), d->getHeight(), 
-                                              AFWorld::instance()->getTheme().screenBgColor);
-      } else {
-            displayInterface->fillRect(d->getX(), d->getY(), d->getWidth(), d->getHeight(), 
-                                       AFWorld::instance()->getTheme().screenBgColor);
+      if (m_canvas != nullptr) {
+            m_display.startCanvasUpdate();
       }
+
+      // Only clear the dialog area, not the entire screenf
+      m_display.fillRect(d->getX(), d->getY(), d->getWidth(), d->getHeight(), 
+                                       AFWorld::instance()->getTheme().screenBgColor);
 }
 
 
@@ -154,15 +152,13 @@ void AFScreen::dismissModal(AFModalDialog* d) {
             }
         }
       
-      // Only clear the dialog area, not the entire screen
-      AFDisplayInterface* displayInterface = m_canvas ? m_canvas : &m_display;
-      if (displayInterface->isDMAAvailable()) {
-            displayInterface->fastFillRectDMA(d->getX(), d->getY(), d->getWidth(), d->getHeight(), 
-                                             AFWorld::instance()->getTheme().screenBgColor);
-      } else {
-            displayInterface->fillRect(d->getX(), d->getY(), d->getWidth(), d->getHeight(), 
-                                     AFWorld::instance()->getTheme().screenBgColor);
+      if (m_canvas != nullptr) {
+            m_display.startCanvasUpdate();
       }
+
+      // Only clear the dialog area, not the entire screen
+      m_display.fillRect(d->getX(), d->getY(), d->getWidth(), d->getHeight(), 
+                                     AFWorld::instance()->getTheme().screenBgColor);
             
       // Only mark widgets that were under the dialog as dirty
       for (auto* w : m_widgets) {
@@ -250,6 +246,10 @@ void AFScreen::handleEvent(const AFEvent& e) {
 void AFScreen::setNeedsFullRedraw() {
       m_needsScreenRedraw = true;
 
+      if (m_canvas != nullptr) {
+            m_display.startCanvasUpdate();
+      }
+
       for (auto* w : m_widgets) {
             w->markDirty();
       }
@@ -266,21 +266,16 @@ void AFScreen::setNeedsFullRedraw() {
 // Clear the screen to the specified color (default from theme)
 //
 void AFScreen::clear(uint16_t color) {
-      AFDisplayInterface* displayInterface = m_canvas ? m_canvas : &m_display;
-      
-      // Use DMA-accelerated fill if available for full screen clears
-      if (displayInterface->isDMAAvailable()) {
-            displayInterface->fastFillRectDMA(0, 0, displayInterface->width(), displayInterface->height(), color);
-      } else {
-            displayInterface->fillScreen(color);
+      if (m_canvas != nullptr) {
+            m_display.startCanvasUpdate();
       }
 
+      // Use DMA-accelerated fill if available for full screen clears
+      m_display.fillScreen(color);
+
       // If using canvas, push to display   
-      if (m_canvas) {
-            const uint16_t* buf = m_canvas->getCanvasBuffer();
-            if (buf) {
-                  m_display.drawRGBBitmap(0, 0, buf, m_display.width(), m_display.height());
-            }
+      if (m_canvas != nullptr) {
+            m_display.endCanvasUpdate(true); // end canvas update without copying to screen (we'll do it ourselves)
       }
 }
 
@@ -328,23 +323,25 @@ void AFScreen::draw() {
         m_needsScreenRedraw = false;
     }
   
-    AFDisplayInterface* displayInterface = m_canvas ? m_canvas : &m_display;
+    if (m_canvas != nullptr) {
+           m_display.startCanvasUpdate();
+    }
 
     // Let subclass paint a custom background (game, camera, map, etc.)
-    onDrawBackground(*displayInterface);
+    onDrawBackground(m_display);
 
     // Draw root-level widgets (only dirty ones in non-canvas mode)
     for (auto* w : m_widgets) {
         if (w->isVisible() && w->isDirty()) {
-            w->draw(*displayInterface);
+            w->draw(m_display);
             w->clearDirty();
-        }
+        }         
     }
 
     // Draw panels
     for (auto* p : m_panels) {
         if (p->isVisible() && p->isDirty()) {
-            p->draw(*displayInterface);
+            p->draw(m_display);
             p->clearDirty();
         }
     }
@@ -352,19 +349,18 @@ void AFScreen::draw() {
     // Draw modal dialogs last (on top)
     for (auto* modal : m_modalStack) {
         if (modal->isVisible() && modal->isDirty()) {
-            modal->draw(*displayInterface);
+            modal->draw(m_display);
             modal->clearDirty();
         }
     }
 
     // If using canvas, push to display
-    if (m_canvas) {
-        const uint16_t* buf = m_canvas->getCanvasBuffer();
-        if (buf) {
-            m_display.drawRGBBitmap(0, 0, buf, m_display.width(), m_display.height());
-        }
+    if (m_canvas != nullptr) {
+        m_display.endCanvasUpdate(true);
     }
 }
+
+
 
 // Mark intersecting widgets dirty
 //

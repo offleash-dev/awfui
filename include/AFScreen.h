@@ -86,14 +86,14 @@ protected:
 
       
 protected:
-     AFDisplayInterface*  m_canvas = nullptr;
+     AFCanvas*  m_canvas = nullptr;
  
  
 private:
       AFDisplayInterface& m_display;
-      bool          m_needsScreenRedraw = false;
-      uint32_t m_id;
+      bool      m_needsScreenRedraw = false;
+      uint32_t  m_id;
 
       AFVector<AFModalDialog*, MAX_DIALOGS_PER_SCREEN>   m_modalStack;  // Modal dialog stack
-      AFWidget*                                             m_pressedWidget = nullptr;  // implicit capture for drag
+      AFWidget*                                          m_pressedWidget = nullptr;  // implicit capture for drag
 };

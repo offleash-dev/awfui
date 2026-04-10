@@ -184,6 +184,11 @@ void AFWorld::pollHardware(AFEvent& outEvent) {
         AFTouchPoint pt = m_touch->getPoint();
         m_touch->sharedTouchRelease();
 
+
+        if (m_touchRotationCorrection != 0) {
+            transformTouchCoordinates(pt.x, pt.y, m_touchRotationCorrection, m_display.width(), m_display.height());
+        }
+
         if (pt.touched || m_wasTouched) {
               // Touch libraries report raw physical panel coordinates
               // Widgets appear to be in physical space too (screen button works without transform)

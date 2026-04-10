@@ -15,6 +15,8 @@
 #include <stdint.h>
 #include <stddef.h>
 
+#include "AFBase.h"
+
 
 
 class AFDisplayInterface;
@@ -31,9 +33,27 @@ class AFDisplayInterface;
 using AFSharedDrawCallback = void (*)();
 
 
+typedef void* AFCanvasData;
+
+// Platform-agnostic canvas handle
+typedef struct AFCanvas {
+    uint16_t width;
+    uint16_t height; 
+    AFCanvasData data;  // Platform-specific (lgfx::Sprite*, uint16_t*, etc.)
+} AFCanvas;
+
+
+
+
 class AFDisplayBase {
 public:
     virtual ~AFDisplayBase() = default;
+
+    // functionality queries
+    virtual bool supportsCanvas() const { return false; }
+    virtual bool supportsFastFill() const { return false; }
+    virtual bool supportsFastBitmap() const { return false; }
+
 
     // --- Dimensions & orientation ---
     virtual int16_t width()  const = 0;
@@ -56,13 +76,12 @@ public:
                           uint16_t color) = 0;
 
 
-    // --- Higher-level shapes (optional, with fallbacks) ---
-
     // --- Text ---
     virtual void setCursor(int16_t x, int16_t y) = 0;
     virtual void setTextColor(uint16_t color) = 0;
     virtual void setTextSize(uint8_t size) = 0;
     virtual void print(const char* text) = 0;
+
 
     // --- Bitmap drawing ---
     // Draw a 1-bit bitmap at (x, y) with the given foreground color.
@@ -84,41 +103,37 @@ public:
                                const uint16_t* bitmap,
                                int16_t w, int16_t h) = 0;
 
-    virtual bool supportsCanvas() const { return false; }                           
+                               
+    // Fast drawing method fallbacks
+    virtual void fastFillRectDMA(int x1, int y1, int x2, int y2, uint16_t color) {
+        // Fallback to regular fillRect
+        fillRect(x1, y1, x2 - x1 + 1, y2 - y1 + 1, color);
+    }
+    
+
+    virtual void fastDrawBitmapDMA(int x, int y, const uint16_t* bitmap, 
+                                   int16_t w, int16_t h) {
+        // Fallback to regular RGB bitmap
+        drawRGBBitmap(x, y, bitmap, w, h);
+    }
+    
+
+    // Canvas management (optional, with fallbacks)
 
     // Create an off-screen canvas matching the display dimensions.
-    // Returns a heap-allocated AFDisplayInterface that draws to a buffer.
+    // Returns a pointer to a heap-allocated AFCanvas that can be used with the AFDisplayBase methods to draw.
     // Caller owns the returned pointer.  Returns nullptr if not supported.
-    virtual AFDisplayInterface* createCanvas() { return nullptr; }
-
-    // Return the raw RGB565 pixel buffer of a canvas, or nullptr if N/A.
-    virtual const uint16_t* getCanvasBuffer() const { return nullptr; }
-
-
-
-    // --- DMA-accelerated primitives (optional) ---
-    // This is exploratory and as much a thought process.
-    // It maybe expanded or revised as needed for to find a standard for multiple platforms.
+    // The created canvas should be freed with destroyCanvas when no longer needed.
+    // The created canvas is not automatically set as the targert for drawing operations; call setCurrentCanvas to use it.
+    virtual AFCanvas* createCanvas(uint16_t w, uint16_t h) { unused(w); unused(h); return nullptr; }
+    virtual void destroyCanvas(AFCanvas* canvas) { unused(canvas); }
     
-    // Query if DMA acceleration is available on this backend
-    virtual bool isDMAAvailable() const { return false; }
-
-    // DMA-accelerated solid fill for large rectangles (screen clears, dialog backgrounds, etc.)
-    // Backends with DMA support should override this for significant performance gains.
-    // Default fallback uses standard fillRect.
-    virtual void fastFillRectDMA(int16_t x, int16_t y, int16_t w, int16_t h, uint16_t color) {
-        fillRect(x, y, w, h, color);
-    }
-
-    // DMA-accelerated pixel buffer push for canvas/bitmap operations
-    // Pushes 'count' RGB565 pixels from 'data' to the current drawing window.
-    // Caller must set the drawing window (via setAddrWindow or equivalent) before calling.
-    // No default fallback - backends must implement if they support this.
-    virtual void pushPixelsDMA(const uint16_t* data, size_t count) {
-        // No generic fallback - backend-specific
-        (void)data;
-        (void)count;
-    }
+    virtual void setCurrentCanvas(AFCanvas* canvas) { m_currentCanvas = canvas; }
+    virtual void startCanvasUpdate() { m_canvasNeedsUpdate = true; }
+    virtual void endCanvasUpdate(bool copyToScreen = true) { unused(copyToScreen); }
+    
+    // Return the raw pixel buffer of a canvas, or nullptr if N/A.
+    virtual const AFCanvasData getCurrentCanvasBuffer() const { return nullptr; }
 
 
     // Set SPI bus locking callbacks for drawing operations
@@ -146,4 +161,7 @@ public:
 protected:
     AFSharedDrawCallback m_aquireDrawCallback = nullptr;
     AFSharedDrawCallback m_releaseDrawCallback = nullptr;
+    
+    bool m_canvasNeedsUpdate = false;
+    AFCanvas* m_currentCanvas = nullptr;
 };

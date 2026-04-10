@@ -7,11 +7,6 @@
 
 #include "AFDisplayAdafruitGFX.h"
 
-// Static canvas buffer for embedded systems with limited heap
-#if !HAS_GFXCANVAS16
-uint16_t AFCanvasAdafruitGFX::s_canvasBuffer[120 * 160];
-#endif
-
 
 
 // Create an off-screen canvas matching the display dimensions
@@ -33,30 +28,81 @@ const uint16_t* AFDisplayAdafruitGFX::getCanvasBuffer() const {
     return nullptr;
 }
 
+
+
+// Initialize line buffer when screen size is known
+void AFDisplayAdafruitGFX::createLineBuffer(int16_t screenWidth) {
+    if (m_lineBuffer) free(m_lineBuffer);
+    m_screenWidth = screenWidth;
+    m_lineBuffer = (uint16_t*)malloc(screenWidth * 2);
+}
+
+
+
+void AFDisplayAdafruitGFX::fastFillRectDMA(int x1, int y1, int x2, int y2, uint16_t color) {
+    if (m_lineBuffer != nullptr) {
+        int w = x2 - x1 + 1;
+        int h = y2 - y1 + 1;
+
+        set_window(x1, y1, x2, y2);
+
+        // Fill line buffer with color (only once per fill)
+        for (int x = 0; x < w; x++)
+            m_lineBuffer[x] = color;
+
+        // DMA each line
+        for (int y = 0; y < h; y++) {
+            spi_dma_transmit((uint8_t*)m_lineBuffer, w * 2);
+        }
+        
+        wait_for_dma();
+    }
+    else {
+        // Fallback to regular fill if no buffer
+        m_gfx.fillRect(x1, y1, x2 - x1 + 1, y2 - y1 + 1, color);
+    }
+}
+
+
+
+void AFDisplayAdafruitGFX::drawRGBBitmap(int16_t x, int16_t y, int16_t w, int16_t h, const uint16_t* pixmap) {
+        if (supportsFastBitmap()) {
+            fastDrawBitmapDMA(x, y, w, h, pixmap);
+            return;
+        }
+
+#if HAS_DRAWRGBBITMAP
+        // Newer Adafruit_GFX has drawRGBBitmap
+        m_gfx.drawRGBBitmap(x, y, const_cast<uint16_t*>(bitmap), w, h);
+#else
+        // Method not available in older Adafruit_GFX version
+        // Convert RGB565 to 8-bit grayscale and draw as regular bitmap
+        for (int16_t row = 0; row < h; row++) {
+            for (int16_t col = 0; col < w; col++) {
+                uint16_t pixel = bitmap[row * w + col];
+                // Convert RGB565 to 8-bit grayscale (simple approximation)
+                uint8_t gray = ((pixel >> 11) & 0x1F) * 8/32 + 
+                               ((pixel >> 5) & 0x3F) * 4/64 + 
+                               (pixel & 0x1F) * 8/32;
+                m_gfx.drawPixel(x + col, y + row, gray);
+            }
+        }
+#endif
+    }
+
+  
+
 // Optimized fillScreen for full screen - uses bulk SPI transfers
 //
 void AFDisplayAdafruitGFX::fillScreenOptimized(uint16_t color) {
     // Get screen dimensions
     int16_t width = m_gfx.width();
     int16_t height = m_gfx.height();
-    
-    // Only optimize for common ILI9341 screen sizes
-    if (!((width == 240 && height == 320) || (width == 320 && height == 240))) {
-        // Not a standard ILI9341 size, use fallback
-        m_gfx.fillScreen(color);
+
+    if (m_lineBuffer != nullptr) {
+        fastFillRectDMA(0, 0, width - 1, height - 1, color);
         return;
     }
-    
-    // The key optimization: bypass Adafruit_GFX::fillRect which calls VLine for each column
-    // Instead, call ILI9341::fillRect directly which does pixel-by-pixel in bulk
-    
-    // This works because of virtual function dispatch:
-    // - m_gfx points to Adafruit_ILI9341
-    // - Adafruit_ILI9341 overrides fillRect() with optimized version
-    // - Calling m_gfx.fillRect() goes directly to ILI9341::fillRect(), NOT Adafruit_GFX::fillRect()
-    
-    // This is the optimization! We skip the terrible VLine-per-column approach
-    // and go straight to the reasonably optimized ILI9341 pixel-by-pixel implementation
-    
-    m_gfx.fillRect(0, 0, width, height, color);
+   
+    m_gfx.fillScreen(color);
 }

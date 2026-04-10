@@ -65,6 +65,7 @@ public:
     uint8_t getRotation() const override { return m_gfx.getRotation(); }
     void    setRotation(uint8_t r) override { m_gfx.setRotation(r); }
 
+    
     // --- Core drawing primitives (from AFDisplayBase) ---
     void drawPixel(int16_t x, int16_t y, uint16_t color) override {
         m_gfx.drawPixel(x, y, color);
@@ -82,11 +83,7 @@ public:
 
     // --- Higher-level drawing (overrides AFDisplayInterface fallbacks) ---
     void fillScreen(uint16_t color) override {
-#if 1
-        m_gfx.fillScreen(color);
-#else
         fillScreenOptimized(color);
-#endif
     }
 
 
@@ -98,7 +95,7 @@ public:
         }
         
         // Use default implementation for other rectangles
-        m_gfx.fillRect(x, y, w, h, color);
+        fastFillRectDMA(x, y, w, h, color);
     }
 
 
@@ -204,39 +201,21 @@ public:
 
     // --- RGB bitmap / canvas support ---
     void drawRGBBitmap(int16_t x, int16_t y,
-                       const uint16_t* bitmap,
-                       int16_t w, int16_t h) override {
-#if HAS_DRAWRGBBITMAP
-        // Newer Adafruit_GFX has drawRGBBitmap
-        m_gfx.drawRGBBitmap(x, y, const_cast<uint16_t*>(bitmap), w, h);
-#else
-        // Method not available in older Adafruit_GFX version
-        // Convert RGB565 to 8-bit grayscale and draw as regular bitmap
-        for (int16_t row = 0; row < h; row++) {
-            for (int16_t col = 0; col < w; col++) {
-                uint16_t pixel = bitmap[row * w + col];
-                // Convert RGB565 to 8-bit grayscale (simple approximation)
-                uint8_t gray = ((pixel >> 11) & 0x1F) * 8/32 + 
-                               ((pixel >> 5) & 0x3F) * 4/64 + 
-                               (pixel & 0x1F) * 8/32;
-                m_gfx.drawPixel(x + col, y + row, gray);
-            }
-        }
-#endif
-    }
+                       const uint16_t* pixmap,
+                       int16_t w, int16_t h) override;
 
+    void initializeLineBuffer(int16_t screenWidth);
+    void fastFillRectDMA(int x1, int y1, int x2, int y2, uint16_t color);
 
-    // --- Canvas support ---
-    AFDisplayInterface* createCanvas() override;
-    const uint16_t* getCanvasBuffer() const override;
-
-
+    
     // Access the underlying Adafruit_GFX for backend-specific operations
     Adafruit_GFX& getGFX() { return m_gfx; }
 
 
 private:
     Adafruit_GFX& m_gfx;
+    uint16_t* m_lineBuffer = nullptr;  // Screen-width line buffer
+    int16_t m_screenWidth = 0;
 };
 
 
@@ -245,90 +224,13 @@ private:
 class AFCanvasAdafruitGFX : public AFDisplayAdafruitGFX {
 public:
     AFCanvasAdafruitGFX(int16_t w, int16_t h)
-#if HAS_GFXCANVAS16
         : AFDisplayAdafruitGFX(m_canvas), m_canvas(w, h) {}
-#else
-        : AFDisplayAdafruitGFX(m_dummy_gfx), m_width(w/2), m_height(h/2) {
-        // Use static buffer at half resolution
-        m_buffer = s_canvasBuffer;
-        // Clear buffer to black
-        memset(m_buffer, 0, (w/2) * (h/2) * sizeof(uint16_t));
-    }
-#endif
 
-#if !HAS_GFXCANVAS16
-    // Override width/height to return correct values instead of dummy's
-    int16_t width() const override { return m_width; }
-    int16_t height() const override { return m_height; }
-#endif
-
-#if !HAS_GFXCANVAS16
-    ~AFCanvasAdafruitGFX() {
-        // Don't delete static buffer - it's allocated at compile time
-    }
-#endif
 
     const uint16_t* getCanvasBuffer() const override {
-#if HAS_GFXCANVAS16
         return m_canvas.getBuffer();
-#else
-        return m_buffer;
-#endif
     }
-
-#if !HAS_GFXCANVAS16
-    // Override drawPixel to write to our buffer
-    void drawPixel(int16_t x, int16_t y, uint16_t color) override {
-        if (x >= 0 && x < m_width && y >= 0 && y < m_height) {
-            m_buffer[y * m_width + x] = color;
-        }
-    }
-
-    // Override fillScreen to clear our buffer
-    void fillScreen(uint16_t color) override {
-        for (int i = 0; i < m_width * m_height; i++) {
-            m_buffer[i] = color;
-        }
-    }
-
-    // Render scaled canvas to full display (2x scaling)
-    void renderScaled() {
-        Adafruit_GFX& gfx = getGFX();
-        for (int y = 0; y < m_height; y++) {
-            for (int x = 0; x < m_width; x++) {
-                uint16_t color = m_buffer[y * m_width + x];
-                // Draw 2x2 pixel block for each canvas pixel
-                gfx.drawPixel(x*2, y*2, color);
-                gfx.drawPixel(x*2+1, y*2, color);
-                gfx.drawPixel(x*2, y*2+1, color);
-                gfx.drawPixel(x*2+1, y*2+1, color);
-            }
-        }
-    }
-#endif
-
 
 private:
-#if !HAS_GFXCANVAS16
-    // Instance-specific dummy GFX class for canvas constructor
-    class DummyGFX : public Adafruit_GFX {
-    public:
-        DummyGFX() : Adafruit_GFX(1, 1) {}  // Default constructor
-        DummyGFX(int16_t w, int16_t h) : Adafruit_GFX(w, h) {}
-        virtual ~DummyGFX() = default;
-        void drawPixel(int16_t x, int16_t y, uint16_t color) override {
-            // Do nothing - this is just a dummy
-        }
-    };
-    
-    // Static buffer allocation for embedded systems with limited heap
-    static uint16_t s_canvasBuffer[120 * 160]; // 37.5KB static buffer (smaller canvas)
-    
-    DummyGFX m_dummy_gfx;
-    uint16_t* m_buffer;
-    int16_t m_width;
-    int16_t m_height;
-#else
     GFXcanvas16 m_canvas;
-#endif
 };

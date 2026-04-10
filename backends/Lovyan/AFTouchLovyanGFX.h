@@ -9,16 +9,21 @@
 //// Copyright (c) 2026 Matt Foster
 //// Licensed under the MIT License. See LICENSE file for details.
 
+// change this if needed for arduino projects, e.g.
+// #include "../../include/AFTouchInterface.h"
 #include "AFTouchInterface.h"
 #include <LovyanGFX.hpp>
+
+
 
 class AFTouchLovyanGFX : public AFTouchInterface {
 public:
     AFTouchLovyanGFX() = default;
     explicit AFTouchLovyanGFX(lgfx::LGFX_Device* gfx) : m_gfx(gfx), m_lastTouchX(0), m_lastTouchY(0), m_touchPressed(false) {}
-
+   
     // Set the display reference
     void setDisplay(lgfx::LGFX_Device* gfx) { m_gfx = gfx; }
+
 
     // Initialize touch interface
     bool begin() override {
@@ -26,6 +31,7 @@ public:
         // This is a no-op - initialization happens in the LGFX driver
         return true;
     }
+
 
     // Get current touch point
     AFTouchPoint getPoint() override {
@@ -44,8 +50,10 @@ public:
         return point;
     }
 
+
     // Access the underlying LovyanGFX for backend-specific operations
     lgfx::LGFX_Device* getLGFX() { return m_gfx; }
+
 
 private:
     lgfx::LGFX_Device* m_gfx = nullptr;

@@ -71,6 +71,17 @@ public:
     // Pass nullptr (default) to poll every tick.
     void setTouchReadyFlag(volatile bool* flag) { m_touchReady = flag; }
 
+
+    void setTouchRotationCorrection(uint8_t correction) {
+        m_touchRotationCorrection = correction;
+    }
+
+
+     // Get current correction
+    uint8_t getTouchRotationCorrection() {
+        return m_touchRotationCorrection;
+    }
+
     // Transform touch coordinates from physical screen space to rotated display space.
     // Usable by external touch tasks that post events via the event queue.
     static void transformTouchCoordinates(int16_t& x, int16_t& y,
@@ -92,6 +103,7 @@ private:
     int16_t m_lastTouchX  = 0;
     int16_t m_lastTouchY  = 0;
     volatile bool* m_touchReady = nullptr;  // optional ISR flag
+    uint8_t m_touchRotationCorrection = 0;
 
     // Single source of truth for screens
     AFScreenList m_screenList;

@@ -32,7 +32,10 @@ void AFImageWidget::draw(AFDisplayInterface& displayInterface)
         uint16_t color = isEnabled() ? theme.widgetFgColor : theme.widgetDisabledFgColor;
         displayInterface.drawBitmap(m_x, m_y, m_img->pixels(), m_img->width(), m_img->height(), color);
     } else {
-        displayInterface.drawRGBBitmap(m_x, m_y, reinterpret_cast<const uint16_t*>(m_img->pixels()),
-                          m_img->width(), m_img->height());
+        if (displayInterface.supportsFastBitmap()) {
+            displayInterface.fastDrawBitmapDMA(m_x, m_y, reinterpret_cast<const uint16_t*>(m_img->pixels()), m_img->width(), m_img->height());
+    } else {
+            displayInterface.drawRGBBitmap(m_x, m_y, reinterpret_cast<const uint16_t*>(m_img->pixels()), m_img->width(), m_img->height());
+        }
     }
 }
