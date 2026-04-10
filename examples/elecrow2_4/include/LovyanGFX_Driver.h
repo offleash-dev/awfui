@@ -67,7 +67,7 @@ class LGFX : public lgfx::LGFX_Device
         cfg.y_max = 319;          
         cfg.pin_int = 47;         
         cfg.bus_shared = false;   
-        cfg.offset_rotation = 6; 
+        cfg.offset_rotation = 3; 
 
         cfg.i2c_port = 0;     
         cfg.i2c_addr = 0x38;  

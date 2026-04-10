@@ -7,17 +7,31 @@
 #include "../lib/awfui/include/AFWorld.h"
 #include "../lib/awfui/include/AFScreen.h"
 #include "../lib/awfui/include/AFLabel.h"
+#include "../lib/awfui/include/AFButton.h"
 #include "../lib/awfui/include/AFBase.h"
 
 // Backend includes from AWFUI library
 #include "../lib/awfui/backends/Lovyan/AFDisplayLovyanGFX.h"
 #include "../lib/awfui/backends/Lovyan/AFTouchLovyanGFX.h"
 
+
+
 // Create global instances
 AFDisplayLovyanGFX display(&gfx);
 AFTouchLovyanGFX touch(&gfx);
 AFWorld* world = nullptr;
 AFScreen* simpleScreen = nullptr;
+AFLabel* gLabel = nullptr;
+AFButton* gButton = nullptr;
+
+
+void buttonClickHandler(AFButton& sender) {
+    Serial.println("Button clicked!");
+    if (gLabel) {
+        gLabel->setText("Button Clicked!");
+    }
+}
+
 
 void setup() {
     Serial.begin(115200);
@@ -37,7 +51,7 @@ void setup() {
     gfx.initDMA();
     
     Serial.println("Step 3: Setting rotation to 3...");
-    gfx.setRotation(3);
+    gfx.setRotation(0);
     Serial.printf("Display: %dx%d, rotation=%d\n", gfx.width(), gfx.height(), gfx.getRotation());
     
     Serial.println("Step 4: Turning on backlight...");
@@ -47,6 +61,11 @@ void setup() {
     Serial.println("Step 5: Starting write mode...");
     gfx.startWrite();
     gfx.fillScreen(TFT_BLACK);
+        delay(10);
+    gfx.fillScreen(TFT_WHITE);
+        delay(10);
+    gfx.fillScreen(TFT_BLACK);
+
     Serial.println("Display ready");
     
     // Test canvas creation
@@ -62,7 +81,9 @@ void setup() {
     // Initialize AWFUI
     Serial.println("Step 7: Initializing AWFUI...");
     AFWorld::init(display, &touch, nullptr);
+        
     world = AFWorld::instance();
+    world->setTouchRotationCorrection(1);
     
     // Create screen WITH canvas (useCanvas=true)
     Serial.println("Step 8: Creating AWFUI screen with canvas...");
@@ -77,9 +98,14 @@ void setup() {
     
     // Add label to canvas
     Serial.println("Step 9: Adding label to canvas...");
-    auto* label = new AFLabel(20, 20, 200, 30, "Canvas Test", MAKE_ID_FROM_STR("Label"));
-    label->setJustification(AFJustificationCenter);
-    simpleScreen->addWidget(label, true);
+    gLabel = new AFLabel(20, 20, 200, 30, "Canvas Test", MAKE_ID_FROM_STR("Labl"));
+    gLabel->setJustification(AFJustificationCenter);
+    simpleScreen->addWidget(gLabel, true);
+
+    gButton = new AFButton(20, 60, 100, 40, "Click Me", MAKE_ID_FROM_STR("Btn1"));
+    gButton->setOnClickCallback(buttonClickHandler);
+    simpleScreen->addWidget(gButton, true);
+
     
     // Set as active screen
     world->setActiveScreen(simpleScreen);
@@ -101,5 +127,13 @@ void loop() {
     if (world) {
         world->loop();
     }
+
+    // Debug touch coordinates
+//    if (touch.getTouchCount() > 0) {
+  {      auto touchPoint = touch.getPoint();
+        Serial.printf("Touch: x=%d, y=%d\n", touchPoint.x, touchPoint.y);
+    }
+
+
     delay(10);
 }
