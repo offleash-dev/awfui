@@ -54,10 +54,11 @@ public:
     explicit AFDisplayAdafruitGFX(Adafruit_GFX& gfx) : m_gfx(gfx) {}
 
     // functionality queries
-    virtual bool supportsCanvas() const { return false; }
-    virtual bool supportsFastFill() const { return false; }
-    virtual bool supportsFastBitmap() const { return false; }
+    virtual bool supportsCanvas() const override { return false; }
+    virtual bool supportsFastFill() const override { return false; }  // this can be set true for ILI9341
+    virtual bool supportsFastBitmap() const override { return false; }
 
+    virtual void begin() override {}
 
     // --- Dimensions & orientation ---
     int16_t width()  const override { return m_gfx.width();  }

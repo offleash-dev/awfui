@@ -54,6 +54,9 @@ public:
     virtual bool supportsFastFill() const { return false; }
     virtual bool supportsFastBitmap() const { return false; }
 
+    // Initialize the display if needed
+    virtual void begin() {}
+
 
     // --- Dimensions & orientation ---
     virtual int16_t width()  const = 0;

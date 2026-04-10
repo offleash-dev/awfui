@@ -21,6 +21,12 @@ public:
     AFDisplaySDL(int16_t w, int16_t h, int displayScale = 2);
     ~AFDisplaySDL();
 
+    virtual bool supportsCanvas() const override { return false; }
+    virtual bool supportsFastFill() const override { return false; }
+    virtual bool supportsFastBitmap() const override { return false; }
+
+    virtual void begin() override {}
+
     // --- Dimensions & orientation ---
     int16_t width()  const override { return m_width; }
     int16_t height() const override { return m_height; }
