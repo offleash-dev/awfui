@@ -57,6 +57,8 @@ public:
                        const uint16_t* bitmap,
                        int16_t w, int16_t h) override;
 
+    void initializeLineBuffer(int width) { unused(width); };
+
     // --- SDL lifecycle ---
     void begin();
     void present();

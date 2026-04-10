@@ -55,8 +55,9 @@ public:
 
     // functionality queries
     virtual bool supportsCanvas() const { return false; }
-    virtual bool supportsFastFill() const { return true; }
+    virtual bool supportsFastFill() const { return false; }
     virtual bool supportsFastBitmap() const { return false; }
+
 
     // --- Dimensions & orientation ---
     int16_t width()  const override { return m_gfx.width();  }
