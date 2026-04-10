@@ -133,7 +133,7 @@ public:
     virtual void endCanvasUpdate(bool copyToScreen = true) { unused(copyToScreen); }
     
     // Return the raw pixel buffer of a canvas, or nullptr if N/A.
-    virtual const AFCanvasData getCurrentCanvasBuffer() const { return nullptr; }
+    virtual AFCanvasData getCurrentCanvasBuffer() { return nullptr; }
 
 
     // Set SPI bus locking callbacks for drawing operations

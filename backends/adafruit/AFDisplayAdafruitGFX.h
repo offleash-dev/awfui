@@ -53,11 +53,11 @@ class AFDisplayAdafruitGFX : public AFDisplayInterface {
 public:
     explicit AFDisplayAdafruitGFX(Adafruit_GFX& gfx) : m_gfx(gfx) {}
 
-    // Initialize the display
-    void begin() {
-        // This is a no-op
-        // The actual display initialization should be done by the specific driver
-    }
+    // functionality queries
+    virtual bool supportsCanvas() const { return false; }
+    virtual bool supportsFastFill() const { return true; }
+    virtual bool supportsFastBitmap() const { return false; }
+
 
     // --- Dimensions & orientation ---
     int16_t width()  const override { return m_gfx.width();  }
