@@ -26,8 +26,13 @@ public:
     // Set the display reference
     void setDisplay(lgfx::LGFX_Device* gfx) { m_gfx = gfx; }
 
+    virtual bool supportsCanvas() const override { return false; }  // this can be set true and a sprite is used for a buffer
+    virtual bool supportsFastFill() const override { return false; }
+    virtual bool supportsFastBitmap() const override { return false; }
+
+
     // Initialize the display
-    void begin() {
+    void begin() override {
         if (m_gfx) m_gfx->begin();
     }
 
