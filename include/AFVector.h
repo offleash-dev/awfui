@@ -21,30 +21,30 @@ class AFVector {
         static constexpr size_t CAPACITY = N;
 
         
-        AFVector() : size_(0) {
+        AFVector() : m_size(0) {
             // Zero out the buffer explicitly
-            memset(buffer_, 0, sizeof(buffer_));
+            memset(m_buffer, 0, sizeof(m_buffer));
         }
         
 
         // Add elements one by one
         void add(const T& value) {
-            if (size_ < CAPACITY) {
-                get_buffer()[size_++] = value;
+            if (m_size < CAPACITY) {
+                get_buffer()[m_size++] = value;
             }
         }
         
 
         void push_back(const T& value) {
-            if (size_ < CAPACITY) {
-                get_buffer()[size_++] = value;
+            if (m_size < CAPACITY) {
+                get_buffer()[m_size++] = value;
             }
         }
         
 
         void pop_back() {
-            if (size_ > 0) {
-                --size_;
+            if (m_size > 0) {
+                --m_size;
             }
         }
         
@@ -60,12 +60,12 @@ class AFVector {
         
 
         T& back() {
-            return get_buffer()[size_ - 1];
+            return get_buffer()[m_size - 1];
         }
         
 
         const T& back() const {
-            return get_buffer()[size_ - 1];
+            return get_buffer()[m_size - 1];
         }
         
 
@@ -79,87 +79,93 @@ class AFVector {
         }
         
 
-        size_t size() const { return size_; }
+
+        size_t size() const { return m_size; }
         constexpr size_t capacity() const { return CAPACITY; }
         constexpr size_t max_size() const { return CAPACITY; }
-        bool empty() const { return size_ == 0; }
-        bool full() const { return size_ >= CAPACITY; }
+        bool empty() const { return m_size == 0; }
+        bool full() const { return m_size >= CAPACITY; }
         
-        void clear() { size_ = 0; }
+        void clear() { m_size = 0; }
        
         T* data() { return get_buffer(); }
         const T* data() const { return get_buffer(); }
         
 
+
         // Iterator support
         class iterator {
         public:
-            iterator(T* ptr) : ptr_(ptr) {}
+            iterator(T* ptr) : m_ptr(ptr) {}
             
-            iterator& operator++() { ++ptr_; return *this; }
-            iterator operator++(int) { iterator tmp = *this; ++ptr_; return tmp; }
+            iterator& operator++() { ++m_ptr; return *this; }
+            iterator operator++(int) { iterator tmp = *this; ++m_ptr; return tmp; }
             
-            iterator operator+(size_t offset) { return iterator(ptr_ + offset); }
+            iterator operator+(size_t offset) { return iterator(m_ptr + offset); }
             
-            T& operator*() { return *ptr_; }
-            const T& operator*() const { return *ptr_; }
+            T& operator*() { return *m_ptr; }
+            const T& operator*() const { return *m_ptr; }
             
-            bool operator!=(const iterator& other) const { return ptr_ != other.ptr_; }
-            bool operator==(const iterator& other) const { return ptr_ == other.ptr_; }
-            bool operator>=(const iterator& other) const { return ptr_ >= other.ptr_; }
+            bool operator!=(const iterator& other) const { return m_ptr != other.m_ptr; }
+            bool operator==(const iterator& other) const { return m_ptr == other.m_ptr; }
+            bool operator>=(const iterator& other) const { return m_ptr >= other.m_ptr; }
             
-            friend class AFVector;  // Allow AFVector to access ptr_
+            friend class AFVector;  // Allow AFVector to access m_ptr
 
             
         private:
-            T* ptr_;
+            T* m_ptr;
         };
         
+
         iterator begin() { return iterator(get_buffer()); }
-        iterator end() { return iterator(get_buffer() + size_); }
+        iterator end() { return iterator(get_buffer() + m_size); }
         
+
         // Const iterator
         class const_iterator {
         public:
-            const_iterator(const T* ptr) : ptr_(ptr) {}
+            const_iterator(const T* ptr) : m_ptr(ptr) {}
             
-            const_iterator& operator++() { ++ptr_; return *this; }
-            const_iterator operator++(int) { const_iterator tmp = *this; ++ptr_; return tmp; }
+            const_iterator& operator++() { ++m_ptr; return *this; }
+            const_iterator operator++(int) { const_iterator tmp = *this; ++m_ptr; return tmp; }
             
-            const T& operator*() const { return *ptr_; }
+            const T& operator*() const { return *m_ptr; }
             
-            bool operator!=(const const_iterator& other) const { return ptr_ != other.ptr_; }
-            bool operator==(const const_iterator& other) const { return ptr_ == other.ptr_; }
+            bool operator!=(const const_iterator& other) const { return m_ptr != other.m_ptr; }
+            bool operator==(const const_iterator& other) const { return m_ptr == other.m_ptr; }
 
             
         private:
-            const T* ptr_;
+            const T* m_ptr;
         };
         
 
+
         const_iterator begin() const { return const_iterator(get_buffer()); }
-        const_iterator end() const { return const_iterator(get_buffer() + size_); }
+        const_iterator end() const { return const_iterator(get_buffer() + m_size); }
         
 
+        
         // Remove element at iterator position
         iterator erase(iterator pos) {
             if (pos >= end()) return end();
             
-            size_t index = pos.ptr_ - get_buffer();
-            for (size_t i = index; i < size_ - 1; ++i) {
+            size_t index = pos.m_ptr - get_buffer();
+            for (size_t i = index; i < m_size - 1; ++i) {
                 get_buffer()[i] = get_buffer()[i + 1];
             }
-            --size_;
+            --m_size;
             return iterator(get_buffer() + index);
         }
 
         
     private:
         // Manually aligned buffer - no STL dependencies
-        alignas(T) char buffer_[sizeof(T) * N];
-        size_t size_;
+        alignas(T) char m_buffer[sizeof(T) * N];
+        size_t m_size;
         
         // Helper to get typed pointer to buffer
-        T* get_buffer() { return reinterpret_cast<T*>(buffer_); }
-        const T* get_buffer() const { return reinterpret_cast<const T*>(buffer_); }
+        T* get_buffer() { return reinterpret_cast<T*>(m_buffer); }
+        const T* get_buffer() const { return reinterpret_cast<const T*>(m_buffer); }
     };

@@ -15,93 +15,93 @@
 
 template<typename T, size_t N>
 class AFQueue {
-    public:
+public:
         using value_type = T;
         static constexpr size_t CAPACITY = N;
         
 
-        AFQueue() : head_(0), tail_(0), count_(0) {
+        AFQueue() : m_head(0), m_tail(0), m_count(0) {
             // Zero out the buffer explicitly
-            memset(buffer_, 0, sizeof(buffer_));
+            memset(m_buffer, 0, sizeof(m_buffer));
         }
         
 
         bool push(const T& value) {
-            if (count_ >= CAPACITY) {
+            if (m_count >= CAPACITY) {
                 return false; // Queue full
             }
             
-            get_buffer()[tail_] = value;
-            tail_ = (tail_ + 1) % CAPACITY;
-            count_++;
+            get_buffer()[m_tail] = value;
+            m_tail = (m_tail + 1) % CAPACITY;
+            m_count++;
             return true;
         }
         
 
         bool pop(T& value) {
-            if (count_ == 0) {
+            if (m_count == 0) {
                 return false; // Queue empty
             }
             
-            value = get_buffer()[head_];
-            head_ = (head_ + 1) % CAPACITY;
-            count_--;
+            value = get_buffer()[m_head];
+            m_head = (m_head + 1) % CAPACITY;
+            m_count--;
             return true;
         }
 
         
         T& front() {
-            return get_buffer()[head_];
+            return get_buffer()[m_head];
         }
         
 
         const T& front() const {
-            return get_buffer()[head_];
+            return get_buffer()[m_head];
         }
         
 
         T& back() {
-            size_t index = (tail_ == 0) ? CAPACITY - 1 : tail_ - 1;
+            size_t index = (m_tail == 0) ? CAPACITY - 1 : m_tail - 1;
             return get_buffer()[index];
         }
         
 
         const T& back() const {
-            size_t index = (tail_ == 0) ? CAPACITY - 1 : tail_ - 1;
+            size_t index = (m_tail == 0) ? CAPACITY - 1 : m_tail - 1;
             return get_buffer()[index];
         }
         
 
-        size_t size() const { return count_; }
+        size_t size() const { return m_count; }
         constexpr size_t capacity() const { return CAPACITY; }
-        bool empty() const { return count_ == 0; }
-        bool full() const { return count_ >= CAPACITY; }
+        bool empty() const { return m_count == 0; }
+        bool full() const { return m_count >= CAPACITY; }
         
 
         void clear() {
-            head_ = 0;
-            tail_ = 0;
-            count_ = 0;
+            m_head = 0;
+            m_tail = 0;
+            m_count = 0;
         }
         
 
         // ETL compatibility - pop without parameter
         void pop() {
-            if (count_ > 0) {
-                head_ = (head_ + 1) % CAPACITY;
-                count_--;
+            if (m_count > 0) {
+                m_head = (m_head + 1) % CAPACITY;
+                m_count--;
             }
         }
         
         
-    private:
+private:
         // Manually aligned buffer - no STL dependencies
-        alignas(T) char buffer_[sizeof(T) * N];
-        size_t head_;
-        size_t tail_;
-        size_t count_;
+        alignas(T) char m_buffer[sizeof(T) * N];
+        size_t m_head;
+        size_t m_tail;
+        size_t m_count;
         
         // Helper to get typed pointer to buffer
-        T* get_buffer() { return reinterpret_cast<T*>(buffer_); }
-        const T* get_buffer() const { return reinterpret_cast<const T*>(buffer_); }
+        T* get_buffer() { return reinterpret_cast<T*>(m_buffer); }
+        const T* get_buffer() const { return reinterpret_cast<const T*>(m_buffer); }
     };
