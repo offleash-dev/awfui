@@ -31,7 +31,7 @@ public:
       void dismiss();
 
       
-      bool isModal() const {
+      bool isModal() const override {
             return true;
       }
 };

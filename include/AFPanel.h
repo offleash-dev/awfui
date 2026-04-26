@@ -17,7 +17,7 @@
 
 class AFPanel : public AFWidget, public AFContainer {
 public:
-      AFPanel() = default;  // Default constructor for stack objects
+      AFPanel() = default; // Default constructor for stack objects
       AFPanel(int16_t x, int16_t y, int16_t w, int16_t h, uint32_t id = 0);
      
       virtual ~AFPanel();
@@ -45,11 +45,17 @@ public:
      
       virtual bool isDirty() const override;
       virtual void setVisible(bool v) override;
-      
+
+
+      virtual bool isModal() const {
+            return false;
+      }
+
+
       // Container interface implementation
       void markIntersectingWidgetsDirty(int16_t rx, int16_t ry, int16_t rw, int16_t rh) override;
-      
-      
+
+
       int16_t toScreenX(int16_t localX) const {
             return m_x + localX;
       }
@@ -64,7 +70,7 @@ public:
             return screenX - m_x;
       }
 
-      
+
       int16_t toLocalY(int16_t screenY) const {
             return screenY - m_y;
       }
@@ -107,6 +113,6 @@ protected:
       }
 
 
-      bool m_opaque = true;
-      AFWidget* m_pressedWidget = nullptr;  // implicit capture for drag
+      bool      m_opaque        = true;
+      AFWidget* m_pressedWidget = nullptr; // implicit capture for drag
 };
