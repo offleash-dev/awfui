@@ -26,11 +26,20 @@ AFImageButton::AFImageButton(int16_t x, int16_t y, const AFImage* img, uint32_t 
 //
 void AFImageButton::init(int16_t x, int16_t y, const AFImage* img, uint32_t id) {
       // Initialize the base AFButton
-      int16_t width = img ? img->width() : 0;
-      int16_t height = img ? img->height() : 0;
+      int16_t width = img ? img->width() : 8;   // Fallback dimensions so a basic box shows.
+      int16_t height = img ? img->height() : 8; // width and height are otherwise not used, just x/y
       AFButton::init(x, y, width, height, "", id);
       
       m_image = img;
+}
+
+
+
+void AFImageButton::setImage(const AFImage* img) {
+    m_image = img;
+    m_x = img ? img->width() : 8;
+    m_y = img ? img->height() : 8;
+    markDirty();
 }
 
 
@@ -69,13 +78,19 @@ void AFImageButton::draw(AFDisplayInterface& displayInterface)
         }
     }
 
-    if (image->format() == kAFImageFormat1bit) {
-        const AFTheme& theme = AFWorld::instance()->getTheme();
-        uint16_t color = isEnabled() ? theme.widgetFgColor : theme.widgetDisabledFgColor;
-        displayInterface.drawBitmap(m_x, m_y, image->pixels(), image->width(), image->height(), color);
+    if (image != nullptr) {
+        if (image->format() == kAFImageFormat1bit) {
+            const AFTheme& theme = AFWorld::instance()->getTheme();
+            uint16_t color = isEnabled() ? theme.widgetFgColor : theme.widgetDisabledFgColor;
+            displayInterface.drawBitmap(m_x, m_y, image->pixels(), image->width(), image->height(), color);
+        } else {
+            displayInterface.drawRGBBitmap(m_x, m_y, reinterpret_cast<const uint16_t*>(image->pixels()),
+                            image->width(), image->height());
+        }
     } else {
-        displayInterface.drawRGBBitmap(m_x, m_y, reinterpret_cast<const uint16_t*>(image->pixels()),
-                          image->width(), image->height());
+        // Draw a simple rectangle with a border as fallback
+        displayInterface.fillRect(m_x, m_y, m_width, m_height, AFWorld::instance()->getTheme().widgetBgColor);
+        displayInterface.drawRect(m_x, m_y, m_width, m_height, AFWorld::instance()->getTheme().widgetFgColor);
     }
 
     if ((m_pressed && m_imagePressed == nullptr) || (m_selected && m_imageSelected == nullptr)) {

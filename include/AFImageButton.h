@@ -27,6 +27,7 @@ public:
     void setSelected(bool selected) { m_selected = selected; }
     bool isSelected() const { return m_selected; }
     
+    void setImage(const AFImage* img);
     void setPressedImage(const AFImage* img) { m_imagePressed = img; }
     void setDisabledImage(const AFImage* img) { m_imageDisabled = img; }
     void setSelectedImage(const AFImage* img) { m_imageSelected = img; }
