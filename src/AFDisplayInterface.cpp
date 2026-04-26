@@ -197,6 +197,7 @@ void AFDisplayInterface::fillCircle(int16_t x, int16_t y, int16_t r, uint16_t co
 }
 
 
+
 void AFDisplayInterface::getTextBounds(const char* str, int16_t x, int16_t y,
                                int16_t* x1, int16_t* y1,
                                uint16_t* w, uint16_t* h) {
@@ -209,9 +210,11 @@ void AFDisplayInterface::getTextBounds(const char* str, int16_t x, int16_t y,
 }
 
 
+
 void AFDisplayInterface::fillScreen(uint16_t color) {
         fillRect(0, 0, width(), height(), color);
 }
+
 
 
 void AFDisplayInterface::drawTextJustified(const char* text,
