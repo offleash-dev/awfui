@@ -21,6 +21,7 @@ public:
         : AFWidget(x, y, w, h, id),
           m_minimum(0), m_maximum(100), m_value(0) {}
 
+          
     // Initialize method for stack objects
     void init(int16_t x, int16_t y, int16_t w, int16_t h, uint32_t id = 0) {
         // Initialize the base AFWidget
@@ -35,6 +36,7 @@ public:
         m_maximum = 100;
         m_value = 0;
     }
+
 
     void setRange(int minimumValue, int maximumValue) {
         m_minimum = minimumValue;
